@@ -595,7 +595,7 @@ def main(input_xls_or_zip, output_py_path=None):
         field_num_declarations.append(field_decl)
 
     output = '\n'.join([
-        "\n%s" % PROFILE_HEADER_FIRST_PART,
+        "%s" % PROFILE_HEADER_FIRST_PART,
         header('EXPORTED PROFILE FROM {} ON {}'.format(
             ('SDK VERSION %s' % profile_version) if profile_version else 'SPREADSHEET',
             datetime.datetime.now().strftime('%Y-%m-%d'),
