@@ -4769,70 +4769,784 @@ MESSAGE_TYPES = {
             ),
         },
     ),
-    49: MessageType(
-        name='file_creator',
-        mesg_num=49,
+    1: MessageType(
+        name='capabilities',
+        mesg_num=1,
         fields={
-            0: Field(
-                name='software_version',
+            0: Field(  # Use language_bits_x types where x is index of array.
+                name='languages',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=0,
+            ),
+            1: Field(  # Use sport_bits_x types where x is index of array.
+                name='sports',
+                type=FIELD_TYPES['sport_bits_0'],
+                def_num=1,
+            ),
+            21: Field(
+                name='workouts_supported',
+                type=FIELD_TYPES['workout_capabilities'],
+                def_num=21,
+            ),
+            23: Field(
+                name='connectivity_supported',
+                type=FIELD_TYPES['connectivity_capabilities'],
+                def_num=23,
+            ),
+        },
+    ),
+    2: MessageType(
+        name='device_settings',
+        mesg_num=2,
+        fields={
+            0: Field(  # Index into time zone arrays.
+                name='active_time_zone',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(  # Offset from system time. Required to convert timestamp from system time to UTC.
+                name='utc_offset',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+            ),
+            2: Field(  # Offset from system time.
+                name='time_offset',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='s',
+            ),
+            4: Field(  # Display mode for the time
+                name='time_mode',
+                type=FIELD_TYPES['time_mode'],
+                def_num=4,
+            ),
+            5: Field(  # timezone offset in 1/4 hour increments
+                name='time_zone_offset',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=5,
+                scale=4,
+                units='hr',
+            ),
+            12: Field(  # Mode for backlight
+                name='backlight_mode',
+                type=FIELD_TYPES['backlight_mode'],
+                def_num=12,
+            ),
+            36: Field(  # Enabled state of the activity tracker functionality
+                name='activity_tracker_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=36,
+            ),
+            39: Field(  # UTC timestamp used to set the devices clock and date
+                name='clock_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=39,
+            ),
+            40: Field(  # Bitfield to configure enabled screens for each supported loop
+                name='pages_enabled',
                 type=BASE_TYPES[0x84],  # uint16
+                def_num=40,
+            ),
+            46: Field(  # Enabled state of the move alert
+                name='move_alert_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=46,
+            ),
+            47: Field(  # Display mode for the date
+                name='date_mode',
+                type=FIELD_TYPES['date_mode'],
+                def_num=47,
+            ),
+            55: Field(
+                name='display_orientation',
+                type=FIELD_TYPES['display_orientation'],
+                def_num=55,
+            ),
+            56: Field(
+                name='mounting_side',
+                type=FIELD_TYPES['side'],
+                def_num=56,
+            ),
+            57: Field(  # Bitfield to indicate one page as default for each supported loop
+                name='default_page',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=57,
+            ),
+            58: Field(  # Minimum steps before an autosync can occur
+                name='autosync_min_steps',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=58,
+                units='steps',
+            ),
+            59: Field(  # Minimum minutes before an autosync can occur
+                name='autosync_min_time',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=59,
+                units='minutes',
+            ),
+            80: Field(  # Enable auto-detect setting for the lactate threshold feature.
+                name='lactate_threshold_autodetect_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=80,
+            ),
+            86: Field(  # Automatically upload using BLE
+                name='ble_auto_upload_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=86,
+            ),
+            89: Field(  # Helps to conserve battery by changing modes
+                name='auto_sync_frequency',
+                type=FIELD_TYPES['auto_sync_frequency'],
+                def_num=89,
+            ),
+            90: Field(  # Allows setting specific activities auto-activity detect enabled/disabled settings
+                name='auto_activity_detect',
+                type=FIELD_TYPES['auto_activity_detect'],
+                def_num=90,
+            ),
+            94: Field(  # Number of screens configured to display
+                name='number_of_screens',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=94,
+            ),
+            95: Field(  # Smart Notification display orientation
+                name='smart_notification_display_orientation',
+                type=FIELD_TYPES['display_orientation'],
+                def_num=95,
+            ),
+            134: Field(
+                name='tap_interface',
+                type=FIELD_TYPES['switch'],
+                def_num=134,
+            ),
+            174: Field(  # Used to hold the tap threshold setting
+                name='tap_sensitivity',
+                type=FIELD_TYPES['tap_sensitivity'],
+                def_num=174,
+            ),
+        },
+    ),
+    3: MessageType(
+        name='user_profile',
+        mesg_num=3,
+        fields={
+            0: Field(  # Used for Morning Report greeting
+                name='friendly_name',
+                type=BASE_TYPES[0x07],  # string
                 def_num=0,
             ),
             1: Field(
-                name='hardware_version',
+                name='gender',
+                type=FIELD_TYPES['gender'],
+                def_num=1,
+            ),
+            2: Field(
+                name='age',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+                units='years',
+            ),
+            3: Field(
+                name='height',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+                scale=100,
+                units='m',
+            ),
+            4: Field(
+                name='weight',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=10,
+                units='kg',
+            ),
+            5: Field(
+                name='language',
+                type=FIELD_TYPES['language'],
+                def_num=5,
+            ),
+            6: Field(
+                name='elev_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=6,
+            ),
+            7: Field(
+                name='weight_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=7,
+            ),
+            8: Field(
+                name='resting_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+                units='bpm',
+            ),
+            9: Field(
+                name='default_max_running_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=9,
+                units='bpm',
+            ),
+            10: Field(
+                name='default_max_biking_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=10,
+                units='bpm',
+            ),
+            11: Field(
+                name='default_max_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+                units='bpm',
+            ),
+            12: Field(
+                name='hr_setting',
+                type=FIELD_TYPES['display_heart'],
+                def_num=12,
+            ),
+            13: Field(
+                name='speed_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=13,
+            ),
+            14: Field(
+                name='dist_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=14,
+            ),
+            16: Field(
+                name='power_setting',
+                type=FIELD_TYPES['display_power'],
+                def_num=16,
+            ),
+            17: Field(
+                name='activity_class',
+                type=FIELD_TYPES['activity_class'],
+                def_num=17,
+            ),
+            18: Field(
+                name='position_setting',
+                type=FIELD_TYPES['display_position'],
+                def_num=18,
+            ),
+            21: Field(
+                name='temperature_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=21,
+            ),
+            22: Field(
+                name='local_id',
+                type=FIELD_TYPES['user_local_id'],
+                def_num=22,
+            ),
+            23: Field(
+                name='global_id',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=23,
+            ),
+            28: Field(  # Typical wake time
+                name='wake_time',
+                type=FIELD_TYPES['localtime_into_day'],
+                def_num=28,
+            ),
+            29: Field(  # Typical bed time
+                name='sleep_time',
+                type=FIELD_TYPES['localtime_into_day'],
+                def_num=29,
+            ),
+            30: Field(
+                name='height_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=30,
+            ),
+            31: Field(  # User defined running step length set to 0 for auto length
+                name='user_running_step_length',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=31,
+                scale=1000,
+                units='m',
+            ),
+            32: Field(  # User defined walking step length set to 0 for auto length
+                name='user_walking_step_length',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=32,
+                scale=1000,
+                units='m',
+            ),
+            47: Field(
+                name='depth_setting',
+                type=FIELD_TYPES['display_measure'],
+                def_num=47,
+            ),
+            49: Field(
+                name='dive_count',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=49,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    4: MessageType(
+        name='hrm_profile',
+        mesg_num=4,
+        fields={
+            0: Field(
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=0,
+            ),
+            1: Field(
+                name='hrm_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=1,
+            ),
+            2: Field(
+                name='log_hrv',
+                type=FIELD_TYPES['bool'],
+                def_num=2,
+            ),
+            3: Field(
+                name='hrm_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=3,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    5: MessageType(
+        name='sdm_profile',
+        mesg_num=5,
+        fields={
+            0: Field(
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=0,
+            ),
+            1: Field(
+                name='sdm_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=1,
+            ),
+            2: Field(
+                name='sdm_cal_factor',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=10,
+                units='%',
+            ),
+            3: Field(
+                name='odometer',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=100,
+                units='m',
+            ),
+            4: Field(  # Use footpod for speed source instead of GPS
+                name='speed_source',
+                type=FIELD_TYPES['bool'],
+                def_num=4,
+            ),
+            5: Field(
+                name='sdm_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=5,
+            ),
+            7: Field(  # Rollover counter that can be used to extend the odometer
+                name='odometer_rollover',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=7,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    6: MessageType(
+        name='bike_profile',
+        mesg_num=6,
+        fields={
+            0: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=1,
+            ),
+            2: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=2,
+            ),
+            3: Field(
+                name='odometer',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=100,
+                units='m',
+            ),
+            4: Field(
+                name='bike_spd_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=4,
+            ),
+            5: Field(
+                name='bike_cad_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=5,
+            ),
+            6: Field(
+                name='bike_spdcad_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=6,
+            ),
+            7: Field(
+                name='bike_power_ant_id',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=7,
+            ),
+            8: Field(
+                name='custom_wheelsize',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=8,
+                scale=1000,
+                units='m',
+            ),
+            9: Field(
+                name='auto_wheelsize',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                scale=1000,
+                units='m',
+            ),
+            10: Field(
+                name='bike_weight',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=10,
+                scale=10,
+                units='kg',
+            ),
+            11: Field(
+                name='power_cal_factor',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=11,
+                scale=10,
+                units='%',
+            ),
+            12: Field(
+                name='auto_wheel_cal',
+                type=FIELD_TYPES['bool'],
+                def_num=12,
+            ),
+            13: Field(
+                name='auto_power_zero',
+                type=FIELD_TYPES['bool'],
+                def_num=13,
+            ),
+            14: Field(
+                name='id',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=14,
+            ),
+            15: Field(
+                name='spd_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=15,
+            ),
+            16: Field(
+                name='cad_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=16,
+            ),
+            17: Field(
+                name='spdcad_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=17,
+            ),
+            18: Field(
+                name='power_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=18,
+            ),
+            19: Field(
+                name='crank_length',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=19,
+                scale=2,
+                offset=-110,
+                units='mm',
+            ),
+            20: Field(
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=20,
+            ),
+            21: Field(
+                name='bike_spd_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=21,
+            ),
+            22: Field(
+                name='bike_cad_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=22,
+            ),
+            23: Field(
+                name='bike_spdcad_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=23,
+            ),
+            24: Field(
+                name='bike_power_ant_id_trans_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=24,
+            ),
+            37: Field(  # Rollover counter that can be used to extend the odometer
+                name='odometer_rollover',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=37,
+            ),
+            38: Field(  # Number of front gears
+                name='front_gear_num',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=38,
+            ),
+            39: Field(  # Number of teeth on each gear 0 is innermost
+                name='front_gear',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=39,
+            ),
+            40: Field(  # Number of rear gears
+                name='rear_gear_num',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=40,
+            ),
+            41: Field(  # Number of teeth on each gear 0 is innermost
+                name='rear_gear',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=41,
+            ),
+            44: Field(
+                name='shimano_di2_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=44,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    7: MessageType(
+        name='zones_target',
+        mesg_num=7,
+        fields={
+            1: Field(
+                name='max_heart_rate',
                 type=BASE_TYPES[0x02],  # uint8
                 def_num=1,
             ),
+            2: Field(
+                name='threshold_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(
+                name='functional_threshold_power',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            5: Field(
+                name='hr_calc_type',
+                type=FIELD_TYPES['hr_zone_calc'],
+                def_num=5,
+            ),
+            7: Field(
+                name='pwr_calc_type',
+                type=FIELD_TYPES['pwr_zone_calc'],
+                def_num=7,
+            ),
         },
     ),
-    162: MessageType(
-        name='timestamp_correlation',
-        mesg_num=162,
+    8: MessageType(
+        name='hr_zone',
+        mesg_num=8,
         fields={
-            0: Field(  # Fractional part of the UTC timestamp at the time the system timestamp was recorded.
-                name='fractional_timestamp',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=32768,
-                units='s',
-            ),
-            1: Field(  # Whole second part of the system timestamp
-                name='system_timestamp',
-                type=FIELD_TYPES['date_time'],
+            1: Field(
+                name='high_bpm',
+                type=BASE_TYPES[0x02],  # uint8
                 def_num=1,
-                units='s',
+                units='bpm',
             ),
-            2: Field(  # Fractional part of the system timestamp
-                name='fractional_system_timestamp',
+            2: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=2,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    9: MessageType(
+        name='power_zone',
+        mesg_num=9,
+        fields={
+            1: Field(
+                name='high_value',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='watts',
+            ),
+            2: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=2,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    10: MessageType(
+        name='met_zone',
+        mesg_num=10,
+        fields={
+            1: Field(
+                name='high_bpm',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+            2: Field(
+                name='calories',
                 type=BASE_TYPES[0x84],  # uint16
                 def_num=2,
-                scale=32768,
-                units='s',
+                scale=10,
+                units='kcal/min',
             ),
-            3: Field(  # timestamp epoch expressed in local time used to convert timestamps to local time
-                name='local_timestamp',
-                type=FIELD_TYPES['local_date_time'],
+            3: Field(
+                name='fat_calories',
+                type=BASE_TYPES[0x02],  # uint8
                 def_num=3,
-                units='s',
+                scale=10,
+                units='kcal/min',
             ),
-            4: Field(  # Millisecond part of the UTC timestamp at the time the system timestamp was recorded.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                units='ms',
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
             ),
-            5: Field(  # Millisecond part of the system timestamp
-                name='system_timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                units='ms',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of UTC timestamp at the time the system timestamp was recorded.
         },
     ),
-
-
-    # ************************* Activity File Messages *************************
+    12: MessageType(
+        name='sport',
+        mesg_num=12,
+        fields={
+            0: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=0,
+            ),
+            1: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=1,
+            ),
+            3: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=3,
+            ),
+        },
+    ),
+    15: MessageType(
+        name='goal',
+        mesg_num=15,
+        fields={
+            0: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=0,
+            ),
+            1: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=1,
+            ),
+            2: Field(
+                name='start_date',
+                type=FIELD_TYPES['date_time'],
+                def_num=2,
+            ),
+            3: Field(
+                name='end_date',
+                type=FIELD_TYPES['date_time'],
+                def_num=3,
+            ),
+            4: Field(
+                name='type',
+                type=FIELD_TYPES['goal'],
+                def_num=4,
+            ),
+            5: Field(
+                name='value',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+            ),
+            6: Field(
+                name='repeat',
+                type=FIELD_TYPES['bool'],
+                def_num=6,
+            ),
+            7: Field(
+                name='target_value',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=7,
+            ),
+            8: Field(
+                name='recurrence',
+                type=FIELD_TYPES['goal_recurrence'],
+                def_num=8,
+            ),
+            9: Field(
+                name='recurrence_value',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+            ),
+            10: Field(
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=10,
+            ),
+            11: Field(
+                name='source',
+                type=FIELD_TYPES['goal_source'],
+                def_num=11,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
     18: MessageType(
         name='session',
         mesg_num=18,
@@ -8282,5927 +8996,6 @@ MESSAGE_TYPES = {
             253: FIELD_TYPE_TIMESTAMP,
         },
     ),
-    34: MessageType(
-        name='activity',
-        mesg_num=34,
-        fields={
-            0: Field(  # Exclude pauses
-                name='total_timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=0,
-                scale=1000,
-                units='s',
-            ),
-            1: Field(
-                name='num_sessions',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-            ),
-            2: Field(
-                name='type',
-                type=FIELD_TYPES['activity'],
-                def_num=2,
-            ),
-            3: Field(
-                name='event',
-                type=FIELD_TYPES['event'],
-                def_num=3,
-            ),
-            4: Field(
-                name='event_type',
-                type=FIELD_TYPES['event_type'],
-                def_num=4,
-            ),
-            5: Field(  # timestamp epoch expressed in local time, used to convert activity timestamps to local time
-                name='local_timestamp',
-                type=FIELD_TYPES['local_date_time'],
-                def_num=5,
-            ),
-            6: Field(
-                name='event_group',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    72: MessageType(  # Corresponds to file_id of workout or course.
-        name='training_file',
-        mesg_num=72,
-        fields={
-            0: Field(
-                name='type',
-                type=FIELD_TYPES['file'],
-                def_num=0,
-            ),
-            1: Field(
-                name='manufacturer',
-                type=FIELD_TYPES['manufacturer'],
-                def_num=1,
-            ),
-            2: Field(
-                name='product',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                subfields=(
-                    SubField(
-                        name='favero_product',
-                        def_num=2,
-                        type=FIELD_TYPES['favero_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=1,
-                                value='favero_electronics',
-                                raw_value=263,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='garmin_product',
-                        def_num=2,
-                        type=FIELD_TYPES['garmin_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=1,
-                                value='garmin',
-                                raw_value=1,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=1,
-                                value='dynastream',
-                                raw_value=15,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=1,
-                                value='dynastream_oem',
-                                raw_value=13,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=1,
-                                value='tacx',
-                                raw_value=89,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            3: Field(
-                name='serial_number',
-                type=BASE_TYPES[0x8C],  # uint32z
-                def_num=3,
-            ),
-            4: Field(
-                name='time_created',
-                type=FIELD_TYPES['date_time'],
-                def_num=4,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    101: MessageType(
-        name='length',
-        mesg_num=101,
-        fields={
-            0: Field(
-                name='event',
-                type=FIELD_TYPES['event'],
-                def_num=0,
-            ),
-            1: Field(
-                name='event_type',
-                type=FIELD_TYPES['event_type'],
-                def_num=1,
-            ),
-            2: Field(
-                name='start_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=2,
-            ),
-            3: Field(
-                name='total_elapsed_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=1000,
-                units='s',
-            ),
-            4: Field(
-                name='total_timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='s',
-            ),
-            5: Field(
-                name='total_strokes',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                units='strokes',
-            ),
-            6: Field(
-                name='avg_speed',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=6,
-                scale=1000,
-                units='m/s',
-            ),
-            7: Field(
-                name='swim_stroke',
-                type=FIELD_TYPES['swim_stroke'],
-                def_num=7,
-                units='swim_stroke',
-            ),
-            9: Field(
-                name='avg_swimming_cadence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=9,
-                units='strokes/min',
-            ),
-            10: Field(
-                name='event_group',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=10,
-            ),
-            11: Field(
-                name='total_calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=11,
-                units='kcal',
-            ),
-            12: Field(
-                name='length_type',
-                type=FIELD_TYPES['length_type'],
-                def_num=12,
-            ),
-            18: Field(
-                name='player_score',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=18,
-            ),
-            19: Field(
-                name='opponent_score',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=19,
-            ),
-            20: Field(  # stroke_type enum used as the index
-                name='stroke_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=20,
-                units='counts',
-            ),
-            21: Field(  # zone number used as the index
-                name='zone_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=21,
-                units='counts',
-            ),
-            22: Field(
-                name='enhanced_avg_respiration_rate',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=22,
-                scale=100,
-                units='Breaths/min',
-            ),
-            23: Field(
-                name='enhanced_max_respiration_rate',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=23,
-                scale=100,
-                units='Breaths/min',
-            ),
-            24: Field(
-                name='avg_respiration_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=24,
-                components=(
-                    ComponentField(
-                        name='enhanced_avg_respiration_rate',
-                        def_num=22,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            25: Field(
-                name='max_respiration_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=25,
-                components=(
-                    ComponentField(
-                        name='enhanced_max_respiration_rate',
-                        def_num=23,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    128: MessageType(
-        name='weather_conditions',
-        mesg_num=128,
-        fields={
-            0: Field(  # Current or forecast
-                name='weather_report',
-                type=FIELD_TYPES['weather_report'],
-                def_num=0,
-            ),
-            1: Field(
-                name='temperature',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=1,
-                units='C',
-            ),
-            2: Field(  # Corresponds to GSC Response weatherIcon field
-                name='condition',
-                type=FIELD_TYPES['weather_status'],
-                def_num=2,
-            ),
-            3: Field(
-                name='wind_direction',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                units='degrees',
-            ),
-            4: Field(
-                name='wind_speed',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=1000,
-                units='m/s',
-            ),
-            5: Field(  # range 0-100
-                name='precipitation_probability',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=5,
-            ),
-            6: Field(  # Heat Index if GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F
-                name='temperature_feels_like',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=6,
-                units='C',
-            ),
-            7: Field(
-                name='relative_humidity',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=7,
-            ),
-            8: Field(  # string corresponding to GCS response location string
-                name='location',
-                type=BASE_TYPES[0x07],  # string
-                def_num=8,
-            ),
-            9: Field(
-                name='observed_at_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=9,
-            ),
-            10: Field(
-                name='observed_location_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=10,
-                units='semicircles',
-            ),
-            11: Field(
-                name='observed_location_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=11,
-                units='semicircles',
-            ),
-            12: Field(
-                name='day_of_week',
-                type=FIELD_TYPES['day_of_week'],
-                def_num=12,
-            ),
-            13: Field(
-                name='high_temperature',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=13,
-                units='C',
-            ),
-            14: Field(
-                name='low_temperature',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=14,
-                units='C',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # time of update for current conditions, else forecast time
-        },
-    ),
-    129: MessageType(
-        name='weather_alert',
-        mesg_num=129,
-        fields={
-            0: Field(  # Unique identifier from GCS report ID string, length is 12
-                name='report_id',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(  # Time alert was issued
-                name='issue_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=1,
-            ),
-            2: Field(  # Time alert expires
-                name='expire_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=2,
-            ),
-            3: Field(  # Warning, Watch, Advisory, Statement
-                name='severity',
-                type=FIELD_TYPES['weather_severity'],
-                def_num=3,
-            ),
-            4: Field(  # Tornado, Severe Thunderstorm, etc.
-                name='type',
-                type=FIELD_TYPES['weather_severe_type'],
-                def_num=4,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    160: MessageType(
-        name='gps_metadata',
-        mesg_num=160,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(
-                name='position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=1,
-                units='semicircles',
-            ),
-            2: Field(
-                name='position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=2,
-                units='semicircles',
-            ),
-            3: Field(
-                name='enhanced_altitude',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            4: Field(
-                name='enhanced_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='m/s',
-            ),
-            5: Field(
-                name='heading',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                scale=100,
-                units='degrees',
-            ),
-            6: Field(  # Used to correlate UTC to system time if the timestamp of the message is in system time. This UTC time is derived from the GPS data.
-                name='utc_timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=6,
-                units='s',
-            ),
-            7: Field(  # velocity[0] is lon velocity. Velocity[1] is lat velocity. Velocity[2] is altitude velocity.
-                name='velocity',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=7,
-                scale=100,
-                units='m/s',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp.
-        },
-    ),
-    161: MessageType(
-        name='camera_event',
-        mesg_num=161,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(
-                name='camera_event_type',
-                type=FIELD_TYPES['camera_event_type'],
-                def_num=1,
-            ),
-            2: Field(
-                name='camera_file_uuid',
-                type=BASE_TYPES[0x07],  # string
-                def_num=2,
-            ),
-            3: Field(
-                name='camera_orientation',
-                type=FIELD_TYPES['camera_orientation_type'],
-                def_num=3,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp.
-        },
-    ),
-    164: MessageType(
-        name='gyroscope_data',
-        mesg_num=164,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Each time in the array describes the time at which the gyro sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in gyro_x and gyro_y and gyro_z
-                name='sample_time_offset',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='gyro_x',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                units='counts',
-            ),
-            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='gyro_y',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                units='counts',
-            ),
-            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='gyro_z',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                units='counts',
-            ),
-            5: Field(  # Calibrated gyro reading
-                name='calibrated_gyro_x',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=5,
-                units='deg/s',
-            ),
-            6: Field(  # Calibrated gyro reading
-                name='calibrated_gyro_y',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=6,
-                units='deg/s',
-            ),
-            7: Field(  # Calibrated gyro reading
-                name='calibrated_gyro_z',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=7,
-                units='deg/s',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    165: MessageType(
-        name='accelerometer_data',
-        mesg_num=165,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Each time in the array describes the time at which the accelerometer sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in accel_x and accel_y and accel_z
-                name='sample_time_offset',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='accel_x',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                units='counts',
-            ),
-            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='accel_y',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                units='counts',
-            ),
-            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='accel_z',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                units='counts',
-            ),
-            5: Field(  # Calibrated accel reading
-                name='calibrated_accel_x',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=5,
-                units='g',
-            ),
-            6: Field(  # Calibrated accel reading
-                name='calibrated_accel_y',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=6,
-                units='g',
-            ),
-            7: Field(  # Calibrated accel reading
-                name='calibrated_accel_z',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=7,
-                units='g',
-            ),
-            8: Field(  # Calibrated accel reading
-                name='compressed_calibrated_accel_x',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=8,
-                units='mG',
-            ),
-            9: Field(  # Calibrated accel reading
-                name='compressed_calibrated_accel_y',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=9,
-                units='mG',
-            ),
-            10: Field(  # Calibrated accel reading
-                name='compressed_calibrated_accel_z',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=10,
-                units='mG',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    167: MessageType(
-        name='three_d_sensor_calibration',
-        mesg_num=167,
-        fields={
-            0: Field(  # Indicates which sensor the calibration is for
-                name='sensor_type',
-                type=FIELD_TYPES['sensor_type'],
-                def_num=0,
-            ),
-            1: Field(  # Calibration factor used to convert from raw ADC value to degrees, g, etc.
-                name='calibration_factor',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-                subfields=(
-                    SubField(  # Accelerometer calibration factor
-                        name='accel_cal_factor',
-                        def_num=1,
-                        type=BASE_TYPES[0x86],  # uint32
-                        units='g',
-                        ref_fields=(
-                            ReferenceField(
-                                name='sensor_type',
-                                def_num=0,
-                                value='accelerometer',
-                                raw_value=0,
-                            ),
-                        ),
-                    ),
-                    SubField(  # Gyro calibration factor
-                        name='gyro_cal_factor',
-                        def_num=1,
-                        type=BASE_TYPES[0x86],  # uint32
-                        units='deg/s',
-                        ref_fields=(
-                            ReferenceField(
-                                name='sensor_type',
-                                def_num=0,
-                                value='gyroscope',
-                                raw_value=1,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            2: Field(  # Calibration factor divisor
-                name='calibration_divisor',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='counts',
-            ),
-            3: Field(  # Level shift value used to shift the ADC value back into range
-                name='level_shift',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-            ),
-            4: Field(  # Internal calibration factors, one for each: xy, yx, zx
-                name='offset_cal',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=4,
-            ),
-            5: Field(  # 3 x 3 rotation matrix (row major)
-                name='orientation_matrix',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=5,
-                scale=65535,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    169: MessageType(
-        name='video_frame',
-        mesg_num=169,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Number of the frame that the timestamp and timestamp_ms correlate to
-                name='frame_number',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    174: MessageType(
-        name='obdii_data',
-        mesg_num=174,
-        fields={
-            0: Field(  # Fractional part of timestamp, added to timestamp
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Offset of PID reading [i] from start_timestamp+start_timestamp_ms. Readings may span accross seconds.
-                name='time_offset',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # Parameter ID
-                name='pid',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=2,
-            ),
-            3: Field(  # Raw parameter data
-                name='raw_data',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=3,
-            ),
-            4: Field(  # Optional, data size of PID[i]. If not specified refer to SAE J1979.
-                name='pid_data_size',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=4,
-            ),
-            5: Field(  # System time associated with sample expressed in ms, can be used instead of time_offset. There will be a system_time value for each raw_data element. For multibyte pids the system_time is repeated.
-                name='system_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-            ),
-            6: Field(  # Timestamp of first sample recorded in the message. Used with time_offset to generate time of each sample
-                name='start_timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=6,
-            ),
-            7: Field(  # Fractional part of start_timestamp
-                name='start_timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=7,
-                units='ms',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
-        },
-    ),
-    177: MessageType(
-        name='nmea_sentence',
-        mesg_num=177,
-        fields={
-            0: Field(  # Fractional part of timestamp, added to timestamp
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # NMEA sentence
-                name='sentence',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
-        },
-    ),
-    178: MessageType(
-        name='aviation_attitude',
-        mesg_num=178,
-        fields={
-            0: Field(  # Fractional part of timestamp, added to timestamp
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # System time associated with sample expressed in ms.
-                name='system_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # Range -PI/2 to +PI/2
-                name='pitch',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=2,
-                scale=10430.38,
-                units='radians',
-            ),
-            3: Field(  # Range -PI to +PI
-                name='roll',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=3,
-                scale=10430.38,
-                units='radians',
-            ),
-            4: Field(  # Range -78.4 to +78.4 (-8 Gs to 8 Gs)
-                name='accel_lateral',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=4,
-                scale=100,
-                units='m/s^2',
-            ),
-            5: Field(  # Range -78.4 to +78.4 (-8 Gs to 8 Gs)
-                name='accel_normal',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=5,
-                scale=100,
-                units='m/s^2',
-            ),
-            6: Field(  # Range -8.727 to +8.727 (-500 degs/sec to +500 degs/sec)
-                name='turn_rate',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=6,
-                scale=1024,
-                units='radians/second',
-            ),
-            7: Field(
-                name='stage',
-                type=FIELD_TYPES['attitude_stage'],
-                def_num=7,
-            ),
-            8: Field(  # The percent complete of the current attitude stage. Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it. Range - 100
-                name='attitude_stage_complete',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-                units='%',
-            ),
-            9: Field(  # Track Angle/Heading Range 0 - 2pi
-                name='track',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                scale=10430.38,
-                units='radians',
-            ),
-            10: Field(
-                name='validity',
-                type=FIELD_TYPES['attitude_validity'],
-                def_num=10,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
-        },
-    ),
-    184: MessageType(
-        name='video',
-        mesg_num=184,
-        fields={
-            0: Field(
-                name='url',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(
-                name='hosting_provider',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            2: Field(  # Playback time of video
-                name='duration',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='ms',
-            ),
-        },
-    ),
-    185: MessageType(
-        name='video_title',
-        mesg_num=185,
-        fields={
-            0: Field(  # Total number of title parts
-                name='message_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-            ),
-            1: Field(
-                name='text',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            254: Field(  # Long titles will be split into multiple parts
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    186: MessageType(
-        name='video_description',
-        mesg_num=186,
-        fields={
-            0: Field(  # Total number of description parts
-                name='message_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-            ),
-            1: Field(
-                name='text',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            254: Field(  # Long descriptions will be split into multiple parts
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    187: MessageType(
-        name='video_clip',
-        mesg_num=187,
-        fields={
-            0: Field(
-                name='clip_number',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-            ),
-            1: Field(
-                name='start_timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=1,
-            ),
-            2: Field(
-                name='start_timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-            ),
-            3: Field(
-                name='end_timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=3,
-            ),
-            4: Field(
-                name='end_timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-            ),
-            6: Field(  # Start of clip in video time
-                name='clip_start',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-                units='ms',
-            ),
-            7: Field(  # End of clip in video time
-                name='clip_end',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=7,
-                units='ms',
-            ),
-        },
-    ),
-    206: MessageType(  # Must be logged before developer field is used
-        name='field_description',
-        mesg_num=206,
-        fields={
-            0: Field(
-                name='developer_data_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(
-                name='field_definition_number',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(
-                name='fit_base_type_id',
-                type=FIELD_TYPES['fit_base_type'],
-                def_num=2,
-            ),
-            3: Field(
-                name='field_name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=3,
-            ),
-            4: Field(
-                name='array',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=4,
-            ),
-            5: Field(
-                name='components',
-                type=BASE_TYPES[0x07],  # string
-                def_num=5,
-            ),
-            6: Field(
-                name='scale',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-            ),
-            7: Field(
-                name='offset',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=7,
-            ),
-            8: Field(
-                name='units',
-                type=BASE_TYPES[0x07],  # string
-                def_num=8,
-            ),
-            9: Field(
-                name='bits',
-                type=BASE_TYPES[0x07],  # string
-                def_num=9,
-            ),
-            10: Field(
-                name='accumulate',
-                type=BASE_TYPES[0x07],  # string
-                def_num=10,
-            ),
-            13: Field(
-                name='fit_base_unit_id',
-                type=FIELD_TYPES['fit_base_unit'],
-                def_num=13,
-            ),
-            14: Field(
-                name='native_mesg_num',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=14,
-            ),
-            15: Field(
-                name='native_field_num',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=15,
-            ),
-        },
-    ),
-    207: MessageType(  # Must be logged before field description
-        name='developer_data_id',
-        mesg_num=207,
-        fields={
-            0: Field(
-                name='developer_id',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=0,
-            ),
-            1: Field(
-                name='application_id',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-            ),
-            2: Field(
-                name='manufacturer_id',
-                type=FIELD_TYPES['manufacturer'],
-                def_num=2,
-            ),
-            3: Field(
-                name='developer_data_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(
-                name='application_version',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-            ),
-        },
-    ),
-    208: MessageType(
-        name='magnetometer_data',
-        mesg_num=208,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Each time in the array describes the time at which the compass sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in cmps_x and cmps_y and cmps_z
-                name='sample_time_offset',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='mag_x',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                units='counts',
-            ),
-            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='mag_y',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                units='counts',
-            ),
-            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='mag_z',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                units='counts',
-            ),
-            5: Field(  # Calibrated Magnetometer reading
-                name='calibrated_mag_x',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=5,
-                units='G',
-            ),
-            6: Field(  # Calibrated Magnetometer reading
-                name='calibrated_mag_y',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=6,
-                units='G',
-            ),
-            7: Field(  # Calibrated Magnetometer reading
-                name='calibrated_mag_z',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=7,
-                units='G',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    209: MessageType(
-        name='barometer_data',
-        mesg_num=209,
-        fields={
-            0: Field(  # Millisecond part of the timestamp.
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Each time in the array describes the time at which the barometer sample with the corrosponding index was taken. The samples may span across seconds. Array size must match the number of samples in baro_cal
-                name='sample_time_offset',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            2: Field(  # These are the raw ADC reading. The samples may span across seconds. A conversion will need to be done on this data once read.
-                name='baro_pres',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='Pa',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    210: MessageType(
-        name='one_d_sensor_calibration',
-        mesg_num=210,
-        fields={
-            0: Field(  # Indicates which sensor the calibration is for
-                name='sensor_type',
-                type=FIELD_TYPES['sensor_type'],
-                def_num=0,
-            ),
-            1: Field(  # Calibration factor used to convert from raw ADC value to degrees, g, etc.
-                name='calibration_factor',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-                subfields=(
-                    SubField(  # Barometer calibration factor
-                        name='baro_cal_factor',
-                        def_num=1,
-                        type=BASE_TYPES[0x86],  # uint32
-                        units='Pa',
-                        ref_fields=(
-                            ReferenceField(
-                                name='sensor_type',
-                                def_num=0,
-                                value='barometer',
-                                raw_value=3,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            2: Field(  # Calibration factor divisor
-                name='calibration_divisor',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='counts',
-            ),
-            3: Field(  # Level shift value used to shift the ADC value back into range
-                name='level_shift',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-            ),
-            4: Field(  # Internal Calibration factor
-                name='offset_cal',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=4,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
-        },
-    ),
-    225: MessageType(
-        name='set',
-        mesg_num=225,
-        fields={
-            0: Field(
-                name='duration',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=0,
-                scale=1000,
-                units='s',
-            ),
-            3: Field(  # # of repitions of the movement
-                name='repetitions',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            4: Field(  # Amount of weight applied for the set
-                name='weight',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=16,
-                units='kg',
-            ),
-            5: Field(
-                name='set_type',
-                type=FIELD_TYPES['set_type'],
-                def_num=5,
-            ),
-            6: Field(  # Start time of the set
-                name='start_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=6,
-            ),
-            7: Field(
-                name='category',
-                type=FIELD_TYPES['exercise_category'],
-                def_num=7,
-            ),
-            8: Field(  # Based on the associated category, see [category]_exercise_names
-                name='category_subtype',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=8,
-            ),
-            9: Field(
-                name='weight_display_unit',
-                type=FIELD_TYPES['fit_base_unit'],
-                def_num=9,
-            ),
-            10: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=10,
-            ),
-            11: Field(
-                name='wkt_step_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=11,
-            ),
-            254: Field(  # Timestamp of the set
-                name='timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=254,
-            ),
-        },
-    ),
-    285: MessageType(
-        name='jump',
-        mesg_num=285,
-        fields={
-            0: Field(
-                name='distance',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=0,
-                units='m',
-            ),
-            1: Field(
-                name='height',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=1,
-                units='m',
-            ),
-            2: Field(
-                name='rotations',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(
-                name='hang_time',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=3,
-                units='s',
-            ),
-            4: Field(  # A score for a jump calculated based on hang time, rotations, and distance.
-                name='score',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=4,
-            ),
-            5: Field(
-                name='position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=5,
-                units='semicircles',
-            ),
-            6: Field(
-                name='position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=6,
-                units='semicircles',
-            ),
-            7: Field(
-                name='speed',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=7,
-                scale=1000,
-                units='m/s',
-                components=(
-                    ComponentField(
-                        name='enhanced_speed',
-                        def_num=8,
-                        scale=1000,
-                        units='m/s',
-                        accumulate=False,
-                        bits=16,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            8: Field(
-                name='enhanced_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=8,
-                scale=1000,
-                units='m/s',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    312: MessageType(
-        name='split',
-        mesg_num=312,
-        fields={
-            0: Field(
-                name='split_type',
-                type=FIELD_TYPES['split_type'],
-                def_num=0,
-            ),
-            1: Field(
-                name='total_elapsed_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-                scale=1000,
-                units='s',
-            ),
-            2: Field(
-                name='total_timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                scale=1000,
-                units='s',
-            ),
-            3: Field(
-                name='total_distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=100,
-                units='m',
-            ),
-            4: Field(
-                name='avg_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='m/s',
-            ),
-            9: Field(
-                name='start_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=9,
-            ),
-            13: Field(
-                name='total_ascent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=13,
-                units='m',
-            ),
-            14: Field(
-                name='total_descent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=14,
-                units='m',
-            ),
-            21: Field(
-                name='start_position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=21,
-                units='semicircles',
-            ),
-            22: Field(
-                name='start_position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=22,
-                units='semicircles',
-            ),
-            23: Field(
-                name='end_position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=23,
-                units='semicircles',
-            ),
-            24: Field(
-                name='end_position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=24,
-                units='semicircles',
-            ),
-            25: Field(
-                name='max_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=25,
-                scale=1000,
-                units='m/s',
-            ),
-            26: Field(
-                name='avg_vert_speed',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=26,
-                scale=1000,
-                units='m/s',
-            ),
-            27: Field(
-                name='end_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=27,
-            ),
-            28: Field(
-                name='total_calories',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=28,
-                units='kcal',
-            ),
-            74: Field(
-                name='start_elevation',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=74,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            110: Field(
-                name='total_moving_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=110,
-                scale=1000,
-                units='s',
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    313: MessageType(
-        name='split_summary',
-        mesg_num=313,
-        fields={
-            0: Field(
-                name='split_type',
-                type=FIELD_TYPES['split_type'],
-                def_num=0,
-            ),
-            3: Field(
-                name='num_splits',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            4: Field(
-                name='total_timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='s',
-            ),
-            5: Field(
-                name='total_distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-                scale=100,
-                units='m',
-            ),
-            6: Field(
-                name='avg_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-                scale=1000,
-                units='m/s',
-            ),
-            7: Field(
-                name='max_speed',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=7,
-                scale=1000,
-                units='m/s',
-            ),
-            8: Field(
-                name='total_ascent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=8,
-                units='m',
-            ),
-            9: Field(
-                name='total_descent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                units='m',
-            ),
-            10: Field(
-                name='avg_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=10,
-                units='bpm',
-            ),
-            11: Field(
-                name='max_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-                units='bpm',
-            ),
-            12: Field(
-                name='avg_vert_speed',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=12,
-                scale=1000,
-                units='m/s',
-            ),
-            13: Field(
-                name='total_calories',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=13,
-                units='kcal',
-            ),
-            77: Field(
-                name='total_moving_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=77,
-                scale=1000,
-                units='s',
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    317: MessageType(
-        name='climb_pro',
-        mesg_num=317,
-        fields={
-            0: Field(
-                name='position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=0,
-                units='semicircles',
-            ),
-            1: Field(
-                name='position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=1,
-                units='semicircles',
-            ),
-            2: Field(
-                name='climb_pro_event',
-                type=FIELD_TYPES['climb_pro_event'],
-                def_num=2,
-            ),
-            3: Field(
-                name='climb_number',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            4: Field(
-                name='climb_category',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=4,
-            ),
-            5: Field(
-                name='current_dist',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=5,
-                units='m',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    375: MessageType(
-        name='device_aux_battery_info',
-        mesg_num=375,
-        fields={
-            0: Field(
-                name='device_index',
-                type=FIELD_TYPES['device_index'],
-                def_num=0,
-            ),
-            1: Field(
-                name='battery_voltage',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                scale=256,
-                units='V',
-            ),
-            2: Field(
-                name='battery_status',
-                type=FIELD_TYPES['battery_status'],
-                def_num=2,
-            ),
-            3: Field(
-                name='battery_identifier',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ********************** Blood Pressure File Messages **********************
-    51: MessageType(
-        name='blood_pressure',
-        mesg_num=51,
-        fields={
-            0: Field(
-                name='systolic_pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='mmHg',
-            ),
-            1: Field(
-                name='diastolic_pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='mmHg',
-            ),
-            2: Field(
-                name='mean_arterial_pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                units='mmHg',
-            ),
-            3: Field(
-                name='map_3_sample_mean',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                units='mmHg',
-            ),
-            4: Field(
-                name='map_morning_values',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                units='mmHg',
-            ),
-            5: Field(
-                name='map_evening_values',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                units='mmHg',
-            ),
-            6: Field(
-                name='heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-                units='bpm',
-            ),
-            7: Field(
-                name='heart_rate_type',
-                type=FIELD_TYPES['hr_type'],
-                def_num=7,
-            ),
-            8: Field(
-                name='status',
-                type=FIELD_TYPES['bp_status'],
-                def_num=8,
-            ),
-            9: Field(  # Associates this blood pressure message to a user. This corresponds to the index of the user profile message in the blood pressure file.
-                name='user_profile_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=9,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ************************** Course File Messages **************************
-    31: MessageType(
-        name='course',
-        mesg_num=31,
-        fields={
-            4: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=4,
-            ),
-            5: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=5,
-            ),
-            6: Field(
-                name='capabilities',
-                type=FIELD_TYPES['course_capabilities'],
-                def_num=6,
-            ),
-            7: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=7,
-            ),
-        },
-    ),
-    32: MessageType(
-        name='course_point',
-        mesg_num=32,
-        fields={
-            1: Field(
-                name='timestamp',
-                type=FIELD_TYPES['date_time'],
-                def_num=1,
-            ),
-            2: Field(
-                name='position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=2,
-                units='semicircles',
-            ),
-            3: Field(
-                name='position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=3,
-                units='semicircles',
-            ),
-            4: Field(
-                name='distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=100,
-                units='m',
-            ),
-            5: Field(
-                name='type',
-                type=FIELD_TYPES['course_point'],
-                def_num=5,
-            ),
-            6: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=6,
-            ),
-            8: Field(
-                name='favorite',
-                type=FIELD_TYPES['bool'],
-                def_num=8,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # ************************** Device File Messages **************************
-    1: MessageType(
-        name='capabilities',
-        mesg_num=1,
-        fields={
-            0: Field(  # Use language_bits_x types where x is index of array.
-                name='languages',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=0,
-            ),
-            1: Field(  # Use sport_bits_x types where x is index of array.
-                name='sports',
-                type=FIELD_TYPES['sport_bits_0'],
-                def_num=1,
-            ),
-            21: Field(
-                name='workouts_supported',
-                type=FIELD_TYPES['workout_capabilities'],
-                def_num=21,
-            ),
-            23: Field(
-                name='connectivity_supported',
-                type=FIELD_TYPES['connectivity_capabilities'],
-                def_num=23,
-            ),
-        },
-    ),
-    35: MessageType(
-        name='software',
-        mesg_num=35,
-        fields={
-            3: Field(
-                name='version',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                scale=100,
-            ),
-            5: Field(
-                name='part_number',
-                type=BASE_TYPES[0x07],  # string
-                def_num=5,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    37: MessageType(
-        name='file_capabilities',
-        mesg_num=37,
-        fields={
-            0: Field(
-                name='type',
-                type=FIELD_TYPES['file'],
-                def_num=0,
-            ),
-            1: Field(
-                name='flags',
-                type=FIELD_TYPES['file_flags'],
-                def_num=1,
-            ),
-            2: Field(
-                name='directory',
-                type=BASE_TYPES[0x07],  # string
-                def_num=2,
-            ),
-            3: Field(
-                name='max_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            4: Field(
-                name='max_size',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                units='bytes',
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    38: MessageType(
-        name='mesg_capabilities',
-        mesg_num=38,
-        fields={
-            0: Field(
-                name='file',
-                type=FIELD_TYPES['file'],
-                def_num=0,
-            ),
-            1: Field(
-                name='mesg_num',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=1,
-            ),
-            2: Field(
-                name='count_type',
-                type=FIELD_TYPES['mesg_count'],
-                def_num=2,
-            ),
-            3: Field(
-                name='count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                subfields=(
-                    SubField(
-                        name='max_per_file',
-                        def_num=3,
-                        type=BASE_TYPES[0x84],  # uint16
-                        ref_fields=(
-                            ReferenceField(
-                                name='count_type',
-                                def_num=2,
-                                value='max_per_file',
-                                raw_value=1,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='max_per_file_type',
-                        def_num=3,
-                        type=BASE_TYPES[0x84],  # uint16
-                        ref_fields=(
-                            ReferenceField(
-                                name='count_type',
-                                def_num=2,
-                                value='max_per_file_type',
-                                raw_value=2,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='num_per_file',
-                        def_num=3,
-                        type=BASE_TYPES[0x84],  # uint16
-                        ref_fields=(
-                            ReferenceField(
-                                name='count_type',
-                                def_num=2,
-                                value='num_per_file',
-                                raw_value=0,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    39: MessageType(
-        name='field_capabilities',
-        mesg_num=39,
-        fields={
-            0: Field(
-                name='file',
-                type=FIELD_TYPES['file'],
-                def_num=0,
-            ),
-            1: Field(
-                name='mesg_num',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=1,
-            ),
-            2: Field(
-                name='field_num',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(
-                name='count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    106: MessageType(
-        name='slave_device',
-        mesg_num=106,
-        fields={
-            0: Field(
-                name='manufacturer',
-                type=FIELD_TYPES['manufacturer'],
-                def_num=0,
-            ),
-            1: Field(
-                name='product',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                subfields=(
-                    SubField(
-                        name='favero_product',
-                        def_num=1,
-                        type=FIELD_TYPES['favero_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='favero_electronics',
-                                raw_value=263,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='garmin_product',
-                        def_num=1,
-                        type=FIELD_TYPES['garmin_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='garmin',
-                                raw_value=1,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='dynastream',
-                                raw_value=15,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='dynastream_oem',
-                                raw_value=13,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='tacx',
-                                raw_value=89,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        },
-    ),
-
-
-    # ************************** Goals File Messages ***************************
-    15: MessageType(
-        name='goal',
-        mesg_num=15,
-        fields={
-            0: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=0,
-            ),
-            1: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=1,
-            ),
-            2: Field(
-                name='start_date',
-                type=FIELD_TYPES['date_time'],
-                def_num=2,
-            ),
-            3: Field(
-                name='end_date',
-                type=FIELD_TYPES['date_time'],
-                def_num=3,
-            ),
-            4: Field(
-                name='type',
-                type=FIELD_TYPES['goal'],
-                def_num=4,
-            ),
-            5: Field(
-                name='value',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-            ),
-            6: Field(
-                name='repeat',
-                type=FIELD_TYPES['bool'],
-                def_num=6,
-            ),
-            7: Field(
-                name='target_value',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=7,
-            ),
-            8: Field(
-                name='recurrence',
-                type=FIELD_TYPES['goal_recurrence'],
-                def_num=8,
-            ),
-            9: Field(
-                name='recurrence_value',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-            ),
-            10: Field(
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=10,
-            ),
-            11: Field(
-                name='source',
-                type=FIELD_TYPES['goal_source'],
-                def_num=11,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # ************************ Monitoring File Messages ************************
-    55: MessageType(
-        name='monitoring',
-        mesg_num=55,
-        fields={
-            0: Field(  # Associates this data to device_info message. Not required for file with single device (sensor).
-                name='device_index',
-                type=FIELD_TYPES['device_index'],
-                def_num=0,
-            ),
-            1: Field(  # Accumulated total calories. Maintained by MonitoringReader for each activity_type. See SDK documentation
-                name='calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='kcal',
-            ),
-            2: Field(  # Accumulated distance. Maintained by MonitoringReader for each activity_type. See SDK documentation.
-                name='distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                scale=100,
-                units='m',
-            ),
-            3: Field(  # Accumulated cycles. Maintained by MonitoringReader for each activity_type. See SDK documentation.
-                name='cycles',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=2,
-                units='cycles',
-                subfields=(
-                    SubField(
-                        name='steps',
-                        def_num=3,
-                        type=BASE_TYPES[0x86],  # uint32
-                        units='steps',
-                        ref_fields=(
-                            ReferenceField(
-                                name='activity_type',
-                                def_num=5,
-                                value='walking',
-                                raw_value=6,
-                            ),
-                            ReferenceField(
-                                name='activity_type',
-                                def_num=5,
-                                value='running',
-                                raw_value=1,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='strokes',
-                        def_num=3,
-                        type=BASE_TYPES[0x86],  # uint32
-                        scale=2,
-                        units='strokes',
-                        ref_fields=(
-                            ReferenceField(
-                                name='activity_type',
-                                def_num=5,
-                                value='cycling',
-                                raw_value=2,
-                            ),
-                            ReferenceField(
-                                name='activity_type',
-                                def_num=5,
-                                value='swimming',
-                                raw_value=5,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            4: Field(
-                name='active_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='s',
-            ),
-            5: Field(
-                name='activity_type',
-                type=FIELD_TYPES['activity_type'],
-                def_num=5,
-            ),
-            6: Field(
-                name='activity_subtype',
-                type=FIELD_TYPES['activity_subtype'],
-                def_num=6,
-            ),
-            7: Field(
-                name='activity_level',
-                type=FIELD_TYPES['activity_level'],
-                def_num=7,
-            ),
-            8: Field(
-                name='distance_16',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=8,
-                units='100*m',
-            ),
-            9: Field(
-                name='cycles_16',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                units='2*cycles or steps',
-            ),
-            10: Field(
-                name='active_time_16',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=10,
-                units='s',
-            ),
-            11: Field(  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
-                name='local_timestamp',
-                type=FIELD_TYPES['local_date_time'],
-                def_num=11,
-            ),
-            12: Field(  # Avg temperature during the logging interval ended at timestamp
-                name='temperature',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=12,
-                scale=100,
-                units='C',
-            ),
-            14: Field(  # Min temperature during the logging interval ended at timestamp
-                name='temperature_min',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=14,
-                scale=100,
-                units='C',
-            ),
-            15: Field(  # Max temperature during the logging interval ended at timestamp
-                name='temperature_max',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=15,
-                scale=100,
-                units='C',
-            ),
-            16: Field(  # Indexed using minute_activity_level enum
-                name='activity_time',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=16,
-                units='minutes',
-            ),
-            19: Field(
-                name='active_calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=19,
-                units='kcal',
-            ),
-            24: Field(  # Indicates single type / intensity for duration since last monitoring message.
-                name='current_activity_type_intensity',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=24,
-                components=(
-                    ComponentField(
-                        name='activity_type',
-                        def_num=5,
-                        accumulate=False,
-                        bits=5,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='intensity',
-                        def_num=28,
-                        accumulate=False,
-                        bits=3,
-                        bit_offset=5,
-                    ),
-                ),
-            ),
-            25: Field(
-                name='timestamp_min_8',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=25,
-                units='min',
-            ),
-            26: Field(
-                name='timestamp_16',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=26,
-                units='s',
-            ),
-            27: Field(
-                name='heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=27,
-                units='bpm',
-            ),
-            28: Field(
-                name='intensity',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=28,
-                scale=10,
-            ),
-            29: Field(
-                name='duration_min',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=29,
-                units='min',
-            ),
-            30: Field(
-                name='duration',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=30,
-                units='s',
-            ),
-            31: Field(
-                name='ascent',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=31,
-                scale=1000,
-                units='m',
-            ),
-            32: Field(
-                name='descent',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=32,
-                scale=1000,
-                units='m',
-            ),
-            33: Field(
-                name='moderate_activity_minutes',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=33,
-                units='minutes',
-            ),
-            34: Field(
-                name='vigorous_activity_minutes',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=34,
-                units='minutes',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
-        },
-    ),
-    103: MessageType(
-        name='monitoring_info',
-        mesg_num=103,
-        fields={
-            0: Field(  # Use to convert activity timestamps to local time if device does not support time zone and daylight savings time correction.
-                name='local_timestamp',
-                type=FIELD_TYPES['local_date_time'],
-                def_num=0,
-                units='s',
-            ),
-            1: Field(
-                name='activity_type',
-                type=FIELD_TYPES['activity_type'],
-                def_num=1,
-            ),
-            3: Field(  # Indexed by activity_type
-                name='cycles_to_distance',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                scale=5000,
-                units='m/cycle',
-            ),
-            4: Field(  # Indexed by activity_type
-                name='cycles_to_calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=5000,
-                units='kcal/cycle',
-            ),
-            5: Field(
-                name='resting_metabolic_rate',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                units='kcal/day',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    132: MessageType(
-        name='hr',
-        mesg_num=132,
-        fields={
-            0: Field(
-                name='fractional_timestamp',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=32768,
-                units='s',
-            ),
-            1: Field(
-                name='time256',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-                scale=256,
-                units='s',
-                components=(
-                    ComponentField(
-                        name='fractional_timestamp',
-                        def_num=0,
-                        scale=256,
-                        units='s',
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            6: Field(
-                name='filtered_bpm',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-                units='bpm',
-            ),
-            9: Field(
-                name='event_timestamp',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=9,
-                scale=1024,
-                units='s',
-            ),
-            10: Field(
-                name='event_timestamp_12',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=10,
-                components=(
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=12,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=24,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=36,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=48,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=60,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=72,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=84,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=96,
-                    ),
-                    ComponentField(
-                        name='event_timestamp',
-                        def_num=9,
-                        scale=1024,
-                        units='s',
-                        accumulate=True,
-                        bits=12,
-                        bit_offset=108,
-                    ),
-                ),
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    211: MessageType(
-        name='monitoring_hr_data',
-        mesg_num=211,
-        fields={
-            0: Field(  # 7-day rolling average
-                name='resting_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-                units='bpm',
-            ),
-            1: Field(  # RHR for today only. (Feeds into 7-day average)
-                name='current_day_resting_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-                units='bpm',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
-        },
-    ),
-    227: MessageType(  # Value from 1 to 100 calculated by FirstBeat
-        name='stress_level',
-        mesg_num=227,
-        fields={
-            0: Field(
-                name='stress_level_value',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=0,
-            ),
-            1: Field(  # Time stress score was calculated
-                name='stress_level_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=1,
-                units='s',
-            ),
-        },
-    ),
-    229: MessageType(
-        name='max_met_data',
-        mesg_num=229,
-        fields={
-            0: Field(  # Time maxMET and vo2 were calculated
-                name='update_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=0,
-            ),
-            2: Field(
-                name='vo2_max',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=10,
-                units='mL/kg/min',
-            ),
-            5: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=5,
-            ),
-            6: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=6,
-            ),
-            8: Field(
-                name='max_met_category',
-                type=FIELD_TYPES['max_met_category'],
-                def_num=8,
-            ),
-            9: Field(  # Indicates if calibrated data was used in the calculation
-                name='calibrated_data',
-                type=FIELD_TYPES['bool'],
-                def_num=9,
-            ),
-            12: Field(  # Indicates if the estimate was obtained using a chest strap or wrist heart rate
-                name='hr_source',
-                type=FIELD_TYPES['max_met_heart_rate_source'],
-                def_num=12,
-            ),
-            13: Field(  # Indidcates if the estimate was obtained using onboard GPS or connected GPS
-                name='speed_source',
-                type=FIELD_TYPES['max_met_speed_source'],
-                def_num=13,
-            ),
-        },
-    ),
-    269: MessageType(
-        name='spo2_data',
-        mesg_num=269,
-        fields={
-            0: Field(
-                name='reading_spo2',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-                units='percent',
-            ),
-            1: Field(
-                name='reading_confidence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(  # Mode when data was captured
-                name='mode',
-                type=FIELD_TYPES['spo2_measurement_type'],
-                def_num=2,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ***************************** Other Messages *****************************
-    78: MessageType(  # Heart rate variability
-        name='hrv',
-        mesg_num=78,
-        fields={
-            0: Field(  # Time between beats
-                name='time',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=1000,
-                units='s',
-            ),
-        },
-    ),
-    80: MessageType(
-        name='ant_rx',
-        mesg_num=80,
-        fields={
-            0: Field(
-                name='fractional_timestamp',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=32768,
-                units='s',
-            ),
-            1: Field(
-                name='mesg_id',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-            ),
-            2: Field(
-                name='mesg_data',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=2,
-                components=(
-                    ComponentField(
-                        name='channel_number',
-                        def_num=3,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=8,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=16,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=24,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=32,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=40,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=48,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=56,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=64,
-                    ),
-                ),
-            ),
-            3: Field(
-                name='channel_number',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(
-                name='data',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=4,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    81: MessageType(
-        name='ant_tx',
-        mesg_num=81,
-        fields={
-            0: Field(
-                name='fractional_timestamp',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=32768,
-                units='s',
-            ),
-            1: Field(
-                name='mesg_id',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-            ),
-            2: Field(
-                name='mesg_data',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=2,
-                components=(
-                    ComponentField(
-                        name='channel_number',
-                        def_num=3,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=8,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=16,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=24,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=32,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=40,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=48,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=56,
-                    ),
-                    ComponentField(
-                        name='data',
-                        def_num=4,
-                        accumulate=False,
-                        bits=8,
-                        bit_offset=64,
-                    ),
-                ),
-            ),
-            3: Field(
-                name='channel_number',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(
-                name='data',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=4,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    82: MessageType(
-        name='ant_channel_id',
-        mesg_num=82,
-        fields={
-            0: Field(
-                name='channel_number',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(
-                name='device_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=1,
-            ),
-            2: Field(
-                name='device_number',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=2,
-            ),
-            3: Field(
-                name='transmission_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=3,
-            ),
-            4: Field(
-                name='device_index',
-                type=FIELD_TYPES['device_index'],
-                def_num=4,
-            ),
-        },
-    ),
-    145: MessageType(
-        name='memo_glob',
-        mesg_num=145,
-        fields={
-            0: Field(  # Deprecated. Use data field.
-                name='memo',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=0,
-            ),
-            1: Field(  # Message Number of the parent message
-                name='mesg_num',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=1,
-            ),
-            2: Field(  # Index of mesg that this glob is associated with.
-                name='parent_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=2,
-            ),
-            3: Field(  # Field within the parent that this glob is associated with
-                name='field_num',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(  # Block of utf8 bytes. Note, mutltibyte characters may be split across adjoining memo_glob messages.
-                name='data',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=4,
-            ),
-            250: Field(  # Sequence number of memo blocks
-                name='part_index',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=250,
-            ),
-        },
-    ),
-    200: MessageType(
-        name='exd_screen_configuration',
-        mesg_num=200,
-        fields={
-            0: Field(
-                name='screen_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(  # number of fields in screen
-                name='field_count',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(
-                name='layout',
-                type=FIELD_TYPES['exd_layout'],
-                def_num=2,
-            ),
-            3: Field(
-                name='screen_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=3,
-            ),
-        },
-    ),
-    201: MessageType(
-        name='exd_data_field_configuration',
-        mesg_num=201,
-        fields={
-            0: Field(
-                name='screen_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(
-                name='concept_field',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-                components=(
-                    ComponentField(
-                        name='field_id',
-                        def_num=2,
-                        accumulate=False,
-                        bits=4,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='concept_count',
-                        def_num=3,
-                        accumulate=False,
-                        bits=4,
-                        bit_offset=4,
-                    ),
-                ),
-            ),
-            2: Field(
-                name='field_id',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(
-                name='concept_count',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(
-                name='display_type',
-                type=FIELD_TYPES['exd_display_type'],
-                def_num=4,
-            ),
-            5: Field(
-                name='title',
-                type=BASE_TYPES[0x07],  # string
-                def_num=5,
-            ),
-        },
-    ),
-    202: MessageType(
-        name='exd_data_concept_configuration',
-        mesg_num=202,
-        fields={
-            0: Field(
-                name='screen_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(
-                name='concept_field',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-                components=(
-                    ComponentField(
-                        name='field_id',
-                        def_num=2,
-                        accumulate=False,
-                        bits=4,
-                        bit_offset=0,
-                    ),
-                    ComponentField(
-                        name='concept_index',
-                        def_num=3,
-                        accumulate=False,
-                        bits=4,
-                        bit_offset=4,
-                    ),
-                ),
-            ),
-            2: Field(
-                name='field_id',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(
-                name='concept_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(
-                name='data_page',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=4,
-            ),
-            5: Field(
-                name='concept_key',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=5,
-            ),
-            6: Field(
-                name='scaling',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-            ),
-            8: Field(
-                name='data_units',
-                type=FIELD_TYPES['exd_data_units'],
-                def_num=8,
-            ),
-            9: Field(
-                name='qualifier',
-                type=FIELD_TYPES['exd_qualifiers'],
-                def_num=9,
-            ),
-            10: Field(
-                name='descriptor',
-                type=FIELD_TYPES['exd_descriptors'],
-                def_num=10,
-            ),
-            11: Field(
-                name='is_signed',
-                type=FIELD_TYPES['bool'],
-                def_num=11,
-            ),
-        },
-    ),
-    268: MessageType(
-        name='dive_summary',
-        mesg_num=268,
-        fields={
-            0: Field(
-                name='reference_mesg',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=0,
-            ),
-            1: Field(
-                name='reference_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=1,
-            ),
-            2: Field(  # 0 if above water
-                name='avg_depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                scale=1000,
-                units='m',
-            ),
-            3: Field(  # 0 if above water
-                name='max_depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=1000,
-                units='m',
-            ),
-            4: Field(  # Time since end of last dive
-                name='surface_interval',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                units='s',
-            ),
-            5: Field(
-                name='start_cns',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=5,
-                units='percent',
-            ),
-            6: Field(
-                name='end_cns',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-                units='percent',
-            ),
-            7: Field(
-                name='start_n2',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=7,
-                units='percent',
-            ),
-            8: Field(
-                name='end_n2',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=8,
-                units='percent',
-            ),
-            9: Field(
-                name='o2_toxicity',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                units='OTUs',
-            ),
-            10: Field(
-                name='dive_number',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=10,
-            ),
-            11: Field(
-                name='bottom_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=11,
-                scale=1000,
-                units='s',
-            ),
-            12: Field(  # Average pressure-based surface air consumption
-                name='avg_pressure_sac',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=12,
-                scale=100,
-                units='bar/min',
-            ),
-            13: Field(  # Average volumetric surface air consumption
-                name='avg_volume_sac',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=13,
-                scale=100,
-                units='L/min',
-            ),
-            14: Field(  # Average respiratory minute volume
-                name='avg_rmv',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=14,
-                scale=100,
-                units='L/min',
-            ),
-            15: Field(  # Time to reach deepest level stop
-                name='descent_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=15,
-                scale=1000,
-                units='s',
-            ),
-            16: Field(  # Time after leaving bottom until reaching surface
-                name='ascent_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=16,
-                scale=1000,
-                units='s',
-            ),
-            17: Field(  # Average ascent rate, not including descents or stops
-                name='avg_ascent_rate',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=17,
-                scale=1000,
-                units='m/s',
-            ),
-            22: Field(  # Average descent rate, not including ascents or stops
-                name='avg_descent_rate',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=22,
-                scale=1000,
-                units='m/s',
-            ),
-            23: Field(  # Maximum ascent rate
-                name='max_ascent_rate',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=23,
-                scale=1000,
-                units='m/s',
-            ),
-            24: Field(  # Maximum descent rate
-                name='max_descent_rate',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=24,
-                scale=1000,
-                units='m/s',
-            ),
-            25: Field(  # Time spent neither ascending nor descending
-                name='hang_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=25,
-                scale=1000,
-                units='s',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    275: MessageType(
-        name='sleep_level',
-        mesg_num=275,
-        fields={
-            0: Field(
-                name='sleep_level',
-                type=FIELD_TYPES['sleep_level'],
-                def_num=0,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    290: MessageType(  # Array of heart beat intervals
-        name='beat_intervals',
-        mesg_num=290,
-        fields={
-            0: Field(  # Milliseconds past date_time
-                name='timestamp_ms',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                units='ms',
-            ),
-            1: Field(  # Array of millisecond times between beats
-                name='time',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='ms',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    297: MessageType(
-        name='respiration_rate',
-        mesg_num=297,
-        fields={
-            0: Field(  # Breaths * 100 /min, -300 indicates invalid, -200 indicates large motion, -100 indicates off wrist
-                name='respiration_rate',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=0,
-                scale=100,
-                units='breaths/min',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    319: MessageType(
-        name='tank_update',
-        mesg_num=319,
-        fields={
-            0: Field(
-                name='sensor',
-                type=FIELD_TYPES['ant_channel_id'],
-                def_num=0,
-            ),
-            1: Field(
-                name='pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                scale=100,
-                units='bar',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    323: MessageType(
-        name='tank_summary',
-        mesg_num=323,
-        fields={
-            0: Field(
-                name='sensor',
-                type=FIELD_TYPES['ant_channel_id'],
-                def_num=0,
-            ),
-            1: Field(
-                name='start_pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                scale=100,
-                units='bar',
-            ),
-            2: Field(
-                name='end_pressure',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=100,
-                units='bar',
-            ),
-            3: Field(
-                name='volume_used',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=100,
-                units='L',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    346: MessageType(
-        name='sleep_assessment',
-        mesg_num=346,
-        fields={
-            0: Field(  # Average of awake_time_score and awakenings_count_score. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='combined_awake_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(  # Score that evaluates the total time spent awake between sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='awake_time_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(  # Score that evaluates the number of awakenings that interrupt sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='awakenings_count_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(  # Score that evaluates the amount of deep sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='deep_sleep_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-            ),
-            4: Field(  # Score that evaluates the quality of sleep based on sleep stages, heart-rate variability and possible awakenings during the night. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='sleep_duration_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=4,
-            ),
-            5: Field(  # Score that evaluates the amount of light sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='light_sleep_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=5,
-            ),
-            6: Field(  # Total score that summarizes the overall quality of sleep, combining sleep duration and quality. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='overall_sleep_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-            ),
-            7: Field(  # Score that evaluates the quality of sleep based on sleep stages, heart-rate variability and possible awakenings during the night. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='sleep_quality_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=7,
-            ),
-            8: Field(  # Score that evaluates stress and recovery during sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='sleep_recovery_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-            ),
-            9: Field(  # Score that evaluates the amount of REM sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='rem_sleep_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=9,
-            ),
-            10: Field(  # Score that evaluates the amount of restlessness during sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='sleep_restlessness_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=10,
-            ),
-            11: Field(  # The number of awakenings during sleep.
-                name='awakenings_count',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-            ),
-            14: Field(  # Score that evaluates the sleep interruptions. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
-                name='interruptions_score',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=14,
-            ),
-            15: Field(  # Excludes stress during awake periods in the sleep window
-                name='average_stress_during_sleep',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=15,
-                scale=100,
-            ),
-        },
-    ),
-    370: MessageType(
-        name='hrv_status_summary',
-        mesg_num=370,
-        fields={
-            0: Field(  # 7 day RMSSD average over sleep
-                name='weekly_average',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=128,
-                units='ms',
-            ),
-            1: Field(  # Last night RMSSD average over sleep
-                name='last_night_average',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                scale=128,
-                units='ms',
-            ),
-            2: Field(  # 5 minute high RMSSD value over sleep
-                name='last_night_5_min_high',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=128,
-                units='ms',
-            ),
-            3: Field(  # 3 week baseline, upper boundary of low HRV status
-                name='baseline_low_upper',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                scale=128,
-                units='ms',
-            ),
-            4: Field(  # 3 week baseline, lower boundary of balanced HRV status
-                name='baseline_balanced_lower',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=128,
-                units='ms',
-            ),
-            5: Field(  # 3 week baseline, upper boundary of balanced HRV status
-                name='baseline_balanced_upper',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                scale=128,
-                units='ms',
-            ),
-            6: Field(
-                name='status',
-                type=FIELD_TYPES['hrv_status'],
-                def_num=6,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    371: MessageType(
-        name='hrv_value',
-        mesg_num=371,
-        fields={
-            0: Field(  # 5 minute RMSSD
-                name='value',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=128,
-                units='ms',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ************************* Schedule File Messages *************************
-    28: MessageType(
-        name='schedule',
-        mesg_num=28,
-        fields={
-            0: Field(  # Corresponds to file_id of scheduled workout / course.
-                name='manufacturer',
-                type=FIELD_TYPES['manufacturer'],
-                def_num=0,
-            ),
-            1: Field(  # Corresponds to file_id of scheduled workout / course.
-                name='product',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                subfields=(
-                    SubField(
-                        name='favero_product',
-                        def_num=1,
-                        type=FIELD_TYPES['favero_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='favero_electronics',
-                                raw_value=263,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='garmin_product',
-                        def_num=1,
-                        type=FIELD_TYPES['garmin_product'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='garmin',
-                                raw_value=1,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='dynastream',
-                                raw_value=15,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='dynastream_oem',
-                                raw_value=13,
-                            ),
-                            ReferenceField(
-                                name='manufacturer',
-                                def_num=0,
-                                value='tacx',
-                                raw_value=89,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            2: Field(  # Corresponds to file_id of scheduled workout / course.
-                name='serial_number',
-                type=BASE_TYPES[0x8C],  # uint32z
-                def_num=2,
-            ),
-            3: Field(  # Corresponds to file_id of scheduled workout / course.
-                name='time_created',
-                type=FIELD_TYPES['date_time'],
-                def_num=3,
-            ),
-            4: Field(  # TRUE if this activity has been started
-                name='completed',
-                type=FIELD_TYPES['bool'],
-                def_num=4,
-            ),
-            5: Field(
-                name='type',
-                type=FIELD_TYPES['schedule'],
-                def_num=5,
-            ),
-            6: Field(
-                name='scheduled_time',
-                type=FIELD_TYPES['local_date_time'],
-                def_num=6,
-            ),
-        },
-    ),
-
-
-    # ************************* Segment File Messages **************************
-    142: MessageType(
-        name='segment_lap',
-        mesg_num=142,
-        fields={
-            0: Field(
-                name='event',
-                type=FIELD_TYPES['event'],
-                def_num=0,
-            ),
-            1: Field(
-                name='event_type',
-                type=FIELD_TYPES['event_type'],
-                def_num=1,
-            ),
-            2: Field(
-                name='start_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=2,
-            ),
-            3: Field(
-                name='start_position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=3,
-                units='semicircles',
-            ),
-            4: Field(
-                name='start_position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=4,
-                units='semicircles',
-            ),
-            5: Field(
-                name='end_position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=5,
-                units='semicircles',
-            ),
-            6: Field(
-                name='end_position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=6,
-                units='semicircles',
-            ),
-            7: Field(  # Time (includes pauses)
-                name='total_elapsed_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=7,
-                scale=1000,
-                units='s',
-            ),
-            8: Field(  # Timer Time (excludes pauses)
-                name='total_timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=8,
-                scale=1000,
-                units='s',
-            ),
-            9: Field(
-                name='total_distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=9,
-                scale=100,
-                units='m',
-            ),
-            10: Field(
-                name='total_cycles',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=10,
-                units='cycles',
-                subfields=(
-                    SubField(
-                        name='total_strokes',
-                        def_num=10,
-                        type=BASE_TYPES[0x86],  # uint32
-                        units='strokes',
-                        ref_fields=(
-                            ReferenceField(
-                                name='sport',
-                                def_num=23,
-                                value='cycling',
-                                raw_value=2,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            11: Field(
-                name='total_calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=11,
-                units='kcal',
-            ),
-            12: Field(  # If New Leaf
-                name='total_fat_calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=12,
-                units='kcal',
-            ),
-            13: Field(
-                name='avg_speed',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=13,
-                scale=1000,
-                units='m/s',
-            ),
-            14: Field(
-                name='max_speed',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=14,
-                scale=1000,
-                units='m/s',
-            ),
-            15: Field(
-                name='avg_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=15,
-                units='bpm',
-            ),
-            16: Field(
-                name='max_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=16,
-                units='bpm',
-            ),
-            17: Field(  # total_cycles / total_timer_time if non_zero_avg_cadence otherwise total_cycles / total_elapsed_time
-                name='avg_cadence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=17,
-                units='rpm',
-            ),
-            18: Field(
-                name='max_cadence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=18,
-                units='rpm',
-            ),
-            19: Field(  # total_power / total_timer_time if non_zero_avg_power otherwise total_power / total_elapsed_time
-                name='avg_power',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=19,
-                units='watts',
-            ),
-            20: Field(
-                name='max_power',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=20,
-                units='watts',
-            ),
-            21: Field(
-                name='total_ascent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=21,
-                units='m',
-            ),
-            22: Field(
-                name='total_descent',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=22,
-                units='m',
-            ),
-            23: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=23,
-            ),
-            24: Field(
-                name='event_group',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=24,
-            ),
-            25: Field(  # North east corner latitude.
-                name='nec_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=25,
-                units='semicircles',
-            ),
-            26: Field(  # North east corner longitude.
-                name='nec_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=26,
-                units='semicircles',
-            ),
-            27: Field(  # South west corner latitude.
-                name='swc_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=27,
-                units='semicircles',
-            ),
-            28: Field(  # South west corner latitude.
-                name='swc_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=28,
-                units='semicircles',
-            ),
-            29: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=29,
-            ),
-            30: Field(
-                name='normalized_power',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=30,
-                units='watts',
-            ),
-            31: Field(
-                name='left_right_balance',
-                type=FIELD_TYPES['left_right_balance_100'],
-                def_num=31,
-            ),
-            32: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=32,
-            ),
-            33: Field(
-                name='total_work',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=33,
-                units='J',
-            ),
-            34: Field(
-                name='avg_altitude',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=34,
-                scale=5,
-                offset=500,
-                units='m',
-                components=(
-                    ComponentField(
-                        name='enhanced_avg_altitude',
-                        def_num=91,
-                        scale=5,
-                        offset=500,
-                        units='m',
-                        accumulate=False,
-                        bits=16,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            35: Field(
-                name='max_altitude',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=35,
-                scale=5,
-                offset=500,
-                units='m',
-                components=(
-                    ComponentField(
-                        name='enhanced_max_altitude',
-                        def_num=92,
-                        scale=5,
-                        offset=500,
-                        units='m',
-                        accumulate=False,
-                        bits=16,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            36: Field(
-                name='gps_accuracy',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=36,
-                units='m',
-            ),
-            37: Field(
-                name='avg_grade',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=37,
-                scale=100,
-                units='%',
-            ),
-            38: Field(
-                name='avg_pos_grade',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=38,
-                scale=100,
-                units='%',
-            ),
-            39: Field(
-                name='avg_neg_grade',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=39,
-                scale=100,
-                units='%',
-            ),
-            40: Field(
-                name='max_pos_grade',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=40,
-                scale=100,
-                units='%',
-            ),
-            41: Field(
-                name='max_neg_grade',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=41,
-                scale=100,
-                units='%',
-            ),
-            42: Field(
-                name='avg_temperature',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=42,
-                units='C',
-            ),
-            43: Field(
-                name='max_temperature',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=43,
-                units='C',
-            ),
-            44: Field(
-                name='total_moving_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=44,
-                scale=1000,
-                units='s',
-            ),
-            45: Field(
-                name='avg_pos_vertical_speed',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=45,
-                scale=1000,
-                units='m/s',
-            ),
-            46: Field(
-                name='avg_neg_vertical_speed',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=46,
-                scale=1000,
-                units='m/s',
-            ),
-            47: Field(
-                name='max_pos_vertical_speed',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=47,
-                scale=1000,
-                units='m/s',
-            ),
-            48: Field(
-                name='max_neg_vertical_speed',
-                type=BASE_TYPES[0x83],  # sint16
-                def_num=48,
-                scale=1000,
-                units='m/s',
-            ),
-            49: Field(
-                name='time_in_hr_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=49,
-                scale=1000,
-                units='s',
-            ),
-            50: Field(
-                name='time_in_speed_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=50,
-                scale=1000,
-                units='s',
-            ),
-            51: Field(
-                name='time_in_cadence_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=51,
-                scale=1000,
-                units='s',
-            ),
-            52: Field(
-                name='time_in_power_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=52,
-                scale=1000,
-                units='s',
-            ),
-            53: Field(
-                name='repetition_num',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=53,
-            ),
-            54: Field(
-                name='min_altitude',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=54,
-                scale=5,
-                offset=500,
-                units='m',
-                components=(
-                    ComponentField(
-                        name='enhanced_min_altitude',
-                        def_num=93,
-                        scale=5,
-                        offset=500,
-                        units='m',
-                        accumulate=False,
-                        bits=16,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            55: Field(
-                name='min_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=55,
-                units='bpm',
-            ),
-            56: Field(
-                name='active_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=56,
-                scale=1000,
-                units='s',
-            ),
-            57: Field(
-                name='wkt_step_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=57,
-            ),
-            58: Field(
-                name='sport_event',
-                type=FIELD_TYPES['sport_event'],
-                def_num=58,
-            ),
-            59: Field(
-                name='avg_left_torque_effectiveness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=59,
-                scale=2,
-                units='percent',
-            ),
-            60: Field(
-                name='avg_right_torque_effectiveness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=60,
-                scale=2,
-                units='percent',
-            ),
-            61: Field(
-                name='avg_left_pedal_smoothness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=61,
-                scale=2,
-                units='percent',
-            ),
-            62: Field(
-                name='avg_right_pedal_smoothness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=62,
-                scale=2,
-                units='percent',
-            ),
-            63: Field(
-                name='avg_combined_pedal_smoothness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=63,
-                scale=2,
-                units='percent',
-            ),
-            64: Field(
-                name='status',
-                type=FIELD_TYPES['segment_lap_status'],
-                def_num=64,
-            ),
-            65: Field(
-                name='uuid',
-                type=BASE_TYPES[0x07],  # string
-                def_num=65,
-            ),
-            66: Field(  # fractional part of the avg_cadence
-                name='avg_fractional_cadence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=66,
-                scale=128,
-                units='rpm',
-            ),
-            67: Field(  # fractional part of the max_cadence
-                name='max_fractional_cadence',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=67,
-                scale=128,
-                units='rpm',
-            ),
-            68: Field(  # fractional part of the total_cycles
-                name='total_fractional_cycles',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=68,
-                scale=128,
-                units='cycles',
-            ),
-            69: Field(
-                name='front_gear_shift_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=69,
-            ),
-            70: Field(
-                name='rear_gear_shift_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=70,
-            ),
-            71: Field(  # Total time spent in the standing position
-                name='time_standing',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=71,
-                scale=1000,
-                units='s',
-            ),
-            72: Field(  # Number of transitions to the standing state
-                name='stand_count',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=72,
-            ),
-            73: Field(  # Average left platform center offset
-                name='avg_left_pco',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=73,
-                units='mm',
-            ),
-            74: Field(  # Average right platform center offset
-                name='avg_right_pco',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=74,
-                units='mm',
-            ),
-            75: Field(  # Average left power phase angles. Data value indexes defined by power_phase_type.
-                name='avg_left_power_phase',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=75,
-                scale=0.7111111,
-                units='degrees',
-            ),
-            76: Field(  # Average left power phase peak angles. Data value indexes defined by power_phase_type.
-                name='avg_left_power_phase_peak',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=76,
-                scale=0.7111111,
-                units='degrees',
-            ),
-            77: Field(  # Average right power phase angles. Data value indexes defined by power_phase_type.
-                name='avg_right_power_phase',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=77,
-                scale=0.7111111,
-                units='degrees',
-            ),
-            78: Field(  # Average right power phase peak angles. Data value indexes defined by power_phase_type.
-                name='avg_right_power_phase_peak',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=78,
-                scale=0.7111111,
-                units='degrees',
-            ),
-            79: Field(  # Average power by position. Data value indexes defined by rider_position_type.
-                name='avg_power_position',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=79,
-                units='watts',
-            ),
-            80: Field(  # Maximum power by position. Data value indexes defined by rider_position_type.
-                name='max_power_position',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=80,
-                units='watts',
-            ),
-            81: Field(  # Average cadence by position. Data value indexes defined by rider_position_type.
-                name='avg_cadence_position',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=81,
-                units='rpm',
-            ),
-            82: Field(  # Maximum cadence by position. Data value indexes defined by rider_position_type.
-                name='max_cadence_position',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=82,
-                units='rpm',
-            ),
-            83: Field(  # Manufacturer that produced the segment
-                name='manufacturer',
-                type=FIELD_TYPES['manufacturer'],
-                def_num=83,
-            ),
-            84: Field(  # The grit score estimates how challenging a route could be for a cyclist in terms of time spent going over sharp turns or large grade slopes.
-                name='total_grit',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=84,
-                units='kGrit',
-            ),
-            85: Field(  # The flow score estimates how long distance wise a cyclist deaccelerates over intervals where deacceleration is unnecessary such as smooth turns or small grade angle intervals.
-                name='total_flow',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=85,
-                units='Flow',
-            ),
-            86: Field(  # The grit score estimates how challenging a route could be for a cyclist in terms of time spent going over sharp turns or large grade slopes.
-                name='avg_grit',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=86,
-                units='kGrit',
-            ),
-            87: Field(  # The flow score estimates how long distance wise a cyclist deaccelerates over intervals where deacceleration is unnecessary such as smooth turns or small grade angle intervals.
-                name='avg_flow',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=87,
-                units='Flow',
-            ),
-            89: Field(  # fractional part of total_ascent
-                name='total_fractional_ascent',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=89,
-                scale=100,
-                units='m',
-            ),
-            90: Field(  # fractional part of total_descent
-                name='total_fractional_descent',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=90,
-                scale=100,
-                units='m',
-            ),
-            91: Field(
-                name='enhanced_avg_altitude',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=91,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            92: Field(
-                name='enhanced_max_altitude',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=92,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            93: Field(
-                name='enhanced_min_altitude',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=93,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,  # Lap end time.
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    148: MessageType(  # Unique Identification data for a segment file
-        name='segment_id',
-        mesg_num=148,
-        fields={
-            0: Field(  # Friendly name assigned to segment
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(  # UUID of the segment
-                name='uuid',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            2: Field(  # Sport associated with the segment
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=2,
-            ),
-            3: Field(  # Segment enabled for evaluation
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=3,
-            ),
-            4: Field(  # Primary key of the user that created the segment
-                name='user_profile_primary_key',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-            ),
-            5: Field(  # ID of the device that created the segment
-                name='device_id',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-            ),
-            6: Field(  # Index for the Leader Board entry selected as the default race participant
-                name='default_race_leader',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-            ),
-            7: Field(  # Indicates if any segments should be deleted
-                name='delete_status',
-                type=FIELD_TYPES['segment_delete_status'],
-                def_num=7,
-            ),
-            8: Field(  # Indicates how the segment was selected to be sent to the device
-                name='selection_type',
-                type=FIELD_TYPES['segment_selection_type'],
-                def_num=8,
-            ),
-        },
-    ),
-    149: MessageType(  # Unique Identification data for an individual segment leader within a segment file
-        name='segment_leaderboard_entry',
-        mesg_num=149,
-        fields={
-            0: Field(  # Friendly name assigned to leader
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(  # Leader classification
-                name='type',
-                type=FIELD_TYPES['segment_leaderboard_type'],
-                def_num=1,
-            ),
-            2: Field(  # Primary user ID of this leader
-                name='group_primary_key',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-            ),
-            3: Field(  # ID of the activity associated with this leader time
-                name='activity_id',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-            ),
-            4: Field(  # Segment Time (includes pauses)
-                name='segment_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='s',
-            ),
-            5: Field(  # String version of the activity_id. 21 characters long, express in decimal
-                name='activity_id_string',
-                type=BASE_TYPES[0x07],  # string
-                def_num=5,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    150: MessageType(  # Navigation and race evaluation point for a segment decribing a point along the segment path and time it took each segment leader to reach that point
-        name='segment_point',
-        mesg_num=150,
-        fields={
-            1: Field(
-                name='position_lat',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=1,
-                units='semicircles',
-            ),
-            2: Field(
-                name='position_long',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=2,
-                units='semicircles',
-            ),
-            3: Field(  # Accumulated distance along the segment at the described point
-                name='distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=100,
-                units='m',
-            ),
-            4: Field(  # Accumulated altitude along the segment at the described point
-                name='altitude',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=5,
-                offset=500,
-                units='m',
-                components=(
-                    ComponentField(
-                        name='enhanced_altitude',
-                        def_num=6,
-                        scale=5,
-                        offset=500,
-                        units='m',
-                        accumulate=False,
-                        bits=16,
-                        bit_offset=0,
-                    ),
-                ),
-            ),
-            5: Field(  # Accumualted time each leader board member required to reach the described point. This value is zero for all leader board members at the starting point of the segment.
-                name='leader_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-                scale=1000,
-                units='s',
-            ),
-            6: Field(  # Accumulated altitude along the segment at the described point
-                name='enhanced_altitude',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-                scale=5,
-                offset=500,
-                units='m',
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # *********************** Segment List File Messages ***********************
-    151: MessageType(  # Summary of the unique segment and leaderboard information associated with a segment file. This message is used to compile a segment list file describing all segment files on a device. The segment list file is used when refreshing the contents of a segment file with the latest available leaderboard information.
-        name='segment_file',
-        mesg_num=151,
-        fields={
-            1: Field(  # UUID of the segment file
-                name='file_uuid',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            3: Field(  # Enabled state of the segment file
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=3,
-            ),
-            4: Field(  # Primary key of the user that created the segment file
-                name='user_profile_primary_key',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-            ),
-            7: Field(  # Leader type of each leader in the segment file
-                name='leader_type',
-                type=FIELD_TYPES['segment_leaderboard_type'],
-                def_num=7,
-            ),
-            8: Field(  # Group primary key of each leader in the segment file
-                name='leader_group_primary_key',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=8,
-            ),
-            9: Field(  # Activity ID of each leader in the segment file
-                name='leader_activity_id',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=9,
-            ),
-            10: Field(  # String version of the activity ID of each leader in the segment file. 21 characters long for each ID, express in decimal
-                name='leader_activity_id_string',
-                type=BASE_TYPES[0x07],  # string
-                def_num=10,
-            ),
-            11: Field(  # Index for the Leader Board entry selected as the default race participant
-                name='default_race_leader',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # ************************* Settings File Messages *************************
-    2: MessageType(
-        name='device_settings',
-        mesg_num=2,
-        fields={
-            0: Field(  # Index into time zone arrays.
-                name='active_time_zone',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-            ),
-            1: Field(  # Offset from system time. Required to convert timestamp from system time to UTC.
-                name='utc_offset',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-            ),
-            2: Field(  # Offset from system time.
-                name='time_offset',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='s',
-            ),
-            4: Field(  # Display mode for the time
-                name='time_mode',
-                type=FIELD_TYPES['time_mode'],
-                def_num=4,
-            ),
-            5: Field(  # timezone offset in 1/4 hour increments
-                name='time_zone_offset',
-                type=BASE_TYPES[0x01],  # sint8
-                def_num=5,
-                scale=4,
-                units='hr',
-            ),
-            12: Field(  # Mode for backlight
-                name='backlight_mode',
-                type=FIELD_TYPES['backlight_mode'],
-                def_num=12,
-            ),
-            36: Field(  # Enabled state of the activity tracker functionality
-                name='activity_tracker_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=36,
-            ),
-            39: Field(  # UTC timestamp used to set the devices clock and date
-                name='clock_time',
-                type=FIELD_TYPES['date_time'],
-                def_num=39,
-            ),
-            40: Field(  # Bitfield to configure enabled screens for each supported loop
-                name='pages_enabled',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=40,
-            ),
-            46: Field(  # Enabled state of the move alert
-                name='move_alert_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=46,
-            ),
-            47: Field(  # Display mode for the date
-                name='date_mode',
-                type=FIELD_TYPES['date_mode'],
-                def_num=47,
-            ),
-            55: Field(
-                name='display_orientation',
-                type=FIELD_TYPES['display_orientation'],
-                def_num=55,
-            ),
-            56: Field(
-                name='mounting_side',
-                type=FIELD_TYPES['side'],
-                def_num=56,
-            ),
-            57: Field(  # Bitfield to indicate one page as default for each supported loop
-                name='default_page',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=57,
-            ),
-            58: Field(  # Minimum steps before an autosync can occur
-                name='autosync_min_steps',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=58,
-                units='steps',
-            ),
-            59: Field(  # Minimum minutes before an autosync can occur
-                name='autosync_min_time',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=59,
-                units='minutes',
-            ),
-            80: Field(  # Enable auto-detect setting for the lactate threshold feature.
-                name='lactate_threshold_autodetect_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=80,
-            ),
-            86: Field(  # Automatically upload using BLE
-                name='ble_auto_upload_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=86,
-            ),
-            89: Field(  # Helps to conserve battery by changing modes
-                name='auto_sync_frequency',
-                type=FIELD_TYPES['auto_sync_frequency'],
-                def_num=89,
-            ),
-            90: Field(  # Allows setting specific activities auto-activity detect enabled/disabled settings
-                name='auto_activity_detect',
-                type=FIELD_TYPES['auto_activity_detect'],
-                def_num=90,
-            ),
-            94: Field(  # Number of screens configured to display
-                name='number_of_screens',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=94,
-            ),
-            95: Field(  # Smart Notification display orientation
-                name='smart_notification_display_orientation',
-                type=FIELD_TYPES['display_orientation'],
-                def_num=95,
-            ),
-            134: Field(
-                name='tap_interface',
-                type=FIELD_TYPES['switch'],
-                def_num=134,
-            ),
-            174: Field(  # Used to hold the tap threshold setting
-                name='tap_sensitivity',
-                type=FIELD_TYPES['tap_sensitivity'],
-                def_num=174,
-            ),
-        },
-    ),
-    3: MessageType(
-        name='user_profile',
-        mesg_num=3,
-        fields={
-            0: Field(  # Used for Morning Report greeting
-                name='friendly_name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(
-                name='gender',
-                type=FIELD_TYPES['gender'],
-                def_num=1,
-            ),
-            2: Field(
-                name='age',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-                units='years',
-            ),
-            3: Field(
-                name='height',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-                scale=100,
-                units='m',
-            ),
-            4: Field(
-                name='weight',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=10,
-                units='kg',
-            ),
-            5: Field(
-                name='language',
-                type=FIELD_TYPES['language'],
-                def_num=5,
-            ),
-            6: Field(
-                name='elev_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=6,
-            ),
-            7: Field(
-                name='weight_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=7,
-            ),
-            8: Field(
-                name='resting_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-                units='bpm',
-            ),
-            9: Field(
-                name='default_max_running_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=9,
-                units='bpm',
-            ),
-            10: Field(
-                name='default_max_biking_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=10,
-                units='bpm',
-            ),
-            11: Field(
-                name='default_max_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-                units='bpm',
-            ),
-            12: Field(
-                name='hr_setting',
-                type=FIELD_TYPES['display_heart'],
-                def_num=12,
-            ),
-            13: Field(
-                name='speed_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=13,
-            ),
-            14: Field(
-                name='dist_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=14,
-            ),
-            16: Field(
-                name='power_setting',
-                type=FIELD_TYPES['display_power'],
-                def_num=16,
-            ),
-            17: Field(
-                name='activity_class',
-                type=FIELD_TYPES['activity_class'],
-                def_num=17,
-            ),
-            18: Field(
-                name='position_setting',
-                type=FIELD_TYPES['display_position'],
-                def_num=18,
-            ),
-            21: Field(
-                name='temperature_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=21,
-            ),
-            22: Field(
-                name='local_id',
-                type=FIELD_TYPES['user_local_id'],
-                def_num=22,
-            ),
-            23: Field(
-                name='global_id',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=23,
-            ),
-            28: Field(  # Typical wake time
-                name='wake_time',
-                type=FIELD_TYPES['localtime_into_day'],
-                def_num=28,
-            ),
-            29: Field(  # Typical bed time
-                name='sleep_time',
-                type=FIELD_TYPES['localtime_into_day'],
-                def_num=29,
-            ),
-            30: Field(
-                name='height_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=30,
-            ),
-            31: Field(  # User defined running step length set to 0 for auto length
-                name='user_running_step_length',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=31,
-                scale=1000,
-                units='m',
-            ),
-            32: Field(  # User defined walking step length set to 0 for auto length
-                name='user_walking_step_length',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=32,
-                scale=1000,
-                units='m',
-            ),
-            47: Field(
-                name='depth_setting',
-                type=FIELD_TYPES['display_measure'],
-                def_num=47,
-            ),
-            49: Field(
-                name='dive_count',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=49,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    4: MessageType(
-        name='hrm_profile',
-        mesg_num=4,
-        fields={
-            0: Field(
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=0,
-            ),
-            1: Field(
-                name='hrm_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=1,
-            ),
-            2: Field(
-                name='log_hrv',
-                type=FIELD_TYPES['bool'],
-                def_num=2,
-            ),
-            3: Field(
-                name='hrm_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=3,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    5: MessageType(
-        name='sdm_profile',
-        mesg_num=5,
-        fields={
-            0: Field(
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=0,
-            ),
-            1: Field(
-                name='sdm_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=1,
-            ),
-            2: Field(
-                name='sdm_cal_factor',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=10,
-                units='%',
-            ),
-            3: Field(
-                name='odometer',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=100,
-                units='m',
-            ),
-            4: Field(  # Use footpod for speed source instead of GPS
-                name='speed_source',
-                type=FIELD_TYPES['bool'],
-                def_num=4,
-            ),
-            5: Field(
-                name='sdm_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=5,
-            ),
-            7: Field(  # Rollover counter that can be used to extend the odometer
-                name='odometer_rollover',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=7,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    6: MessageType(
-        name='bike_profile',
-        mesg_num=6,
-        fields={
-            0: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=1,
-            ),
-            2: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=2,
-            ),
-            3: Field(
-                name='odometer',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=100,
-                units='m',
-            ),
-            4: Field(
-                name='bike_spd_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=4,
-            ),
-            5: Field(
-                name='bike_cad_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=5,
-            ),
-            6: Field(
-                name='bike_spdcad_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=6,
-            ),
-            7: Field(
-                name='bike_power_ant_id',
-                type=BASE_TYPES[0x8B],  # uint16z
-                def_num=7,
-            ),
-            8: Field(
-                name='custom_wheelsize',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=8,
-                scale=1000,
-                units='m',
-            ),
-            9: Field(
-                name='auto_wheelsize',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                scale=1000,
-                units='m',
-            ),
-            10: Field(
-                name='bike_weight',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=10,
-                scale=10,
-                units='kg',
-            ),
-            11: Field(
-                name='power_cal_factor',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=11,
-                scale=10,
-                units='%',
-            ),
-            12: Field(
-                name='auto_wheel_cal',
-                type=FIELD_TYPES['bool'],
-                def_num=12,
-            ),
-            13: Field(
-                name='auto_power_zero',
-                type=FIELD_TYPES['bool'],
-                def_num=13,
-            ),
-            14: Field(
-                name='id',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=14,
-            ),
-            15: Field(
-                name='spd_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=15,
-            ),
-            16: Field(
-                name='cad_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=16,
-            ),
-            17: Field(
-                name='spdcad_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=17,
-            ),
-            18: Field(
-                name='power_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=18,
-            ),
-            19: Field(
-                name='crank_length',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=19,
-                scale=2,
-                offset=-110,
-                units='mm',
-            ),
-            20: Field(
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=20,
-            ),
-            21: Field(
-                name='bike_spd_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=21,
-            ),
-            22: Field(
-                name='bike_cad_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=22,
-            ),
-            23: Field(
-                name='bike_spdcad_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=23,
-            ),
-            24: Field(
-                name='bike_power_ant_id_trans_type',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=24,
-            ),
-            37: Field(  # Rollover counter that can be used to extend the odometer
-                name='odometer_rollover',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=37,
-            ),
-            38: Field(  # Number of front gears
-                name='front_gear_num',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=38,
-            ),
-            39: Field(  # Number of teeth on each gear 0 is innermost
-                name='front_gear',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=39,
-            ),
-            40: Field(  # Number of rear gears
-                name='rear_gear_num',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=40,
-            ),
-            41: Field(  # Number of teeth on each gear 0 is innermost
-                name='rear_gear',
-                type=BASE_TYPES[0x0A],  # uint8z
-                def_num=41,
-            ),
-            44: Field(
-                name='shimano_di2_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=44,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    127: MessageType(
-        name='connectivity',
-        mesg_num=127,
-        fields={
-            0: Field(  # Use Bluetooth for connectivity features
-                name='bluetooth_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=0,
-            ),
-            1: Field(  # Use Bluetooth Low Energy for connectivity features
-                name='bluetooth_le_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=1,
-            ),
-            2: Field(  # Use ANT for connectivity features
-                name='ant_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=2,
-            ),
-            3: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=3,
-            ),
-            4: Field(
-                name='live_tracking_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=4,
-            ),
-            5: Field(
-                name='weather_conditions_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=5,
-            ),
-            6: Field(
-                name='weather_alerts_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=6,
-            ),
-            7: Field(
-                name='auto_activity_upload_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=7,
-            ),
-            8: Field(
-                name='course_download_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=8,
-            ),
-            9: Field(
-                name='workout_download_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=9,
-            ),
-            10: Field(
-                name='gps_ephemeris_download_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=10,
-            ),
-            11: Field(
-                name='incident_detection_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=11,
-            ),
-            12: Field(
-                name='grouptrack_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=12,
-            ),
-        },
-    ),
-    159: MessageType(
-        name='watchface_settings',
-        mesg_num=159,
-        fields={
-            0: Field(
-                name='mode',
-                type=FIELD_TYPES['watchface_mode'],
-                def_num=0,
-            ),
-            1: Field(
-                name='layout',
-                type=BASE_TYPES[0x0D],  # byte
-                def_num=1,
-                subfields=(
-                    SubField(
-                        name='analog_layout',
-                        def_num=1,
-                        type=FIELD_TYPES['analog_watchface_layout'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='mode',
-                                def_num=0,
-                                value='analog',
-                                raw_value=1,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='digital_layout',
-                        def_num=1,
-                        type=FIELD_TYPES['digital_watchface_layout'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='mode',
-                                def_num=0,
-                                value='digital',
-                                raw_value=0,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    188: MessageType(
-        name='ohr_settings',
-        mesg_num=188,
-        fields={
-            0: Field(
-                name='enabled',
-                type=FIELD_TYPES['switch'],
-                def_num=0,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-    216: MessageType(
-        name='time_in_zone',
-        mesg_num=216,
-        fields={
-            0: Field(
-                name='reference_mesg',
-                type=FIELD_TYPES['mesg_num'],
-                def_num=0,
-            ),
-            1: Field(
-                name='reference_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=1,
-            ),
-            2: Field(
-                name='time_in_hr_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                scale=1000,
-                units='s',
-            ),
-            3: Field(
-                name='time_in_speed_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=3,
-                scale=1000,
-                units='s',
-            ),
-            4: Field(
-                name='time_in_cadence_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                scale=1000,
-                units='s',
-            ),
-            5: Field(
-                name='time_in_power_zone',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=5,
-                scale=1000,
-                units='s',
-            ),
-            6: Field(
-                name='hr_zone_high_boundary',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-                units='bpm',
-            ),
-            7: Field(
-                name='speed_zone_high_boundary',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=7,
-                scale=1000,
-                units='m/s',
-            ),
-            8: Field(
-                name='cadence_zone_high_bondary',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-                units='rpm',
-            ),
-            9: Field(
-                name='power_zone_high_boundary',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                units='watts',
-            ),
-            10: Field(
-                name='hr_calc_type',
-                type=FIELD_TYPES['hr_zone_calc'],
-                def_num=10,
-            ),
-            11: Field(
-                name='max_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-            ),
-            12: Field(
-                name='resting_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=12,
-            ),
-            13: Field(
-                name='threshold_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=13,
-            ),
-            14: Field(
-                name='pwr_calc_type',
-                type=FIELD_TYPES['pwr_zone_calc'],
-                def_num=14,
-            ),
-            15: Field(
-                name='functional_threshold_power',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=15,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ********************** Sport Settings File Messages **********************
-    7: MessageType(
-        name='zones_target',
-        mesg_num=7,
-        fields={
-            1: Field(
-                name='max_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(
-                name='threshold_heart_rate',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-            ),
-            3: Field(
-                name='functional_threshold_power',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-            ),
-            5: Field(
-                name='hr_calc_type',
-                type=FIELD_TYPES['hr_zone_calc'],
-                def_num=5,
-            ),
-            7: Field(
-                name='pwr_calc_type',
-                type=FIELD_TYPES['pwr_zone_calc'],
-                def_num=7,
-            ),
-        },
-    ),
-    8: MessageType(
-        name='hr_zone',
-        mesg_num=8,
-        fields={
-            1: Field(
-                name='high_bpm',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-                units='bpm',
-            ),
-            2: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=2,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    9: MessageType(
-        name='power_zone',
-        mesg_num=9,
-        fields={
-            1: Field(
-                name='high_value',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                units='watts',
-            ),
-            2: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=2,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    10: MessageType(
-        name='met_zone',
-        mesg_num=10,
-        fields={
-            1: Field(
-                name='high_bpm',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-            ),
-            2: Field(
-                name='calories',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=10,
-                units='kcal/min',
-            ),
-            3: Field(
-                name='fat_calories',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-                scale=10,
-                units='kcal/min',
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    12: MessageType(
-        name='sport',
-        mesg_num=12,
-        fields={
-            0: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=0,
-            ),
-            1: Field(
-                name='sub_sport',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=1,
-            ),
-            3: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=3,
-            ),
-        },
-    ),
-    53: MessageType(
-        name='speed_zone',
-        mesg_num=53,
-        fields={
-            0: Field(
-                name='high_value',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=0,
-                scale=1000,
-                units='m/s',
-            ),
-            1: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    131: MessageType(
-        name='cadence_zone',
-        mesg_num=131,
-        fields={
-            0: Field(
-                name='high_value',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-                units='rpm',
-            ),
-            1: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=1,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    258: MessageType(
-        name='dive_settings',
-        mesg_num=258,
-        fields={
-            0: Field(
-                name='name',
-                type=BASE_TYPES[0x07],  # string
-                def_num=0,
-            ),
-            1: Field(
-                name='model',
-                type=FIELD_TYPES['tissue_model_type'],
-                def_num=1,
-            ),
-            2: Field(
-                name='gf_low',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=2,
-                units='percent',
-            ),
-            3: Field(
-                name='gf_high',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=3,
-                units='percent',
-            ),
-            4: Field(
-                name='water_type',
-                type=FIELD_TYPES['water_type'],
-                def_num=4,
-            ),
-            5: Field(  # Fresh water is usually 1000; salt water is usually 1025
-                name='water_density',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=5,
-                units='kg/m^3',
-            ),
-            6: Field(  # Typically 1.40
-                name='po2_warn',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=6,
-                scale=100,
-                units='percent',
-            ),
-            7: Field(  # Typically 1.60
-                name='po2_critical',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=7,
-                scale=100,
-                units='percent',
-            ),
-            8: Field(
-                name='po2_deco',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-                scale=100,
-                units='percent',
-            ),
-            9: Field(
-                name='safety_stop_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=9,
-            ),
-            10: Field(
-                name='bottom_depth',
-                type=BASE_TYPES[0x88],  # float32
-                def_num=10,
-            ),
-            11: Field(
-                name='bottom_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=11,
-            ),
-            12: Field(
-                name='apnea_countdown_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=12,
-            ),
-            13: Field(
-                name='apnea_countdown_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=13,
-            ),
-            14: Field(
-                name='backlight_mode',
-                type=FIELD_TYPES['dive_backlight_mode'],
-                def_num=14,
-            ),
-            15: Field(
-                name='backlight_brightness',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=15,
-            ),
-            16: Field(
-                name='backlight_timeout',
-                type=FIELD_TYPES['backlight_timeout'],
-                def_num=16,
-            ),
-            17: Field(  # Time between surfacing and ending the activity
-                name='repeat_dive_interval',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=17,
-                units='s',
-            ),
-            18: Field(  # Time at safety stop (if enabled)
-                name='safety_stop_time',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=18,
-                units='s',
-            ),
-            19: Field(
-                name='heart_rate_source_type',
-                type=FIELD_TYPES['source_type'],
-                def_num=19,
-            ),
-            20: Field(
-                name='heart_rate_source',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=20,
-                subfields=(
-                    SubField(
-                        name='heart_rate_antplus_device_type',
-                        def_num=20,
-                        type=FIELD_TYPES['antplus_device_type'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='heart_rate_source_type',
-                                def_num=19,
-                                value='antplus',
-                                raw_value=1,
-                            ),
-                        ),
-                    ),
-                    SubField(
-                        name='heart_rate_local_device_type',
-                        def_num=20,
-                        type=FIELD_TYPES['local_device_type'],
-                        ref_fields=(
-                            ReferenceField(
-                                name='heart_rate_source_type',
-                                def_num=19,
-                                value='local',
-                                raw_value=5,
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-            21: Field(  # Index of travel dive_gas message
-                name='travel_gas',
-                type=FIELD_TYPES['message_index'],
-                def_num=21,
-            ),
-            22: Field(  # If low PO2 should be switched to automatically
-                name='ccr_low_setpoint_switch_mode',
-                type=FIELD_TYPES['ccr_setpoint_switch_mode'],
-                def_num=22,
-            ),
-            23: Field(  # Target PO2 when using low setpoint
-                name='ccr_low_setpoint',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=23,
-                scale=100,
-                units='percent',
-            ),
-            24: Field(  # Depth to switch to low setpoint in automatic mode
-                name='ccr_low_setpoint_depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=24,
-                scale=1000,
-                units='m',
-            ),
-            25: Field(  # If high PO2 should be switched to automatically
-                name='ccr_high_setpoint_switch_mode',
-                type=FIELD_TYPES['ccr_setpoint_switch_mode'],
-                def_num=25,
-            ),
-            26: Field(  # Target PO2 when using high setpoint
-                name='ccr_high_setpoint',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=26,
-                scale=100,
-                units='percent',
-            ),
-            27: Field(  # Depth to switch to high setpoint in automatic mode
-                name='ccr_high_setpoint_depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=27,
-                scale=1000,
-                units='m',
-            ),
-            29: Field(  # Type of gas consumption rate to display. Some values are only valid if tank volume is known.
-                name='gas_consumption_display',
-                type=FIELD_TYPES['gas_consumption_rate_type'],
-                def_num=29,
-            ),
-            30: Field(  # Indicates whether the up key is enabled during dives
-                name='up_key_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=30,
-            ),
-            35: Field(  # Sounds and vibration enabled or disabled in-dive
-                name='dive_sounds',
-                type=FIELD_TYPES['tone'],
-                def_num=35,
-            ),
-            36: Field(  # Usually 1.0/1.5/2.0 representing 3/4.5/6m or 10/15/20ft
-                name='last_stop_multiple',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=36,
-                scale=10,
-            ),
-            37: Field(  # Indicates which guidelines to use for no-fly surface interval.
-                name='no_fly_time_mode',
-                type=FIELD_TYPES['no_fly_time_mode'],
-                def_num=37,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    259: MessageType(
-        name='dive_gas',
-        mesg_num=259,
-        fields={
-            0: Field(
-                name='helium_content',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=0,
-                units='percent',
-            ),
-            1: Field(
-                name='oxygen_content',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=1,
-                units='percent',
-            ),
-            2: Field(
-                name='status',
-                type=FIELD_TYPES['dive_gas_status'],
-                def_num=2,
-            ),
-            3: Field(
-                name='mode',
-                type=FIELD_TYPES['dive_gas_mode'],
-                def_num=3,
-            ),
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    262: MessageType(
-        name='dive_alarm',
-        mesg_num=262,
-        fields={
-            0: Field(  # Depth setting (m) for depth type alarms
-                name='depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=0,
-                scale=1000,
-                units='m',
-            ),
-            1: Field(  # Time setting (s) for time type alarms
-                name='time',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=1,
-                units='s',
-            ),
-            2: Field(  # Enablement flag
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=2,
-            ),
-            3: Field(  # Alarm type setting
-                name='alarm_type',
-                type=FIELD_TYPES['dive_alarm_type'],
-                def_num=3,
-            ),
-            4: Field(  # Tone and Vibe setting for the alarm
-                name='sound',
-                type=FIELD_TYPES['tone'],
-                def_num=4,
-            ),
-            5: Field(  # Dive types the alarm will trigger on
-                name='dive_types',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=5,
-            ),
-            6: Field(  # Alarm ID
-                name='id',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-            ),
-            7: Field(  # Show a visible pop-up for this alarm
-                name='popup_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=7,
-            ),
-            8: Field(  # Trigger the alarm on descent
-                name='trigger_on_descent',
-                type=FIELD_TYPES['bool'],
-                def_num=8,
-            ),
-            9: Field(  # Trigger the alarm on ascent
-                name='trigger_on_ascent',
-                type=FIELD_TYPES['bool'],
-                def_num=9,
-            ),
-            10: Field(  # Repeat alarm each time threshold is crossed?
-                name='repeating',
-                type=FIELD_TYPES['bool'],
-                def_num=10,
-            ),
-            11: Field(  # Ascent/descent rate (mps) setting for speed type alarms
-                name='speed',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=11,
-                scale=1000,
-                units='mps',
-            ),
-            254: Field(  # Index of the alarm
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-    393: MessageType(
-        name='dive_apnea_alarm',
-        mesg_num=393,
-        fields={
-            0: Field(  # Depth setting (m) for depth type alarms
-                name='depth',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=0,
-                scale=1000,
-                units='m',
-            ),
-            1: Field(  # Time setting (s) for time type alarms
-                name='time',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=1,
-                units='s',
-            ),
-            2: Field(  # Enablement flag
-                name='enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=2,
-            ),
-            3: Field(  # Alarm type setting
-                name='alarm_type',
-                type=FIELD_TYPES['dive_alarm_type'],
-                def_num=3,
-            ),
-            4: Field(  # Tone and Vibe setting for the alarm.
-                name='sound',
-                type=FIELD_TYPES['tone'],
-                def_num=4,
-            ),
-            5: Field(  # Dive types the alarm will trigger on
-                name='dive_types',
-                type=FIELD_TYPES['sub_sport'],
-                def_num=5,
-            ),
-            6: Field(  # Alarm ID
-                name='id',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-            ),
-            7: Field(  # Show a visible pop-up for this alarm
-                name='popup_enabled',
-                type=FIELD_TYPES['bool'],
-                def_num=7,
-            ),
-            8: Field(  # Trigger the alarm on descent
-                name='trigger_on_descent',
-                type=FIELD_TYPES['bool'],
-                def_num=8,
-            ),
-            9: Field(  # Trigger the alarm on ascent
-                name='trigger_on_ascent',
-                type=FIELD_TYPES['bool'],
-                def_num=9,
-            ),
-            10: Field(  # Repeat alarm each time threshold is crossed?
-                name='repeating',
-                type=FIELD_TYPES['bool'],
-                def_num=10,
-            ),
-            11: Field(  # Ascent/descent rate (mps) setting for speed type alarms
-                name='speed',
-                type=BASE_TYPES[0x85],  # sint32
-                def_num=11,
-                scale=1000,
-                units='mps',
-            ),
-            254: Field(  # Index of the alarm
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # ************************** Totals File Messages **************************
-    33: MessageType(
-        name='totals',
-        mesg_num=33,
-        fields={
-            0: Field(  # Excludes pauses
-                name='timer_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=0,
-                units='s',
-            ),
-            1: Field(
-                name='distance',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=1,
-                units='m',
-            ),
-            2: Field(
-                name='calories',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=2,
-                units='kcal',
-            ),
-            3: Field(
-                name='sport',
-                type=FIELD_TYPES['sport'],
-                def_num=3,
-            ),
-            4: Field(  # Includes pauses
-                name='elapsed_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=4,
-                units='s',
-            ),
-            5: Field(
-                name='sessions',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-            ),
-            6: Field(
-                name='active_time',
-                type=BASE_TYPES[0x86],  # uint32
-                def_num=6,
-                units='s',
-            ),
-            9: Field(
-                name='sport_index',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=9,
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-            254: Field(
-                name='message_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=254,
-            ),
-        },
-    ),
-
-
-    # *********************** Weight Scale File Messages ***********************
-    30: MessageType(
-        name='weight_scale',
-        mesg_num=30,
-        fields={
-            0: Field(
-                name='weight',
-                type=FIELD_TYPES['weight'],
-                def_num=0,
-                scale=100,
-                units='kg',
-            ),
-            1: Field(
-                name='percent_fat',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=1,
-                scale=100,
-                units='%',
-            ),
-            2: Field(
-                name='percent_hydration',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=2,
-                scale=100,
-                units='%',
-            ),
-            3: Field(
-                name='visceral_fat_mass',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=3,
-                scale=100,
-                units='kg',
-            ),
-            4: Field(
-                name='bone_mass',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=4,
-                scale=100,
-                units='kg',
-            ),
-            5: Field(
-                name='muscle_mass',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=5,
-                scale=100,
-                units='kg',
-            ),
-            7: Field(
-                name='basal_met',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=7,
-                scale=4,
-                units='kcal/day',
-            ),
-            8: Field(
-                name='physique_rating',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=8,
-            ),
-            9: Field(  # ~4kJ per kcal, 0.25 allows max 16384 kcal
-                name='active_met',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=9,
-                scale=4,
-                units='kcal/day',
-            ),
-            10: Field(
-                name='metabolic_age',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=10,
-                units='years',
-            ),
-            11: Field(
-                name='visceral_fat_rating',
-                type=BASE_TYPES[0x02],  # uint8
-                def_num=11,
-            ),
-            12: Field(  # Associates this weight scale message to a user. This corresponds to the index of the user profile message in the weight scale file.
-                name='user_profile_index',
-                type=FIELD_TYPES['message_index'],
-                def_num=12,
-            ),
-            13: Field(
-                name='bmi',
-                type=BASE_TYPES[0x84],  # uint16
-                def_num=13,
-                scale=10,
-                units='kg/m^2',
-            ),
-            253: FIELD_TYPE_TIMESTAMP,
-        },
-    ),
-
-
-    # ************************* Workout File Messages **************************
     26: MessageType(
         name='workout',
         mesg_num=26,
@@ -14981,6 +9774,2684 @@ MESSAGE_TYPES = {
             ),
         },
     ),
+    28: MessageType(
+        name='schedule',
+        mesg_num=28,
+        fields={
+            0: Field(  # Corresponds to file_id of scheduled workout / course.
+                name='manufacturer',
+                type=FIELD_TYPES['manufacturer'],
+                def_num=0,
+            ),
+            1: Field(  # Corresponds to file_id of scheduled workout / course.
+                name='product',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                subfields=(
+                    SubField(
+                        name='favero_product',
+                        def_num=1,
+                        type=FIELD_TYPES['favero_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='favero_electronics',
+                                raw_value=263,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='garmin_product',
+                        def_num=1,
+                        type=FIELD_TYPES['garmin_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='garmin',
+                                raw_value=1,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='dynastream',
+                                raw_value=15,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='dynastream_oem',
+                                raw_value=13,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='tacx',
+                                raw_value=89,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            2: Field(  # Corresponds to file_id of scheduled workout / course.
+                name='serial_number',
+                type=BASE_TYPES[0x8C],  # uint32z
+                def_num=2,
+            ),
+            3: Field(  # Corresponds to file_id of scheduled workout / course.
+                name='time_created',
+                type=FIELD_TYPES['date_time'],
+                def_num=3,
+            ),
+            4: Field(  # TRUE if this activity has been started
+                name='completed',
+                type=FIELD_TYPES['bool'],
+                def_num=4,
+            ),
+            5: Field(
+                name='type',
+                type=FIELD_TYPES['schedule'],
+                def_num=5,
+            ),
+            6: Field(
+                name='scheduled_time',
+                type=FIELD_TYPES['local_date_time'],
+                def_num=6,
+            ),
+        },
+    ),
+    30: MessageType(
+        name='weight_scale',
+        mesg_num=30,
+        fields={
+            0: Field(
+                name='weight',
+                type=FIELD_TYPES['weight'],
+                def_num=0,
+                scale=100,
+                units='kg',
+            ),
+            1: Field(
+                name='percent_fat',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                scale=100,
+                units='%',
+            ),
+            2: Field(
+                name='percent_hydration',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=100,
+                units='%',
+            ),
+            3: Field(
+                name='visceral_fat_mass',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                scale=100,
+                units='kg',
+            ),
+            4: Field(
+                name='bone_mass',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=100,
+                units='kg',
+            ),
+            5: Field(
+                name='muscle_mass',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                scale=100,
+                units='kg',
+            ),
+            7: Field(
+                name='basal_met',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=7,
+                scale=4,
+                units='kcal/day',
+            ),
+            8: Field(
+                name='physique_rating',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+            ),
+            9: Field(  # ~4kJ per kcal, 0.25 allows max 16384 kcal
+                name='active_met',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                scale=4,
+                units='kcal/day',
+            ),
+            10: Field(
+                name='metabolic_age',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=10,
+                units='years',
+            ),
+            11: Field(
+                name='visceral_fat_rating',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+            ),
+            12: Field(  # Associates this weight scale message to a user. This corresponds to the index of the user profile message in the weight scale file.
+                name='user_profile_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=12,
+            ),
+            13: Field(
+                name='bmi',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=13,
+                scale=10,
+                units='kg/m^2',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    31: MessageType(
+        name='course',
+        mesg_num=31,
+        fields={
+            4: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=4,
+            ),
+            5: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=5,
+            ),
+            6: Field(
+                name='capabilities',
+                type=FIELD_TYPES['course_capabilities'],
+                def_num=6,
+            ),
+            7: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=7,
+            ),
+        },
+    ),
+    32: MessageType(
+        name='course_point',
+        mesg_num=32,
+        fields={
+            1: Field(
+                name='timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=1,
+            ),
+            2: Field(
+                name='position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=2,
+                units='semicircles',
+            ),
+            3: Field(
+                name='position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=3,
+                units='semicircles',
+            ),
+            4: Field(
+                name='distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=100,
+                units='m',
+            ),
+            5: Field(
+                name='type',
+                type=FIELD_TYPES['course_point'],
+                def_num=5,
+            ),
+            6: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=6,
+            ),
+            8: Field(
+                name='favorite',
+                type=FIELD_TYPES['bool'],
+                def_num=8,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    33: MessageType(
+        name='totals',
+        mesg_num=33,
+        fields={
+            0: Field(  # Excludes pauses
+                name='timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=0,
+                units='s',
+            ),
+            1: Field(
+                name='distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+                units='m',
+            ),
+            2: Field(
+                name='calories',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='kcal',
+            ),
+            3: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=3,
+            ),
+            4: Field(  # Includes pauses
+                name='elapsed_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                units='s',
+            ),
+            5: Field(
+                name='sessions',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+            ),
+            6: Field(
+                name='active_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+                units='s',
+            ),
+            9: Field(
+                name='sport_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=9,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    34: MessageType(
+        name='activity',
+        mesg_num=34,
+        fields={
+            0: Field(  # Exclude pauses
+                name='total_timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=0,
+                scale=1000,
+                units='s',
+            ),
+            1: Field(
+                name='num_sessions',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+            ),
+            2: Field(
+                name='type',
+                type=FIELD_TYPES['activity'],
+                def_num=2,
+            ),
+            3: Field(
+                name='event',
+                type=FIELD_TYPES['event'],
+                def_num=3,
+            ),
+            4: Field(
+                name='event_type',
+                type=FIELD_TYPES['event_type'],
+                def_num=4,
+            ),
+            5: Field(  # timestamp epoch expressed in local time, used to convert activity timestamps to local time
+                name='local_timestamp',
+                type=FIELD_TYPES['local_date_time'],
+                def_num=5,
+            ),
+            6: Field(
+                name='event_group',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    35: MessageType(
+        name='software',
+        mesg_num=35,
+        fields={
+            3: Field(
+                name='version',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                scale=100,
+            ),
+            5: Field(
+                name='part_number',
+                type=BASE_TYPES[0x07],  # string
+                def_num=5,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    37: MessageType(
+        name='file_capabilities',
+        mesg_num=37,
+        fields={
+            0: Field(
+                name='type',
+                type=FIELD_TYPES['file'],
+                def_num=0,
+            ),
+            1: Field(
+                name='flags',
+                type=FIELD_TYPES['file_flags'],
+                def_num=1,
+            ),
+            2: Field(
+                name='directory',
+                type=BASE_TYPES[0x07],  # string
+                def_num=2,
+            ),
+            3: Field(
+                name='max_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            4: Field(
+                name='max_size',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                units='bytes',
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    38: MessageType(
+        name='mesg_capabilities',
+        mesg_num=38,
+        fields={
+            0: Field(
+                name='file',
+                type=FIELD_TYPES['file'],
+                def_num=0,
+            ),
+            1: Field(
+                name='mesg_num',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=1,
+            ),
+            2: Field(
+                name='count_type',
+                type=FIELD_TYPES['mesg_count'],
+                def_num=2,
+            ),
+            3: Field(
+                name='count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                subfields=(
+                    SubField(
+                        name='max_per_file',
+                        def_num=3,
+                        type=BASE_TYPES[0x84],  # uint16
+                        ref_fields=(
+                            ReferenceField(
+                                name='count_type',
+                                def_num=2,
+                                value='max_per_file',
+                                raw_value=1,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='max_per_file_type',
+                        def_num=3,
+                        type=BASE_TYPES[0x84],  # uint16
+                        ref_fields=(
+                            ReferenceField(
+                                name='count_type',
+                                def_num=2,
+                                value='max_per_file_type',
+                                raw_value=2,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='num_per_file',
+                        def_num=3,
+                        type=BASE_TYPES[0x84],  # uint16
+                        ref_fields=(
+                            ReferenceField(
+                                name='count_type',
+                                def_num=2,
+                                value='num_per_file',
+                                raw_value=0,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    39: MessageType(
+        name='field_capabilities',
+        mesg_num=39,
+        fields={
+            0: Field(
+                name='file',
+                type=FIELD_TYPES['file'],
+                def_num=0,
+            ),
+            1: Field(
+                name='mesg_num',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=1,
+            ),
+            2: Field(
+                name='field_num',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(
+                name='count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    49: MessageType(
+        name='file_creator',
+        mesg_num=49,
+        fields={
+            0: Field(
+                name='software_version',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+            ),
+            1: Field(
+                name='hardware_version',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+        },
+    ),
+    51: MessageType(
+        name='blood_pressure',
+        mesg_num=51,
+        fields={
+            0: Field(
+                name='systolic_pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='mmHg',
+            ),
+            1: Field(
+                name='diastolic_pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='mmHg',
+            ),
+            2: Field(
+                name='mean_arterial_pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                units='mmHg',
+            ),
+            3: Field(
+                name='map_3_sample_mean',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                units='mmHg',
+            ),
+            4: Field(
+                name='map_morning_values',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                units='mmHg',
+            ),
+            5: Field(
+                name='map_evening_values',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                units='mmHg',
+            ),
+            6: Field(
+                name='heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+                units='bpm',
+            ),
+            7: Field(
+                name='heart_rate_type',
+                type=FIELD_TYPES['hr_type'],
+                def_num=7,
+            ),
+            8: Field(
+                name='status',
+                type=FIELD_TYPES['bp_status'],
+                def_num=8,
+            ),
+            9: Field(  # Associates this blood pressure message to a user. This corresponds to the index of the user profile message in the blood pressure file.
+                name='user_profile_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=9,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    53: MessageType(
+        name='speed_zone',
+        mesg_num=53,
+        fields={
+            0: Field(
+                name='high_value',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=1000,
+                units='m/s',
+            ),
+            1: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    55: MessageType(
+        name='monitoring',
+        mesg_num=55,
+        fields={
+            0: Field(  # Associates this data to device_info message. Not required for file with single device (sensor).
+                name='device_index',
+                type=FIELD_TYPES['device_index'],
+                def_num=0,
+            ),
+            1: Field(  # Accumulated total calories. Maintained by MonitoringReader for each activity_type. See SDK documentation
+                name='calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='kcal',
+            ),
+            2: Field(  # Accumulated distance. Maintained by MonitoringReader for each activity_type. See SDK documentation.
+                name='distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                scale=100,
+                units='m',
+            ),
+            3: Field(  # Accumulated cycles. Maintained by MonitoringReader for each activity_type. See SDK documentation.
+                name='cycles',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=2,
+                units='cycles',
+                subfields=(
+                    SubField(
+                        name='steps',
+                        def_num=3,
+                        type=BASE_TYPES[0x86],  # uint32
+                        units='steps',
+                        ref_fields=(
+                            ReferenceField(
+                                name='activity_type',
+                                def_num=5,
+                                value='walking',
+                                raw_value=6,
+                            ),
+                            ReferenceField(
+                                name='activity_type',
+                                def_num=5,
+                                value='running',
+                                raw_value=1,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='strokes',
+                        def_num=3,
+                        type=BASE_TYPES[0x86],  # uint32
+                        scale=2,
+                        units='strokes',
+                        ref_fields=(
+                            ReferenceField(
+                                name='activity_type',
+                                def_num=5,
+                                value='cycling',
+                                raw_value=2,
+                            ),
+                            ReferenceField(
+                                name='activity_type',
+                                def_num=5,
+                                value='swimming',
+                                raw_value=5,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            4: Field(
+                name='active_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='s',
+            ),
+            5: Field(
+                name='activity_type',
+                type=FIELD_TYPES['activity_type'],
+                def_num=5,
+            ),
+            6: Field(
+                name='activity_subtype',
+                type=FIELD_TYPES['activity_subtype'],
+                def_num=6,
+            ),
+            7: Field(
+                name='activity_level',
+                type=FIELD_TYPES['activity_level'],
+                def_num=7,
+            ),
+            8: Field(
+                name='distance_16',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=8,
+                units='100*m',
+            ),
+            9: Field(
+                name='cycles_16',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                units='2*cycles or steps',
+            ),
+            10: Field(
+                name='active_time_16',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=10,
+                units='s',
+            ),
+            11: Field(  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
+                name='local_timestamp',
+                type=FIELD_TYPES['local_date_time'],
+                def_num=11,
+            ),
+            12: Field(  # Avg temperature during the logging interval ended at timestamp
+                name='temperature',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=12,
+                scale=100,
+                units='C',
+            ),
+            14: Field(  # Min temperature during the logging interval ended at timestamp
+                name='temperature_min',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=14,
+                scale=100,
+                units='C',
+            ),
+            15: Field(  # Max temperature during the logging interval ended at timestamp
+                name='temperature_max',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=15,
+                scale=100,
+                units='C',
+            ),
+            16: Field(  # Indexed using minute_activity_level enum
+                name='activity_time',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=16,
+                units='minutes',
+            ),
+            19: Field(
+                name='active_calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=19,
+                units='kcal',
+            ),
+            24: Field(  # Indicates single type / intensity for duration since last monitoring message.
+                name='current_activity_type_intensity',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=24,
+                components=(
+                    ComponentField(
+                        name='activity_type',
+                        def_num=5,
+                        accumulate=False,
+                        bits=5,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='intensity',
+                        def_num=28,
+                        accumulate=False,
+                        bits=3,
+                        bit_offset=5,
+                    ),
+                ),
+            ),
+            25: Field(
+                name='timestamp_min_8',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=25,
+                units='min',
+            ),
+            26: Field(
+                name='timestamp_16',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=26,
+                units='s',
+            ),
+            27: Field(
+                name='heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=27,
+                units='bpm',
+            ),
+            28: Field(
+                name='intensity',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=28,
+                scale=10,
+            ),
+            29: Field(
+                name='duration_min',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=29,
+                units='min',
+            ),
+            30: Field(
+                name='duration',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=30,
+                units='s',
+            ),
+            31: Field(
+                name='ascent',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=31,
+                scale=1000,
+                units='m',
+            ),
+            32: Field(
+                name='descent',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=32,
+                scale=1000,
+                units='m',
+            ),
+            33: Field(
+                name='moderate_activity_minutes',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=33,
+                units='minutes',
+            ),
+            34: Field(
+                name='vigorous_activity_minutes',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=34,
+                units='minutes',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
+        },
+    ),
+    72: MessageType(  # Corresponds to file_id of workout or course.
+        name='training_file',
+        mesg_num=72,
+        fields={
+            0: Field(
+                name='type',
+                type=FIELD_TYPES['file'],
+                def_num=0,
+            ),
+            1: Field(
+                name='manufacturer',
+                type=FIELD_TYPES['manufacturer'],
+                def_num=1,
+            ),
+            2: Field(
+                name='product',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                subfields=(
+                    SubField(
+                        name='favero_product',
+                        def_num=2,
+                        type=FIELD_TYPES['favero_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=1,
+                                value='favero_electronics',
+                                raw_value=263,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='garmin_product',
+                        def_num=2,
+                        type=FIELD_TYPES['garmin_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=1,
+                                value='garmin',
+                                raw_value=1,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=1,
+                                value='dynastream',
+                                raw_value=15,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=1,
+                                value='dynastream_oem',
+                                raw_value=13,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=1,
+                                value='tacx',
+                                raw_value=89,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            3: Field(
+                name='serial_number',
+                type=BASE_TYPES[0x8C],  # uint32z
+                def_num=3,
+            ),
+            4: Field(
+                name='time_created',
+                type=FIELD_TYPES['date_time'],
+                def_num=4,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    78: MessageType(  # Heart rate variability
+        name='hrv',
+        mesg_num=78,
+        fields={
+            0: Field(  # Time between beats
+                name='time',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=1000,
+                units='s',
+            ),
+        },
+    ),
+    80: MessageType(
+        name='ant_rx',
+        mesg_num=80,
+        fields={
+            0: Field(
+                name='fractional_timestamp',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=32768,
+                units='s',
+            ),
+            1: Field(
+                name='mesg_id',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+            ),
+            2: Field(
+                name='mesg_data',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=2,
+                components=(
+                    ComponentField(
+                        name='channel_number',
+                        def_num=3,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=8,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=16,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=24,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=32,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=40,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=48,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=56,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=64,
+                    ),
+                ),
+            ),
+            3: Field(
+                name='channel_number',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(
+                name='data',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=4,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    81: MessageType(
+        name='ant_tx',
+        mesg_num=81,
+        fields={
+            0: Field(
+                name='fractional_timestamp',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=32768,
+                units='s',
+            ),
+            1: Field(
+                name='mesg_id',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+            ),
+            2: Field(
+                name='mesg_data',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=2,
+                components=(
+                    ComponentField(
+                        name='channel_number',
+                        def_num=3,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=8,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=16,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=24,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=32,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=40,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=48,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=56,
+                    ),
+                    ComponentField(
+                        name='data',
+                        def_num=4,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=64,
+                    ),
+                ),
+            ),
+            3: Field(
+                name='channel_number',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(
+                name='data',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=4,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    82: MessageType(
+        name='ant_channel_id',
+        mesg_num=82,
+        fields={
+            0: Field(
+                name='channel_number',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(
+                name='device_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=1,
+            ),
+            2: Field(
+                name='device_number',
+                type=BASE_TYPES[0x8B],  # uint16z
+                def_num=2,
+            ),
+            3: Field(
+                name='transmission_type',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=3,
+            ),
+            4: Field(
+                name='device_index',
+                type=FIELD_TYPES['device_index'],
+                def_num=4,
+            ),
+        },
+    ),
+    101: MessageType(
+        name='length',
+        mesg_num=101,
+        fields={
+            0: Field(
+                name='event',
+                type=FIELD_TYPES['event'],
+                def_num=0,
+            ),
+            1: Field(
+                name='event_type',
+                type=FIELD_TYPES['event_type'],
+                def_num=1,
+            ),
+            2: Field(
+                name='start_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=2,
+            ),
+            3: Field(
+                name='total_elapsed_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=1000,
+                units='s',
+            ),
+            4: Field(
+                name='total_timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='s',
+            ),
+            5: Field(
+                name='total_strokes',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                units='strokes',
+            ),
+            6: Field(
+                name='avg_speed',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=6,
+                scale=1000,
+                units='m/s',
+            ),
+            7: Field(
+                name='swim_stroke',
+                type=FIELD_TYPES['swim_stroke'],
+                def_num=7,
+                units='swim_stroke',
+            ),
+            9: Field(
+                name='avg_swimming_cadence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=9,
+                units='strokes/min',
+            ),
+            10: Field(
+                name='event_group',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=10,
+            ),
+            11: Field(
+                name='total_calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=11,
+                units='kcal',
+            ),
+            12: Field(
+                name='length_type',
+                type=FIELD_TYPES['length_type'],
+                def_num=12,
+            ),
+            18: Field(
+                name='player_score',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=18,
+            ),
+            19: Field(
+                name='opponent_score',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=19,
+            ),
+            20: Field(  # stroke_type enum used as the index
+                name='stroke_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=20,
+                units='counts',
+            ),
+            21: Field(  # zone number used as the index
+                name='zone_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=21,
+                units='counts',
+            ),
+            22: Field(
+                name='enhanced_avg_respiration_rate',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=22,
+                scale=100,
+                units='Breaths/min',
+            ),
+            23: Field(
+                name='enhanced_max_respiration_rate',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=23,
+                scale=100,
+                units='Breaths/min',
+            ),
+            24: Field(
+                name='avg_respiration_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=24,
+                components=(
+                    ComponentField(
+                        name='enhanced_avg_respiration_rate',
+                        def_num=22,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            25: Field(
+                name='max_respiration_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=25,
+                components=(
+                    ComponentField(
+                        name='enhanced_max_respiration_rate',
+                        def_num=23,
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    103: MessageType(
+        name='monitoring_info',
+        mesg_num=103,
+        fields={
+            0: Field(  # Use to convert activity timestamps to local time if device does not support time zone and daylight savings time correction.
+                name='local_timestamp',
+                type=FIELD_TYPES['local_date_time'],
+                def_num=0,
+                units='s',
+            ),
+            1: Field(
+                name='activity_type',
+                type=FIELD_TYPES['activity_type'],
+                def_num=1,
+            ),
+            3: Field(  # Indexed by activity_type
+                name='cycles_to_distance',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                scale=5000,
+                units='m/cycle',
+            ),
+            4: Field(  # Indexed by activity_type
+                name='cycles_to_calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=5000,
+                units='kcal/cycle',
+            ),
+            5: Field(
+                name='resting_metabolic_rate',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                units='kcal/day',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    106: MessageType(
+        name='slave_device',
+        mesg_num=106,
+        fields={
+            0: Field(
+                name='manufacturer',
+                type=FIELD_TYPES['manufacturer'],
+                def_num=0,
+            ),
+            1: Field(
+                name='product',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                subfields=(
+                    SubField(
+                        name='favero_product',
+                        def_num=1,
+                        type=FIELD_TYPES['favero_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='favero_electronics',
+                                raw_value=263,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='garmin_product',
+                        def_num=1,
+                        type=FIELD_TYPES['garmin_product'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='garmin',
+                                raw_value=1,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='dynastream',
+                                raw_value=15,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='dynastream_oem',
+                                raw_value=13,
+                            ),
+                            ReferenceField(
+                                name='manufacturer',
+                                def_num=0,
+                                value='tacx',
+                                raw_value=89,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        },
+    ),
+    127: MessageType(
+        name='connectivity',
+        mesg_num=127,
+        fields={
+            0: Field(  # Use Bluetooth for connectivity features
+                name='bluetooth_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=0,
+            ),
+            1: Field(  # Use Bluetooth Low Energy for connectivity features
+                name='bluetooth_le_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=1,
+            ),
+            2: Field(  # Use ANT for connectivity features
+                name='ant_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=2,
+            ),
+            3: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=3,
+            ),
+            4: Field(
+                name='live_tracking_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=4,
+            ),
+            5: Field(
+                name='weather_conditions_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=5,
+            ),
+            6: Field(
+                name='weather_alerts_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=6,
+            ),
+            7: Field(
+                name='auto_activity_upload_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=7,
+            ),
+            8: Field(
+                name='course_download_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=8,
+            ),
+            9: Field(
+                name='workout_download_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=9,
+            ),
+            10: Field(
+                name='gps_ephemeris_download_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=10,
+            ),
+            11: Field(
+                name='incident_detection_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=11,
+            ),
+            12: Field(
+                name='grouptrack_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=12,
+            ),
+        },
+    ),
+    128: MessageType(
+        name='weather_conditions',
+        mesg_num=128,
+        fields={
+            0: Field(  # Current or forecast
+                name='weather_report',
+                type=FIELD_TYPES['weather_report'],
+                def_num=0,
+            ),
+            1: Field(
+                name='temperature',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=1,
+                units='C',
+            ),
+            2: Field(  # Corresponds to GSC Response weatherIcon field
+                name='condition',
+                type=FIELD_TYPES['weather_status'],
+                def_num=2,
+            ),
+            3: Field(
+                name='wind_direction',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                units='degrees',
+            ),
+            4: Field(
+                name='wind_speed',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=1000,
+                units='m/s',
+            ),
+            5: Field(  # range 0-100
+                name='precipitation_probability',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=5,
+            ),
+            6: Field(  # Heat Index if GCS heatIdx above or equal to 90F or wind chill if GCS windChill below or equal to 32F
+                name='temperature_feels_like',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=6,
+                units='C',
+            ),
+            7: Field(
+                name='relative_humidity',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=7,
+            ),
+            8: Field(  # string corresponding to GCS response location string
+                name='location',
+                type=BASE_TYPES[0x07],  # string
+                def_num=8,
+            ),
+            9: Field(
+                name='observed_at_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=9,
+            ),
+            10: Field(
+                name='observed_location_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=10,
+                units='semicircles',
+            ),
+            11: Field(
+                name='observed_location_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=11,
+                units='semicircles',
+            ),
+            12: Field(
+                name='day_of_week',
+                type=FIELD_TYPES['day_of_week'],
+                def_num=12,
+            ),
+            13: Field(
+                name='high_temperature',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=13,
+                units='C',
+            ),
+            14: Field(
+                name='low_temperature',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=14,
+                units='C',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # time of update for current conditions, else forecast time
+        },
+    ),
+    129: MessageType(
+        name='weather_alert',
+        mesg_num=129,
+        fields={
+            0: Field(  # Unique identifier from GCS report ID string, length is 12
+                name='report_id',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(  # Time alert was issued
+                name='issue_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=1,
+            ),
+            2: Field(  # Time alert expires
+                name='expire_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=2,
+            ),
+            3: Field(  # Warning, Watch, Advisory, Statement
+                name='severity',
+                type=FIELD_TYPES['weather_severity'],
+                def_num=3,
+            ),
+            4: Field(  # Tornado, Severe Thunderstorm, etc.
+                name='type',
+                type=FIELD_TYPES['weather_severe_type'],
+                def_num=4,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    131: MessageType(
+        name='cadence_zone',
+        mesg_num=131,
+        fields={
+            0: Field(
+                name='high_value',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+                units='rpm',
+            ),
+            1: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    132: MessageType(
+        name='hr',
+        mesg_num=132,
+        fields={
+            0: Field(
+                name='fractional_timestamp',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=32768,
+                units='s',
+            ),
+            1: Field(
+                name='time256',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+                scale=256,
+                units='s',
+                components=(
+                    ComponentField(
+                        name='fractional_timestamp',
+                        def_num=0,
+                        scale=256,
+                        units='s',
+                        accumulate=False,
+                        bits=8,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            6: Field(
+                name='filtered_bpm',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+                units='bpm',
+            ),
+            9: Field(
+                name='event_timestamp',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=9,
+                scale=1024,
+                units='s',
+            ),
+            10: Field(
+                name='event_timestamp_12',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=10,
+                components=(
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=12,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=24,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=36,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=48,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=60,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=72,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=84,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=96,
+                    ),
+                    ComponentField(
+                        name='event_timestamp',
+                        def_num=9,
+                        scale=1024,
+                        units='s',
+                        accumulate=True,
+                        bits=12,
+                        bit_offset=108,
+                    ),
+                ),
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    142: MessageType(
+        name='segment_lap',
+        mesg_num=142,
+        fields={
+            0: Field(
+                name='event',
+                type=FIELD_TYPES['event'],
+                def_num=0,
+            ),
+            1: Field(
+                name='event_type',
+                type=FIELD_TYPES['event_type'],
+                def_num=1,
+            ),
+            2: Field(
+                name='start_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=2,
+            ),
+            3: Field(
+                name='start_position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=3,
+                units='semicircles',
+            ),
+            4: Field(
+                name='start_position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=4,
+                units='semicircles',
+            ),
+            5: Field(
+                name='end_position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=5,
+                units='semicircles',
+            ),
+            6: Field(
+                name='end_position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=6,
+                units='semicircles',
+            ),
+            7: Field(  # Time (includes pauses)
+                name='total_elapsed_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=7,
+                scale=1000,
+                units='s',
+            ),
+            8: Field(  # Timer Time (excludes pauses)
+                name='total_timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=8,
+                scale=1000,
+                units='s',
+            ),
+            9: Field(
+                name='total_distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=9,
+                scale=100,
+                units='m',
+            ),
+            10: Field(
+                name='total_cycles',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=10,
+                units='cycles',
+                subfields=(
+                    SubField(
+                        name='total_strokes',
+                        def_num=10,
+                        type=BASE_TYPES[0x86],  # uint32
+                        units='strokes',
+                        ref_fields=(
+                            ReferenceField(
+                                name='sport',
+                                def_num=23,
+                                value='cycling',
+                                raw_value=2,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            11: Field(
+                name='total_calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=11,
+                units='kcal',
+            ),
+            12: Field(  # If New Leaf
+                name='total_fat_calories',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=12,
+                units='kcal',
+            ),
+            13: Field(
+                name='avg_speed',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=13,
+                scale=1000,
+                units='m/s',
+            ),
+            14: Field(
+                name='max_speed',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=14,
+                scale=1000,
+                units='m/s',
+            ),
+            15: Field(
+                name='avg_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=15,
+                units='bpm',
+            ),
+            16: Field(
+                name='max_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=16,
+                units='bpm',
+            ),
+            17: Field(  # total_cycles / total_timer_time if non_zero_avg_cadence otherwise total_cycles / total_elapsed_time
+                name='avg_cadence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=17,
+                units='rpm',
+            ),
+            18: Field(
+                name='max_cadence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=18,
+                units='rpm',
+            ),
+            19: Field(  # total_power / total_timer_time if non_zero_avg_power otherwise total_power / total_elapsed_time
+                name='avg_power',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=19,
+                units='watts',
+            ),
+            20: Field(
+                name='max_power',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=20,
+                units='watts',
+            ),
+            21: Field(
+                name='total_ascent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=21,
+                units='m',
+            ),
+            22: Field(
+                name='total_descent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=22,
+                units='m',
+            ),
+            23: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=23,
+            ),
+            24: Field(
+                name='event_group',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=24,
+            ),
+            25: Field(  # North east corner latitude.
+                name='nec_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=25,
+                units='semicircles',
+            ),
+            26: Field(  # North east corner longitude.
+                name='nec_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=26,
+                units='semicircles',
+            ),
+            27: Field(  # South west corner latitude.
+                name='swc_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=27,
+                units='semicircles',
+            ),
+            28: Field(  # South west corner latitude.
+                name='swc_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=28,
+                units='semicircles',
+            ),
+            29: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=29,
+            ),
+            30: Field(
+                name='normalized_power',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=30,
+                units='watts',
+            ),
+            31: Field(
+                name='left_right_balance',
+                type=FIELD_TYPES['left_right_balance_100'],
+                def_num=31,
+            ),
+            32: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=32,
+            ),
+            33: Field(
+                name='total_work',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=33,
+                units='J',
+            ),
+            34: Field(
+                name='avg_altitude',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=34,
+                scale=5,
+                offset=500,
+                units='m',
+                components=(
+                    ComponentField(
+                        name='enhanced_avg_altitude',
+                        def_num=91,
+                        scale=5,
+                        offset=500,
+                        units='m',
+                        accumulate=False,
+                        bits=16,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            35: Field(
+                name='max_altitude',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=35,
+                scale=5,
+                offset=500,
+                units='m',
+                components=(
+                    ComponentField(
+                        name='enhanced_max_altitude',
+                        def_num=92,
+                        scale=5,
+                        offset=500,
+                        units='m',
+                        accumulate=False,
+                        bits=16,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            36: Field(
+                name='gps_accuracy',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=36,
+                units='m',
+            ),
+            37: Field(
+                name='avg_grade',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=37,
+                scale=100,
+                units='%',
+            ),
+            38: Field(
+                name='avg_pos_grade',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=38,
+                scale=100,
+                units='%',
+            ),
+            39: Field(
+                name='avg_neg_grade',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=39,
+                scale=100,
+                units='%',
+            ),
+            40: Field(
+                name='max_pos_grade',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=40,
+                scale=100,
+                units='%',
+            ),
+            41: Field(
+                name='max_neg_grade',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=41,
+                scale=100,
+                units='%',
+            ),
+            42: Field(
+                name='avg_temperature',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=42,
+                units='C',
+            ),
+            43: Field(
+                name='max_temperature',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=43,
+                units='C',
+            ),
+            44: Field(
+                name='total_moving_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=44,
+                scale=1000,
+                units='s',
+            ),
+            45: Field(
+                name='avg_pos_vertical_speed',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=45,
+                scale=1000,
+                units='m/s',
+            ),
+            46: Field(
+                name='avg_neg_vertical_speed',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=46,
+                scale=1000,
+                units='m/s',
+            ),
+            47: Field(
+                name='max_pos_vertical_speed',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=47,
+                scale=1000,
+                units='m/s',
+            ),
+            48: Field(
+                name='max_neg_vertical_speed',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=48,
+                scale=1000,
+                units='m/s',
+            ),
+            49: Field(
+                name='time_in_hr_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=49,
+                scale=1000,
+                units='s',
+            ),
+            50: Field(
+                name='time_in_speed_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=50,
+                scale=1000,
+                units='s',
+            ),
+            51: Field(
+                name='time_in_cadence_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=51,
+                scale=1000,
+                units='s',
+            ),
+            52: Field(
+                name='time_in_power_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=52,
+                scale=1000,
+                units='s',
+            ),
+            53: Field(
+                name='repetition_num',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=53,
+            ),
+            54: Field(
+                name='min_altitude',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=54,
+                scale=5,
+                offset=500,
+                units='m',
+                components=(
+                    ComponentField(
+                        name='enhanced_min_altitude',
+                        def_num=93,
+                        scale=5,
+                        offset=500,
+                        units='m',
+                        accumulate=False,
+                        bits=16,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            55: Field(
+                name='min_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=55,
+                units='bpm',
+            ),
+            56: Field(
+                name='active_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=56,
+                scale=1000,
+                units='s',
+            ),
+            57: Field(
+                name='wkt_step_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=57,
+            ),
+            58: Field(
+                name='sport_event',
+                type=FIELD_TYPES['sport_event'],
+                def_num=58,
+            ),
+            59: Field(
+                name='avg_left_torque_effectiveness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=59,
+                scale=2,
+                units='percent',
+            ),
+            60: Field(
+                name='avg_right_torque_effectiveness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=60,
+                scale=2,
+                units='percent',
+            ),
+            61: Field(
+                name='avg_left_pedal_smoothness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=61,
+                scale=2,
+                units='percent',
+            ),
+            62: Field(
+                name='avg_right_pedal_smoothness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=62,
+                scale=2,
+                units='percent',
+            ),
+            63: Field(
+                name='avg_combined_pedal_smoothness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=63,
+                scale=2,
+                units='percent',
+            ),
+            64: Field(
+                name='status',
+                type=FIELD_TYPES['segment_lap_status'],
+                def_num=64,
+            ),
+            65: Field(
+                name='uuid',
+                type=BASE_TYPES[0x07],  # string
+                def_num=65,
+            ),
+            66: Field(  # fractional part of the avg_cadence
+                name='avg_fractional_cadence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=66,
+                scale=128,
+                units='rpm',
+            ),
+            67: Field(  # fractional part of the max_cadence
+                name='max_fractional_cadence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=67,
+                scale=128,
+                units='rpm',
+            ),
+            68: Field(  # fractional part of the total_cycles
+                name='total_fractional_cycles',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=68,
+                scale=128,
+                units='cycles',
+            ),
+            69: Field(
+                name='front_gear_shift_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=69,
+            ),
+            70: Field(
+                name='rear_gear_shift_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=70,
+            ),
+            71: Field(  # Total time spent in the standing position
+                name='time_standing',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=71,
+                scale=1000,
+                units='s',
+            ),
+            72: Field(  # Number of transitions to the standing state
+                name='stand_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=72,
+            ),
+            73: Field(  # Average left platform center offset
+                name='avg_left_pco',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=73,
+                units='mm',
+            ),
+            74: Field(  # Average right platform center offset
+                name='avg_right_pco',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=74,
+                units='mm',
+            ),
+            75: Field(  # Average left power phase angles. Data value indexes defined by power_phase_type.
+                name='avg_left_power_phase',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=75,
+                scale=0.7111111,
+                units='degrees',
+            ),
+            76: Field(  # Average left power phase peak angles. Data value indexes defined by power_phase_type.
+                name='avg_left_power_phase_peak',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=76,
+                scale=0.7111111,
+                units='degrees',
+            ),
+            77: Field(  # Average right power phase angles. Data value indexes defined by power_phase_type.
+                name='avg_right_power_phase',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=77,
+                scale=0.7111111,
+                units='degrees',
+            ),
+            78: Field(  # Average right power phase peak angles. Data value indexes defined by power_phase_type.
+                name='avg_right_power_phase_peak',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=78,
+                scale=0.7111111,
+                units='degrees',
+            ),
+            79: Field(  # Average power by position. Data value indexes defined by rider_position_type.
+                name='avg_power_position',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=79,
+                units='watts',
+            ),
+            80: Field(  # Maximum power by position. Data value indexes defined by rider_position_type.
+                name='max_power_position',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=80,
+                units='watts',
+            ),
+            81: Field(  # Average cadence by position. Data value indexes defined by rider_position_type.
+                name='avg_cadence_position',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=81,
+                units='rpm',
+            ),
+            82: Field(  # Maximum cadence by position. Data value indexes defined by rider_position_type.
+                name='max_cadence_position',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=82,
+                units='rpm',
+            ),
+            83: Field(  # Manufacturer that produced the segment
+                name='manufacturer',
+                type=FIELD_TYPES['manufacturer'],
+                def_num=83,
+            ),
+            84: Field(  # The grit score estimates how challenging a route could be for a cyclist in terms of time spent going over sharp turns or large grade slopes.
+                name='total_grit',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=84,
+                units='kGrit',
+            ),
+            85: Field(  # The flow score estimates how long distance wise a cyclist deaccelerates over intervals where deacceleration is unnecessary such as smooth turns or small grade angle intervals.
+                name='total_flow',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=85,
+                units='Flow',
+            ),
+            86: Field(  # The grit score estimates how challenging a route could be for a cyclist in terms of time spent going over sharp turns or large grade slopes.
+                name='avg_grit',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=86,
+                units='kGrit',
+            ),
+            87: Field(  # The flow score estimates how long distance wise a cyclist deaccelerates over intervals where deacceleration is unnecessary such as smooth turns or small grade angle intervals.
+                name='avg_flow',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=87,
+                units='Flow',
+            ),
+            89: Field(  # fractional part of total_ascent
+                name='total_fractional_ascent',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=89,
+                scale=100,
+                units='m',
+            ),
+            90: Field(  # fractional part of total_descent
+                name='total_fractional_descent',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=90,
+                scale=100,
+                units='m',
+            ),
+            91: Field(
+                name='enhanced_avg_altitude',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=91,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            92: Field(
+                name='enhanced_max_altitude',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=92,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            93: Field(
+                name='enhanced_min_altitude',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=93,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Lap end time.
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    145: MessageType(
+        name='memo_glob',
+        mesg_num=145,
+        fields={
+            0: Field(  # Deprecated. Use data field.
+                name='memo',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=0,
+            ),
+            1: Field(  # Message Number of the parent message
+                name='mesg_num',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=1,
+            ),
+            2: Field(  # Index of mesg that this glob is associated with.
+                name='parent_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=2,
+            ),
+            3: Field(  # Field within the parent that this glob is associated with
+                name='field_num',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(  # Block of utf8 bytes. Note, mutltibyte characters may be split across adjoining memo_glob messages.
+                name='data',
+                type=BASE_TYPES[0x0A],  # uint8z
+                def_num=4,
+            ),
+            250: Field(  # Sequence number of memo blocks
+                name='part_index',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=250,
+            ),
+        },
+    ),
+    148: MessageType(  # Unique Identification data for a segment file
+        name='segment_id',
+        mesg_num=148,
+        fields={
+            0: Field(  # Friendly name assigned to segment
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(  # UUID of the segment
+                name='uuid',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            2: Field(  # Sport associated with the segment
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=2,
+            ),
+            3: Field(  # Segment enabled for evaluation
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=3,
+            ),
+            4: Field(  # Primary key of the user that created the segment
+                name='user_profile_primary_key',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+            ),
+            5: Field(  # ID of the device that created the segment
+                name='device_id',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+            ),
+            6: Field(  # Index for the Leader Board entry selected as the default race participant
+                name='default_race_leader',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+            ),
+            7: Field(  # Indicates if any segments should be deleted
+                name='delete_status',
+                type=FIELD_TYPES['segment_delete_status'],
+                def_num=7,
+            ),
+            8: Field(  # Indicates how the segment was selected to be sent to the device
+                name='selection_type',
+                type=FIELD_TYPES['segment_selection_type'],
+                def_num=8,
+            ),
+        },
+    ),
+    149: MessageType(  # Unique Identification data for an individual segment leader within a segment file
+        name='segment_leaderboard_entry',
+        mesg_num=149,
+        fields={
+            0: Field(  # Friendly name assigned to leader
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(  # Leader classification
+                name='type',
+                type=FIELD_TYPES['segment_leaderboard_type'],
+                def_num=1,
+            ),
+            2: Field(  # Primary user ID of this leader
+                name='group_primary_key',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+            ),
+            3: Field(  # ID of the activity associated with this leader time
+                name='activity_id',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+            ),
+            4: Field(  # Segment Time (includes pauses)
+                name='segment_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='s',
+            ),
+            5: Field(  # String version of the activity_id. 21 characters long, express in decimal
+                name='activity_id_string',
+                type=BASE_TYPES[0x07],  # string
+                def_num=5,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    150: MessageType(  # Navigation and race evaluation point for a segment decribing a point along the segment path and time it took each segment leader to reach that point
+        name='segment_point',
+        mesg_num=150,
+        fields={
+            1: Field(
+                name='position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=1,
+                units='semicircles',
+            ),
+            2: Field(
+                name='position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=2,
+                units='semicircles',
+            ),
+            3: Field(  # Accumulated distance along the segment at the described point
+                name='distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=100,
+                units='m',
+            ),
+            4: Field(  # Accumulated altitude along the segment at the described point
+                name='altitude',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=5,
+                offset=500,
+                units='m',
+                components=(
+                    ComponentField(
+                        name='enhanced_altitude',
+                        def_num=6,
+                        scale=5,
+                        offset=500,
+                        units='m',
+                        accumulate=False,
+                        bits=16,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            5: Field(  # Accumualted time each leader board member required to reach the described point. This value is zero for all leader board members at the starting point of the segment.
+                name='leader_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+                scale=1000,
+                units='s',
+            ),
+            6: Field(  # Accumulated altitude along the segment at the described point
+                name='enhanced_altitude',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    151: MessageType(  # Summary of the unique segment and leaderboard information associated with a segment file. This message is used to compile a segment list file describing all segment files on a device. The segment list file is used when refreshing the contents of a segment file with the latest available leaderboard information.
+        name='segment_file',
+        mesg_num=151,
+        fields={
+            1: Field(  # UUID of the segment file
+                name='file_uuid',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            3: Field(  # Enabled state of the segment file
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=3,
+            ),
+            4: Field(  # Primary key of the user that created the segment file
+                name='user_profile_primary_key',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+            ),
+            7: Field(  # Leader type of each leader in the segment file
+                name='leader_type',
+                type=FIELD_TYPES['segment_leaderboard_type'],
+                def_num=7,
+            ),
+            8: Field(  # Group primary key of each leader in the segment file
+                name='leader_group_primary_key',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=8,
+            ),
+            9: Field(  # Activity ID of each leader in the segment file
+                name='leader_activity_id',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=9,
+            ),
+            10: Field(  # String version of the activity ID of each leader in the segment file. 21 characters long for each ID, express in decimal
+                name='leader_activity_id_string',
+                type=BASE_TYPES[0x07],  # string
+                def_num=10,
+            ),
+            11: Field(  # Index for the Leader Board entry selected as the default race participant
+                name='default_race_leader',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
     158: MessageType(
         name='workout_session',
         mesg_num=158,
@@ -15024,6 +12495,1641 @@ MESSAGE_TYPES = {
             ),
         },
     ),
+    159: MessageType(
+        name='watchface_settings',
+        mesg_num=159,
+        fields={
+            0: Field(
+                name='mode',
+                type=FIELD_TYPES['watchface_mode'],
+                def_num=0,
+            ),
+            1: Field(
+                name='layout',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+                subfields=(
+                    SubField(
+                        name='analog_layout',
+                        def_num=1,
+                        type=FIELD_TYPES['analog_watchface_layout'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='mode',
+                                def_num=0,
+                                value='analog',
+                                raw_value=1,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='digital_layout',
+                        def_num=1,
+                        type=FIELD_TYPES['digital_watchface_layout'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='mode',
+                                def_num=0,
+                                value='digital',
+                                raw_value=0,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    160: MessageType(
+        name='gps_metadata',
+        mesg_num=160,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(
+                name='position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=1,
+                units='semicircles',
+            ),
+            2: Field(
+                name='position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=2,
+                units='semicircles',
+            ),
+            3: Field(
+                name='enhanced_altitude',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            4: Field(
+                name='enhanced_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='m/s',
+            ),
+            5: Field(
+                name='heading',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                scale=100,
+                units='degrees',
+            ),
+            6: Field(  # Used to correlate UTC to system time if the timestamp of the message is in system time. This UTC time is derived from the GPS data.
+                name='utc_timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=6,
+                units='s',
+            ),
+            7: Field(  # velocity[0] is lon velocity. Velocity[1] is lat velocity. Velocity[2] is altitude velocity.
+                name='velocity',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=7,
+                scale=100,
+                units='m/s',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp.
+        },
+    ),
+    161: MessageType(
+        name='camera_event',
+        mesg_num=161,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(
+                name='camera_event_type',
+                type=FIELD_TYPES['camera_event_type'],
+                def_num=1,
+            ),
+            2: Field(
+                name='camera_file_uuid',
+                type=BASE_TYPES[0x07],  # string
+                def_num=2,
+            ),
+            3: Field(
+                name='camera_orientation',
+                type=FIELD_TYPES['camera_orientation_type'],
+                def_num=3,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp.
+        },
+    ),
+    162: MessageType(
+        name='timestamp_correlation',
+        mesg_num=162,
+        fields={
+            0: Field(  # Fractional part of the UTC timestamp at the time the system timestamp was recorded.
+                name='fractional_timestamp',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=32768,
+                units='s',
+            ),
+            1: Field(  # Whole second part of the system timestamp
+                name='system_timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=1,
+                units='s',
+            ),
+            2: Field(  # Fractional part of the system timestamp
+                name='fractional_system_timestamp',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=32768,
+                units='s',
+            ),
+            3: Field(  # timestamp epoch expressed in local time used to convert timestamps to local time
+                name='local_timestamp',
+                type=FIELD_TYPES['local_date_time'],
+                def_num=3,
+                units='s',
+            ),
+            4: Field(  # Millisecond part of the UTC timestamp at the time the system timestamp was recorded.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                units='ms',
+            ),
+            5: Field(  # Millisecond part of the system timestamp
+                name='system_timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                units='ms',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of UTC timestamp at the time the system timestamp was recorded.
+        },
+    ),
+    164: MessageType(
+        name='gyroscope_data',
+        mesg_num=164,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Each time in the array describes the time at which the gyro sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in gyro_x and gyro_y and gyro_z
+                name='sample_time_offset',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='gyro_x',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                units='counts',
+            ),
+            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='gyro_y',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                units='counts',
+            ),
+            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='gyro_z',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                units='counts',
+            ),
+            5: Field(  # Calibrated gyro reading
+                name='calibrated_gyro_x',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=5,
+                units='deg/s',
+            ),
+            6: Field(  # Calibrated gyro reading
+                name='calibrated_gyro_y',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=6,
+                units='deg/s',
+            ),
+            7: Field(  # Calibrated gyro reading
+                name='calibrated_gyro_z',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=7,
+                units='deg/s',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    165: MessageType(
+        name='accelerometer_data',
+        mesg_num=165,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Each time in the array describes the time at which the accelerometer sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in accel_x and accel_y and accel_z
+                name='sample_time_offset',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='accel_x',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                units='counts',
+            ),
+            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='accel_y',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                units='counts',
+            ),
+            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='accel_z',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                units='counts',
+            ),
+            5: Field(  # Calibrated accel reading
+                name='calibrated_accel_x',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=5,
+                units='g',
+            ),
+            6: Field(  # Calibrated accel reading
+                name='calibrated_accel_y',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=6,
+                units='g',
+            ),
+            7: Field(  # Calibrated accel reading
+                name='calibrated_accel_z',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=7,
+                units='g',
+            ),
+            8: Field(  # Calibrated accel reading
+                name='compressed_calibrated_accel_x',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=8,
+                units='mG',
+            ),
+            9: Field(  # Calibrated accel reading
+                name='compressed_calibrated_accel_y',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=9,
+                units='mG',
+            ),
+            10: Field(  # Calibrated accel reading
+                name='compressed_calibrated_accel_z',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=10,
+                units='mG',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    167: MessageType(
+        name='three_d_sensor_calibration',
+        mesg_num=167,
+        fields={
+            0: Field(  # Indicates which sensor the calibration is for
+                name='sensor_type',
+                type=FIELD_TYPES['sensor_type'],
+                def_num=0,
+            ),
+            1: Field(  # Calibration factor used to convert from raw ADC value to degrees, g, etc.
+                name='calibration_factor',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+                subfields=(
+                    SubField(  # Accelerometer calibration factor
+                        name='accel_cal_factor',
+                        def_num=1,
+                        type=BASE_TYPES[0x86],  # uint32
+                        units='g',
+                        ref_fields=(
+                            ReferenceField(
+                                name='sensor_type',
+                                def_num=0,
+                                value='accelerometer',
+                                raw_value=0,
+                            ),
+                        ),
+                    ),
+                    SubField(  # Gyro calibration factor
+                        name='gyro_cal_factor',
+                        def_num=1,
+                        type=BASE_TYPES[0x86],  # uint32
+                        units='deg/s',
+                        ref_fields=(
+                            ReferenceField(
+                                name='sensor_type',
+                                def_num=0,
+                                value='gyroscope',
+                                raw_value=1,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            2: Field(  # Calibration factor divisor
+                name='calibration_divisor',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='counts',
+            ),
+            3: Field(  # Level shift value used to shift the ADC value back into range
+                name='level_shift',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+            ),
+            4: Field(  # Internal calibration factors, one for each: xy, yx, zx
+                name='offset_cal',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=4,
+            ),
+            5: Field(  # 3 x 3 rotation matrix (row major)
+                name='orientation_matrix',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=5,
+                scale=65535,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    169: MessageType(
+        name='video_frame',
+        mesg_num=169,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Number of the frame that the timestamp and timestamp_ms correlate to
+                name='frame_number',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    174: MessageType(
+        name='obdii_data',
+        mesg_num=174,
+        fields={
+            0: Field(  # Fractional part of timestamp, added to timestamp
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Offset of PID reading [i] from start_timestamp+start_timestamp_ms. Readings may span accross seconds.
+                name='time_offset',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # Parameter ID
+                name='pid',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=2,
+            ),
+            3: Field(  # Raw parameter data
+                name='raw_data',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=3,
+            ),
+            4: Field(  # Optional, data size of PID[i]. If not specified refer to SAE J1979.
+                name='pid_data_size',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=4,
+            ),
+            5: Field(  # System time associated with sample expressed in ms, can be used instead of time_offset. There will be a system_time value for each raw_data element. For multibyte pids the system_time is repeated.
+                name='system_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+            ),
+            6: Field(  # Timestamp of first sample recorded in the message. Used with time_offset to generate time of each sample
+                name='start_timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=6,
+            ),
+            7: Field(  # Fractional part of start_timestamp
+                name='start_timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=7,
+                units='ms',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
+        },
+    ),
+    177: MessageType(
+        name='nmea_sentence',
+        mesg_num=177,
+        fields={
+            0: Field(  # Fractional part of timestamp, added to timestamp
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # NMEA sentence
+                name='sentence',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
+        },
+    ),
+    178: MessageType(
+        name='aviation_attitude',
+        mesg_num=178,
+        fields={
+            0: Field(  # Fractional part of timestamp, added to timestamp
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # System time associated with sample expressed in ms.
+                name='system_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # Range -PI/2 to +PI/2
+                name='pitch',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=2,
+                scale=10430.38,
+                units='radians',
+            ),
+            3: Field(  # Range -PI to +PI
+                name='roll',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=3,
+                scale=10430.38,
+                units='radians',
+            ),
+            4: Field(  # Range -78.4 to +78.4 (-8 Gs to 8 Gs)
+                name='accel_lateral',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=4,
+                scale=100,
+                units='m/s^2',
+            ),
+            5: Field(  # Range -78.4 to +78.4 (-8 Gs to 8 Gs)
+                name='accel_normal',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=5,
+                scale=100,
+                units='m/s^2',
+            ),
+            6: Field(  # Range -8.727 to +8.727 (-500 degs/sec to +500 degs/sec)
+                name='turn_rate',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=6,
+                scale=1024,
+                units='radians/second',
+            ),
+            7: Field(
+                name='stage',
+                type=FIELD_TYPES['attitude_stage'],
+                def_num=7,
+            ),
+            8: Field(  # The percent complete of the current attitude stage. Set to 0 for attitude stages 0, 1 and 2 and to 100 for attitude stage 3 by AHRS modules that do not support it. Range - 100
+                name='attitude_stage_complete',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+                units='%',
+            ),
+            9: Field(  # Track Angle/Heading Range 0 - 2pi
+                name='track',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                scale=10430.38,
+                units='radians',
+            ),
+            10: Field(
+                name='validity',
+                type=FIELD_TYPES['attitude_validity'],
+                def_num=10,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Timestamp message was output
+        },
+    ),
+    184: MessageType(
+        name='video',
+        mesg_num=184,
+        fields={
+            0: Field(
+                name='url',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(
+                name='hosting_provider',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            2: Field(  # Playback time of video
+                name='duration',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='ms',
+            ),
+        },
+    ),
+    185: MessageType(
+        name='video_title',
+        mesg_num=185,
+        fields={
+            0: Field(  # Total number of title parts
+                name='message_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+            ),
+            1: Field(
+                name='text',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            254: Field(  # Long titles will be split into multiple parts
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    186: MessageType(
+        name='video_description',
+        mesg_num=186,
+        fields={
+            0: Field(  # Total number of description parts
+                name='message_count',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+            ),
+            1: Field(
+                name='text',
+                type=BASE_TYPES[0x07],  # string
+                def_num=1,
+            ),
+            254: Field(  # Long descriptions will be split into multiple parts
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    187: MessageType(
+        name='video_clip',
+        mesg_num=187,
+        fields={
+            0: Field(
+                name='clip_number',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+            ),
+            1: Field(
+                name='start_timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=1,
+            ),
+            2: Field(
+                name='start_timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+            ),
+            3: Field(
+                name='end_timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=3,
+            ),
+            4: Field(
+                name='end_timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+            ),
+            6: Field(  # Start of clip in video time
+                name='clip_start',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+                units='ms',
+            ),
+            7: Field(  # End of clip in video time
+                name='clip_end',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=7,
+                units='ms',
+            ),
+        },
+    ),
+    188: MessageType(
+        name='ohr_settings',
+        mesg_num=188,
+        fields={
+            0: Field(
+                name='enabled',
+                type=FIELD_TYPES['switch'],
+                def_num=0,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    200: MessageType(
+        name='exd_screen_configuration',
+        mesg_num=200,
+        fields={
+            0: Field(
+                name='screen_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(  # number of fields in screen
+                name='field_count',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+            2: Field(
+                name='layout',
+                type=FIELD_TYPES['exd_layout'],
+                def_num=2,
+            ),
+            3: Field(
+                name='screen_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=3,
+            ),
+        },
+    ),
+    201: MessageType(
+        name='exd_data_field_configuration',
+        mesg_num=201,
+        fields={
+            0: Field(
+                name='screen_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(
+                name='concept_field',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+                components=(
+                    ComponentField(
+                        name='field_id',
+                        def_num=2,
+                        accumulate=False,
+                        bits=4,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='concept_count',
+                        def_num=3,
+                        accumulate=False,
+                        bits=4,
+                        bit_offset=4,
+                    ),
+                ),
+            ),
+            2: Field(
+                name='field_id',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(
+                name='concept_count',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(
+                name='display_type',
+                type=FIELD_TYPES['exd_display_type'],
+                def_num=4,
+            ),
+            5: Field(
+                name='title',
+                type=BASE_TYPES[0x07],  # string
+                def_num=5,
+            ),
+        },
+    ),
+    202: MessageType(
+        name='exd_data_concept_configuration',
+        mesg_num=202,
+        fields={
+            0: Field(
+                name='screen_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(
+                name='concept_field',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+                components=(
+                    ComponentField(
+                        name='field_id',
+                        def_num=2,
+                        accumulate=False,
+                        bits=4,
+                        bit_offset=0,
+                    ),
+                    ComponentField(
+                        name='concept_index',
+                        def_num=3,
+                        accumulate=False,
+                        bits=4,
+                        bit_offset=4,
+                    ),
+                ),
+            ),
+            2: Field(
+                name='field_id',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(
+                name='concept_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(
+                name='data_page',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=4,
+            ),
+            5: Field(
+                name='concept_key',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=5,
+            ),
+            6: Field(
+                name='scaling',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+            ),
+            8: Field(
+                name='data_units',
+                type=FIELD_TYPES['exd_data_units'],
+                def_num=8,
+            ),
+            9: Field(
+                name='qualifier',
+                type=FIELD_TYPES['exd_qualifiers'],
+                def_num=9,
+            ),
+            10: Field(
+                name='descriptor',
+                type=FIELD_TYPES['exd_descriptors'],
+                def_num=10,
+            ),
+            11: Field(
+                name='is_signed',
+                type=FIELD_TYPES['bool'],
+                def_num=11,
+            ),
+        },
+    ),
+    206: MessageType(  # Must be logged before developer field is used
+        name='field_description',
+        mesg_num=206,
+        fields={
+            0: Field(
+                name='developer_data_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(
+                name='field_definition_number',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+            2: Field(
+                name='fit_base_type_id',
+                type=FIELD_TYPES['fit_base_type'],
+                def_num=2,
+            ),
+            3: Field(
+                name='field_name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=3,
+            ),
+            4: Field(
+                name='array',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=4,
+            ),
+            5: Field(
+                name='components',
+                type=BASE_TYPES[0x07],  # string
+                def_num=5,
+            ),
+            6: Field(
+                name='scale',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+            ),
+            7: Field(
+                name='offset',
+                type=BASE_TYPES[0x01],  # sint8
+                def_num=7,
+            ),
+            8: Field(
+                name='units',
+                type=BASE_TYPES[0x07],  # string
+                def_num=8,
+            ),
+            9: Field(
+                name='bits',
+                type=BASE_TYPES[0x07],  # string
+                def_num=9,
+            ),
+            10: Field(
+                name='accumulate',
+                type=BASE_TYPES[0x07],  # string
+                def_num=10,
+            ),
+            13: Field(
+                name='fit_base_unit_id',
+                type=FIELD_TYPES['fit_base_unit'],
+                def_num=13,
+            ),
+            14: Field(
+                name='native_mesg_num',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=14,
+            ),
+            15: Field(
+                name='native_field_num',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=15,
+            ),
+        },
+    ),
+    207: MessageType(  # Must be logged before field description
+        name='developer_data_id',
+        mesg_num=207,
+        fields={
+            0: Field(
+                name='developer_id',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=0,
+            ),
+            1: Field(
+                name='application_id',
+                type=BASE_TYPES[0x0D],  # byte
+                def_num=1,
+            ),
+            2: Field(
+                name='manufacturer_id',
+                type=FIELD_TYPES['manufacturer'],
+                def_num=2,
+            ),
+            3: Field(
+                name='developer_data_index',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(
+                name='application_version',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+            ),
+        },
+    ),
+    208: MessageType(
+        name='magnetometer_data',
+        mesg_num=208,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Each time in the array describes the time at which the compass sample with the corrosponding index was taken. Limited to 30 samples in each message. The samples may span across seconds. Array size must match the number of samples in cmps_x and cmps_y and cmps_z
+                name='sample_time_offset',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='mag_x',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                units='counts',
+            ),
+            3: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='mag_y',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                units='counts',
+            ),
+            4: Field(  # These are the raw ADC reading. Maximum number of samples is 30 in each message. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='mag_z',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                units='counts',
+            ),
+            5: Field(  # Calibrated Magnetometer reading
+                name='calibrated_mag_x',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=5,
+                units='G',
+            ),
+            6: Field(  # Calibrated Magnetometer reading
+                name='calibrated_mag_y',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=6,
+                units='G',
+            ),
+            7: Field(  # Calibrated Magnetometer reading
+                name='calibrated_mag_z',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=7,
+                units='G',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    209: MessageType(
+        name='barometer_data',
+        mesg_num=209,
+        fields={
+            0: Field(  # Millisecond part of the timestamp.
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Each time in the array describes the time at which the barometer sample with the corrosponding index was taken. The samples may span across seconds. Array size must match the number of samples in baro_cal
+                name='sample_time_offset',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            2: Field(  # These are the raw ADC reading. The samples may span across seconds. A conversion will need to be done on this data once read.
+                name='baro_pres',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='Pa',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    210: MessageType(
+        name='one_d_sensor_calibration',
+        mesg_num=210,
+        fields={
+            0: Field(  # Indicates which sensor the calibration is for
+                name='sensor_type',
+                type=FIELD_TYPES['sensor_type'],
+                def_num=0,
+            ),
+            1: Field(  # Calibration factor used to convert from raw ADC value to degrees, g, etc.
+                name='calibration_factor',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+                subfields=(
+                    SubField(  # Barometer calibration factor
+                        name='baro_cal_factor',
+                        def_num=1,
+                        type=BASE_TYPES[0x86],  # uint32
+                        units='Pa',
+                        ref_fields=(
+                            ReferenceField(
+                                name='sensor_type',
+                                def_num=0,
+                                value='barometer',
+                                raw_value=3,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            2: Field(  # Calibration factor divisor
+                name='calibration_divisor',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                units='counts',
+            ),
+            3: Field(  # Level shift value used to shift the ADC value back into range
+                name='level_shift',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+            ),
+            4: Field(  # Internal Calibration factor
+                name='offset_cal',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=4,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Whole second part of the timestamp
+        },
+    ),
+    211: MessageType(
+        name='monitoring_hr_data',
+        mesg_num=211,
+        fields={
+            0: Field(  # 7-day rolling average
+                name='resting_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+                units='bpm',
+            ),
+            1: Field(  # RHR for today only. (Feeds into 7-day average)
+                name='current_day_resting_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+                units='bpm',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,  # Must align to logging interval, for example, time must be 00:00:00 for daily log.
+        },
+    ),
+    216: MessageType(
+        name='time_in_zone',
+        mesg_num=216,
+        fields={
+            0: Field(
+                name='reference_mesg',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=0,
+            ),
+            1: Field(
+                name='reference_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=1,
+            ),
+            2: Field(
+                name='time_in_hr_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                scale=1000,
+                units='s',
+            ),
+            3: Field(
+                name='time_in_speed_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=1000,
+                units='s',
+            ),
+            4: Field(
+                name='time_in_cadence_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='s',
+            ),
+            5: Field(
+                name='time_in_power_zone',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+                scale=1000,
+                units='s',
+            ),
+            6: Field(
+                name='hr_zone_high_boundary',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+                units='bpm',
+            ),
+            7: Field(
+                name='speed_zone_high_boundary',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=7,
+                scale=1000,
+                units='m/s',
+            ),
+            8: Field(
+                name='cadence_zone_high_bondary',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+                units='rpm',
+            ),
+            9: Field(
+                name='power_zone_high_boundary',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                units='watts',
+            ),
+            10: Field(
+                name='hr_calc_type',
+                type=FIELD_TYPES['hr_zone_calc'],
+                def_num=10,
+            ),
+            11: Field(
+                name='max_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+            ),
+            12: Field(
+                name='resting_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=12,
+            ),
+            13: Field(
+                name='threshold_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=13,
+            ),
+            14: Field(
+                name='pwr_calc_type',
+                type=FIELD_TYPES['pwr_zone_calc'],
+                def_num=14,
+            ),
+            15: Field(
+                name='functional_threshold_power',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=15,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    225: MessageType(
+        name='set',
+        mesg_num=225,
+        fields={
+            0: Field(
+                name='duration',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=0,
+                scale=1000,
+                units='s',
+            ),
+            3: Field(  # # of repitions of the movement
+                name='repetitions',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            4: Field(  # Amount of weight applied for the set
+                name='weight',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=16,
+                units='kg',
+            ),
+            5: Field(
+                name='set_type',
+                type=FIELD_TYPES['set_type'],
+                def_num=5,
+            ),
+            6: Field(  # Start time of the set
+                name='start_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=6,
+            ),
+            7: Field(
+                name='category',
+                type=FIELD_TYPES['exercise_category'],
+                def_num=7,
+            ),
+            8: Field(  # Based on the associated category, see [category]_exercise_names
+                name='category_subtype',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=8,
+            ),
+            9: Field(
+                name='weight_display_unit',
+                type=FIELD_TYPES['fit_base_unit'],
+                def_num=9,
+            ),
+            10: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=10,
+            ),
+            11: Field(
+                name='wkt_step_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=11,
+            ),
+            254: Field(  # Timestamp of the set
+                name='timestamp',
+                type=FIELD_TYPES['date_time'],
+                def_num=254,
+            ),
+        },
+    ),
+    227: MessageType(  # Value from 1 to 100 calculated by FirstBeat
+        name='stress_level',
+        mesg_num=227,
+        fields={
+            0: Field(
+                name='stress_level_value',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=0,
+            ),
+            1: Field(  # Time stress score was calculated
+                name='stress_level_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=1,
+                units='s',
+            ),
+        },
+    ),
+    229: MessageType(
+        name='max_met_data',
+        mesg_num=229,
+        fields={
+            0: Field(  # Time maxMET and vo2 were calculated
+                name='update_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=0,
+            ),
+            2: Field(
+                name='vo2_max',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=10,
+                units='mL/kg/min',
+            ),
+            5: Field(
+                name='sport',
+                type=FIELD_TYPES['sport'],
+                def_num=5,
+            ),
+            6: Field(
+                name='sub_sport',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=6,
+            ),
+            8: Field(
+                name='max_met_category',
+                type=FIELD_TYPES['max_met_category'],
+                def_num=8,
+            ),
+            9: Field(  # Indicates if calibrated data was used in the calculation
+                name='calibrated_data',
+                type=FIELD_TYPES['bool'],
+                def_num=9,
+            ),
+            12: Field(  # Indicates if the estimate was obtained using a chest strap or wrist heart rate
+                name='hr_source',
+                type=FIELD_TYPES['max_met_heart_rate_source'],
+                def_num=12,
+            ),
+            13: Field(  # Indidcates if the estimate was obtained using onboard GPS or connected GPS
+                name='speed_source',
+                type=FIELD_TYPES['max_met_speed_source'],
+                def_num=13,
+            ),
+        },
+    ),
+    258: MessageType(
+        name='dive_settings',
+        mesg_num=258,
+        fields={
+            0: Field(
+                name='name',
+                type=BASE_TYPES[0x07],  # string
+                def_num=0,
+            ),
+            1: Field(
+                name='model',
+                type=FIELD_TYPES['tissue_model_type'],
+                def_num=1,
+            ),
+            2: Field(
+                name='gf_low',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+                units='percent',
+            ),
+            3: Field(
+                name='gf_high',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+                units='percent',
+            ),
+            4: Field(
+                name='water_type',
+                type=FIELD_TYPES['water_type'],
+                def_num=4,
+            ),
+            5: Field(  # Fresh water is usually 1000; salt water is usually 1025
+                name='water_density',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=5,
+                units='kg/m^3',
+            ),
+            6: Field(  # Typically 1.40
+                name='po2_warn',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+                scale=100,
+                units='percent',
+            ),
+            7: Field(  # Typically 1.60
+                name='po2_critical',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=7,
+                scale=100,
+                units='percent',
+            ),
+            8: Field(
+                name='po2_deco',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+                scale=100,
+                units='percent',
+            ),
+            9: Field(
+                name='safety_stop_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=9,
+            ),
+            10: Field(
+                name='bottom_depth',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=10,
+            ),
+            11: Field(
+                name='bottom_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=11,
+            ),
+            12: Field(
+                name='apnea_countdown_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=12,
+            ),
+            13: Field(
+                name='apnea_countdown_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=13,
+            ),
+            14: Field(
+                name='backlight_mode',
+                type=FIELD_TYPES['dive_backlight_mode'],
+                def_num=14,
+            ),
+            15: Field(
+                name='backlight_brightness',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=15,
+            ),
+            16: Field(
+                name='backlight_timeout',
+                type=FIELD_TYPES['backlight_timeout'],
+                def_num=16,
+            ),
+            17: Field(  # Time between surfacing and ending the activity
+                name='repeat_dive_interval',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=17,
+                units='s',
+            ),
+            18: Field(  # Time at safety stop (if enabled)
+                name='safety_stop_time',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=18,
+                units='s',
+            ),
+            19: Field(
+                name='heart_rate_source_type',
+                type=FIELD_TYPES['source_type'],
+                def_num=19,
+            ),
+            20: Field(
+                name='heart_rate_source',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=20,
+                subfields=(
+                    SubField(
+                        name='heart_rate_antplus_device_type',
+                        def_num=20,
+                        type=FIELD_TYPES['antplus_device_type'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='heart_rate_source_type',
+                                def_num=19,
+                                value='antplus',
+                                raw_value=1,
+                            ),
+                        ),
+                    ),
+                    SubField(
+                        name='heart_rate_local_device_type',
+                        def_num=20,
+                        type=FIELD_TYPES['local_device_type'],
+                        ref_fields=(
+                            ReferenceField(
+                                name='heart_rate_source_type',
+                                def_num=19,
+                                value='local',
+                                raw_value=5,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            21: Field(  # Index of travel dive_gas message
+                name='travel_gas',
+                type=FIELD_TYPES['message_index'],
+                def_num=21,
+            ),
+            22: Field(  # If low PO2 should be switched to automatically
+                name='ccr_low_setpoint_switch_mode',
+                type=FIELD_TYPES['ccr_setpoint_switch_mode'],
+                def_num=22,
+            ),
+            23: Field(  # Target PO2 when using low setpoint
+                name='ccr_low_setpoint',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=23,
+                scale=100,
+                units='percent',
+            ),
+            24: Field(  # Depth to switch to low setpoint in automatic mode
+                name='ccr_low_setpoint_depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=24,
+                scale=1000,
+                units='m',
+            ),
+            25: Field(  # If high PO2 should be switched to automatically
+                name='ccr_high_setpoint_switch_mode',
+                type=FIELD_TYPES['ccr_setpoint_switch_mode'],
+                def_num=25,
+            ),
+            26: Field(  # Target PO2 when using high setpoint
+                name='ccr_high_setpoint',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=26,
+                scale=100,
+                units='percent',
+            ),
+            27: Field(  # Depth to switch to high setpoint in automatic mode
+                name='ccr_high_setpoint_depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=27,
+                scale=1000,
+                units='m',
+            ),
+            29: Field(  # Type of gas consumption rate to display. Some values are only valid if tank volume is known.
+                name='gas_consumption_display',
+                type=FIELD_TYPES['gas_consumption_rate_type'],
+                def_num=29,
+            ),
+            30: Field(  # Indicates whether the up key is enabled during dives
+                name='up_key_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=30,
+            ),
+            35: Field(  # Sounds and vibration enabled or disabled in-dive
+                name='dive_sounds',
+                type=FIELD_TYPES['tone'],
+                def_num=35,
+            ),
+            36: Field(  # Usually 1.0/1.5/2.0 representing 3/4.5/6m or 10/15/20ft
+                name='last_stop_multiple',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=36,
+                scale=10,
+            ),
+            37: Field(  # Indicates which guidelines to use for no-fly surface interval.
+                name='no_fly_time_mode',
+                type=FIELD_TYPES['no_fly_time_mode'],
+                def_num=37,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    259: MessageType(
+        name='dive_gas',
+        mesg_num=259,
+        fields={
+            0: Field(
+                name='helium_content',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+                units='percent',
+            ),
+            1: Field(
+                name='oxygen_content',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+                units='percent',
+            ),
+            2: Field(
+                name='status',
+                type=FIELD_TYPES['dive_gas_status'],
+                def_num=2,
+            ),
+            3: Field(
+                name='mode',
+                type=FIELD_TYPES['dive_gas_mode'],
+                def_num=3,
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    262: MessageType(
+        name='dive_alarm',
+        mesg_num=262,
+        fields={
+            0: Field(  # Depth setting (m) for depth type alarms
+                name='depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=0,
+                scale=1000,
+                units='m',
+            ),
+            1: Field(  # Time setting (s) for time type alarms
+                name='time',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=1,
+                units='s',
+            ),
+            2: Field(  # Enablement flag
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=2,
+            ),
+            3: Field(  # Alarm type setting
+                name='alarm_type',
+                type=FIELD_TYPES['dive_alarm_type'],
+                def_num=3,
+            ),
+            4: Field(  # Tone and Vibe setting for the alarm
+                name='sound',
+                type=FIELD_TYPES['tone'],
+                def_num=4,
+            ),
+            5: Field(  # Dive types the alarm will trigger on
+                name='dive_types',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=5,
+            ),
+            6: Field(  # Alarm ID
+                name='id',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+            ),
+            7: Field(  # Show a visible pop-up for this alarm
+                name='popup_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=7,
+            ),
+            8: Field(  # Trigger the alarm on descent
+                name='trigger_on_descent',
+                type=FIELD_TYPES['bool'],
+                def_num=8,
+            ),
+            9: Field(  # Trigger the alarm on ascent
+                name='trigger_on_ascent',
+                type=FIELD_TYPES['bool'],
+                def_num=9,
+            ),
+            10: Field(  # Repeat alarm each time threshold is crossed?
+                name='repeating',
+                type=FIELD_TYPES['bool'],
+                def_num=10,
+            ),
+            11: Field(  # Ascent/descent rate (mps) setting for speed type alarms
+                name='speed',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=11,
+                scale=1000,
+                units='mps',
+            ),
+            254: Field(  # Index of the alarm
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
     264: MessageType(
         name='exercise_title',
         mesg_num=264,
@@ -15044,6 +14150,855 @@ MESSAGE_TYPES = {
                 def_num=2,
             ),
             254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    268: MessageType(
+        name='dive_summary',
+        mesg_num=268,
+        fields={
+            0: Field(
+                name='reference_mesg',
+                type=FIELD_TYPES['mesg_num'],
+                def_num=0,
+            ),
+            1: Field(
+                name='reference_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=1,
+            ),
+            2: Field(  # 0 if above water
+                name='avg_depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                scale=1000,
+                units='m',
+            ),
+            3: Field(  # 0 if above water
+                name='max_depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=1000,
+                units='m',
+            ),
+            4: Field(  # Time since end of last dive
+                name='surface_interval',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                units='s',
+            ),
+            5: Field(
+                name='start_cns',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=5,
+                units='percent',
+            ),
+            6: Field(
+                name='end_cns',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+                units='percent',
+            ),
+            7: Field(
+                name='start_n2',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=7,
+                units='percent',
+            ),
+            8: Field(
+                name='end_n2',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=8,
+                units='percent',
+            ),
+            9: Field(
+                name='o2_toxicity',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                units='OTUs',
+            ),
+            10: Field(
+                name='dive_number',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=10,
+            ),
+            11: Field(
+                name='bottom_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=11,
+                scale=1000,
+                units='s',
+            ),
+            12: Field(  # Average pressure-based surface air consumption
+                name='avg_pressure_sac',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=12,
+                scale=100,
+                units='bar/min',
+            ),
+            13: Field(  # Average volumetric surface air consumption
+                name='avg_volume_sac',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=13,
+                scale=100,
+                units='L/min',
+            ),
+            14: Field(  # Average respiratory minute volume
+                name='avg_rmv',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=14,
+                scale=100,
+                units='L/min',
+            ),
+            15: Field(  # Time to reach deepest level stop
+                name='descent_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=15,
+                scale=1000,
+                units='s',
+            ),
+            16: Field(  # Time after leaving bottom until reaching surface
+                name='ascent_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=16,
+                scale=1000,
+                units='s',
+            ),
+            17: Field(  # Average ascent rate, not including descents or stops
+                name='avg_ascent_rate',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=17,
+                scale=1000,
+                units='m/s',
+            ),
+            22: Field(  # Average descent rate, not including ascents or stops
+                name='avg_descent_rate',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=22,
+                scale=1000,
+                units='m/s',
+            ),
+            23: Field(  # Maximum ascent rate
+                name='max_ascent_rate',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=23,
+                scale=1000,
+                units='m/s',
+            ),
+            24: Field(  # Maximum descent rate
+                name='max_descent_rate',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=24,
+                scale=1000,
+                units='m/s',
+            ),
+            25: Field(  # Time spent neither ascending nor descending
+                name='hang_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=25,
+                scale=1000,
+                units='s',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    269: MessageType(
+        name='spo2_data',
+        mesg_num=269,
+        fields={
+            0: Field(
+                name='reading_spo2',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+                units='percent',
+            ),
+            1: Field(
+                name='reading_confidence',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+            2: Field(  # Mode when data was captured
+                name='mode',
+                type=FIELD_TYPES['spo2_measurement_type'],
+                def_num=2,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    275: MessageType(
+        name='sleep_level',
+        mesg_num=275,
+        fields={
+            0: Field(
+                name='sleep_level',
+                type=FIELD_TYPES['sleep_level'],
+                def_num=0,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    285: MessageType(
+        name='jump',
+        mesg_num=285,
+        fields={
+            0: Field(
+                name='distance',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=0,
+                units='m',
+            ),
+            1: Field(
+                name='height',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=1,
+                units='m',
+            ),
+            2: Field(
+                name='rotations',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(
+                name='hang_time',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=3,
+                units='s',
+            ),
+            4: Field(  # A score for a jump calculated based on hang time, rotations, and distance.
+                name='score',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=4,
+            ),
+            5: Field(
+                name='position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=5,
+                units='semicircles',
+            ),
+            6: Field(
+                name='position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=6,
+                units='semicircles',
+            ),
+            7: Field(
+                name='speed',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=7,
+                scale=1000,
+                units='m/s',
+                components=(
+                    ComponentField(
+                        name='enhanced_speed',
+                        def_num=8,
+                        scale=1000,
+                        units='m/s',
+                        accumulate=False,
+                        bits=16,
+                        bit_offset=0,
+                    ),
+                ),
+            ),
+            8: Field(
+                name='enhanced_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=8,
+                scale=1000,
+                units='m/s',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    290: MessageType(  # Array of heart beat intervals
+        name='beat_intervals',
+        mesg_num=290,
+        fields={
+            0: Field(  # Milliseconds past date_time
+                name='timestamp_ms',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                units='ms',
+            ),
+            1: Field(  # Array of millisecond times between beats
+                name='time',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                units='ms',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    297: MessageType(
+        name='respiration_rate',
+        mesg_num=297,
+        fields={
+            0: Field(  # Breaths * 100 /min, -300 indicates invalid, -200 indicates large motion, -100 indicates off wrist
+                name='respiration_rate',
+                type=BASE_TYPES[0x83],  # sint16
+                def_num=0,
+                scale=100,
+                units='breaths/min',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    312: MessageType(
+        name='split',
+        mesg_num=312,
+        fields={
+            0: Field(
+                name='split_type',
+                type=FIELD_TYPES['split_type'],
+                def_num=0,
+            ),
+            1: Field(
+                name='total_elapsed_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=1,
+                scale=1000,
+                units='s',
+            ),
+            2: Field(
+                name='total_timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=2,
+                scale=1000,
+                units='s',
+            ),
+            3: Field(
+                name='total_distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=100,
+                units='m',
+            ),
+            4: Field(
+                name='avg_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='m/s',
+            ),
+            9: Field(
+                name='start_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=9,
+            ),
+            13: Field(
+                name='total_ascent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=13,
+                units='m',
+            ),
+            14: Field(
+                name='total_descent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=14,
+                units='m',
+            ),
+            21: Field(
+                name='start_position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=21,
+                units='semicircles',
+            ),
+            22: Field(
+                name='start_position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=22,
+                units='semicircles',
+            ),
+            23: Field(
+                name='end_position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=23,
+                units='semicircles',
+            ),
+            24: Field(
+                name='end_position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=24,
+                units='semicircles',
+            ),
+            25: Field(
+                name='max_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=25,
+                scale=1000,
+                units='m/s',
+            ),
+            26: Field(
+                name='avg_vert_speed',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=26,
+                scale=1000,
+                units='m/s',
+            ),
+            27: Field(
+                name='end_time',
+                type=FIELD_TYPES['date_time'],
+                def_num=27,
+            ),
+            28: Field(
+                name='total_calories',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=28,
+                units='kcal',
+            ),
+            74: Field(
+                name='start_elevation',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=74,
+                scale=5,
+                offset=500,
+                units='m',
+            ),
+            110: Field(
+                name='total_moving_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=110,
+                scale=1000,
+                units='s',
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    313: MessageType(
+        name='split_summary',
+        mesg_num=313,
+        fields={
+            0: Field(
+                name='split_type',
+                type=FIELD_TYPES['split_type'],
+                def_num=0,
+            ),
+            3: Field(
+                name='num_splits',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            4: Field(
+                name='total_timer_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=4,
+                scale=1000,
+                units='s',
+            ),
+            5: Field(
+                name='total_distance',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=5,
+                scale=100,
+                units='m',
+            ),
+            6: Field(
+                name='avg_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+                scale=1000,
+                units='m/s',
+            ),
+            7: Field(
+                name='max_speed',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=7,
+                scale=1000,
+                units='m/s',
+            ),
+            8: Field(
+                name='total_ascent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=8,
+                units='m',
+            ),
+            9: Field(
+                name='total_descent',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=9,
+                units='m',
+            ),
+            10: Field(
+                name='avg_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=10,
+                units='bpm',
+            ),
+            11: Field(
+                name='max_heart_rate',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+                units='bpm',
+            ),
+            12: Field(
+                name='avg_vert_speed',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=12,
+                scale=1000,
+                units='m/s',
+            ),
+            13: Field(
+                name='total_calories',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=13,
+                units='kcal',
+            ),
+            77: Field(
+                name='total_moving_time',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=77,
+                scale=1000,
+                units='s',
+            ),
+            254: Field(
+                name='message_index',
+                type=FIELD_TYPES['message_index'],
+                def_num=254,
+            ),
+        },
+    ),
+    317: MessageType(
+        name='climb_pro',
+        mesg_num=317,
+        fields={
+            0: Field(
+                name='position_lat',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=0,
+                units='semicircles',
+            ),
+            1: Field(
+                name='position_long',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=1,
+                units='semicircles',
+            ),
+            2: Field(
+                name='climb_pro_event',
+                type=FIELD_TYPES['climb_pro_event'],
+                def_num=2,
+            ),
+            3: Field(
+                name='climb_number',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+            ),
+            4: Field(
+                name='climb_category',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=4,
+            ),
+            5: Field(
+                name='current_dist',
+                type=BASE_TYPES[0x88],  # float32
+                def_num=5,
+                units='m',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    319: MessageType(
+        name='tank_update',
+        mesg_num=319,
+        fields={
+            0: Field(
+                name='sensor',
+                type=FIELD_TYPES['ant_channel_id'],
+                def_num=0,
+            ),
+            1: Field(
+                name='pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                scale=100,
+                units='bar',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    323: MessageType(
+        name='tank_summary',
+        mesg_num=323,
+        fields={
+            0: Field(
+                name='sensor',
+                type=FIELD_TYPES['ant_channel_id'],
+                def_num=0,
+            ),
+            1: Field(
+                name='start_pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                scale=100,
+                units='bar',
+            ),
+            2: Field(
+                name='end_pressure',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=100,
+                units='bar',
+            ),
+            3: Field(
+                name='volume_used',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=3,
+                scale=100,
+                units='L',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    346: MessageType(
+        name='sleep_assessment',
+        mesg_num=346,
+        fields={
+            0: Field(  # Average of awake_time_score and awakenings_count_score. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='combined_awake_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=0,
+            ),
+            1: Field(  # Score that evaluates the total time spent awake between sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='awake_time_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=1,
+            ),
+            2: Field(  # Score that evaluates the number of awakenings that interrupt sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='awakenings_count_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=2,
+            ),
+            3: Field(  # Score that evaluates the amount of deep sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='deep_sleep_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            4: Field(  # Score that evaluates the quality of sleep based on sleep stages, heart-rate variability and possible awakenings during the night. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='sleep_duration_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=4,
+            ),
+            5: Field(  # Score that evaluates the amount of light sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='light_sleep_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=5,
+            ),
+            6: Field(  # Total score that summarizes the overall quality of sleep, combining sleep duration and quality. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='overall_sleep_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=6,
+            ),
+            7: Field(  # Score that evaluates the quality of sleep based on sleep stages, heart-rate variability and possible awakenings during the night. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='sleep_quality_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=7,
+            ),
+            8: Field(  # Score that evaluates stress and recovery during sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='sleep_recovery_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=8,
+            ),
+            9: Field(  # Score that evaluates the amount of REM sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='rem_sleep_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=9,
+            ),
+            10: Field(  # Score that evaluates the amount of restlessness during sleep. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='sleep_restlessness_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=10,
+            ),
+            11: Field(  # The number of awakenings during sleep.
+                name='awakenings_count',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=11,
+            ),
+            14: Field(  # Score that evaluates the sleep interruptions. If valid: 0 (worst) to 100 (best). If unknown: FIT_UINT8_INVALID.
+                name='interruptions_score',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=14,
+            ),
+            15: Field(  # Excludes stress during awake periods in the sleep window
+                name='average_stress_during_sleep',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=15,
+                scale=100,
+            ),
+        },
+    ),
+    370: MessageType(
+        name='hrv_status_summary',
+        mesg_num=370,
+        fields={
+            0: Field(  # 7 day RMSSD average over sleep
+                name='weekly_average',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=128,
+                units='ms',
+            ),
+            1: Field(  # Last night RMSSD average over sleep
+                name='last_night_average',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                scale=128,
+                units='ms',
+            ),
+            2: Field(  # 5 minute high RMSSD value over sleep
+                name='last_night_5_min_high',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=2,
+                scale=128,
+                units='ms',
+            ),
+            3: Field(  # 3 week baseline, upper boundary of low HRV status
+                name='baseline_low_upper',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=3,
+                scale=128,
+                units='ms',
+            ),
+            4: Field(  # 3 week baseline, lower boundary of balanced HRV status
+                name='baseline_balanced_lower',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=4,
+                scale=128,
+                units='ms',
+            ),
+            5: Field(  # 3 week baseline, upper boundary of balanced HRV status
+                name='baseline_balanced_upper',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=5,
+                scale=128,
+                units='ms',
+            ),
+            6: Field(
+                name='status',
+                type=FIELD_TYPES['hrv_status'],
+                def_num=6,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    371: MessageType(
+        name='hrv_value',
+        mesg_num=371,
+        fields={
+            0: Field(  # 5 minute RMSSD
+                name='value',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=0,
+                scale=128,
+                units='ms',
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    375: MessageType(
+        name='device_aux_battery_info',
+        mesg_num=375,
+        fields={
+            0: Field(
+                name='device_index',
+                type=FIELD_TYPES['device_index'],
+                def_num=0,
+            ),
+            1: Field(
+                name='battery_voltage',
+                type=BASE_TYPES[0x84],  # uint16
+                def_num=1,
+                scale=256,
+                units='V',
+            ),
+            2: Field(
+                name='battery_status',
+                type=FIELD_TYPES['battery_status'],
+                def_num=2,
+            ),
+            3: Field(
+                name='battery_identifier',
+                type=BASE_TYPES[0x02],  # uint8
+                def_num=3,
+            ),
+            253: FIELD_TYPE_TIMESTAMP,
+        },
+    ),
+    393: MessageType(
+        name='dive_apnea_alarm',
+        mesg_num=393,
+        fields={
+            0: Field(  # Depth setting (m) for depth type alarms
+                name='depth',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=0,
+                scale=1000,
+                units='m',
+            ),
+            1: Field(  # Time setting (s) for time type alarms
+                name='time',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=1,
+                units='s',
+            ),
+            2: Field(  # Enablement flag
+                name='enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=2,
+            ),
+            3: Field(  # Alarm type setting
+                name='alarm_type',
+                type=FIELD_TYPES['dive_alarm_type'],
+                def_num=3,
+            ),
+            4: Field(  # Tone and Vibe setting for the alarm.
+                name='sound',
+                type=FIELD_TYPES['tone'],
+                def_num=4,
+            ),
+            5: Field(  # Dive types the alarm will trigger on
+                name='dive_types',
+                type=FIELD_TYPES['sub_sport'],
+                def_num=5,
+            ),
+            6: Field(  # Alarm ID
+                name='id',
+                type=BASE_TYPES[0x86],  # uint32
+                def_num=6,
+            ),
+            7: Field(  # Show a visible pop-up for this alarm
+                name='popup_enabled',
+                type=FIELD_TYPES['bool'],
+                def_num=7,
+            ),
+            8: Field(  # Trigger the alarm on descent
+                name='trigger_on_descent',
+                type=FIELD_TYPES['bool'],
+                def_num=8,
+            ),
+            9: Field(  # Trigger the alarm on ascent
+                name='trigger_on_ascent',
+                type=FIELD_TYPES['bool'],
+                def_num=9,
+            ),
+            10: Field(  # Repeat alarm each time threshold is crossed?
+                name='repeating',
+                type=FIELD_TYPES['bool'],
+                def_num=10,
+            ),
+            11: Field(  # Ascent/descent rate (mps) setting for speed type alarms
+                name='speed',
+                type=BASE_TYPES[0x85],  # sint32
+                def_num=11,
+                scale=1000,
+                units='mps',
+            ),
+            254: Field(  # Index of the alarm
                 name='message_index',
                 type=FIELD_TYPES['message_index'],
                 def_num=254,
