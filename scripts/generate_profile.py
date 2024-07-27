@@ -17,6 +17,8 @@ import re
 import sys
 import zipfile
 from itertools import islice
+import requests
+import tempfile
 
 import openpyxl  # Dev requirement for parsing Excel spreadsheet
 
@@ -557,12 +559,38 @@ def get_xls_and_version_from_zip(path):
     except KeyError:
         return archive.open('Profile.xlsx'), profile_version
 
+def download_latest_sdk(path):
+    url = 'https://developer.garmin.com/fit/download/'
+    dl_page = requests.get(url)
+
+    re_link = re.compile(r'href="(https://developer\.garmin\.com/downloads/fit/sdk/FitSDKRelease_[^\s]+\.zip)"')
+
+    match = re_link.search(dl_page.text)
+    if not match:
+        print("Couldn't find download link on page. Exiting.")
+        sys.exit(1)
+
+    download_url = match.group(1)
+    print("Downloading latest SDK from %s" % download_url)
+
+    r = requests.get(download_url, stream=True)
+
+    with open(path, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+
 
 def main(input_xls_or_zip, output_py_path=None):
     if output_py_path and os.path.exists(output_py_path):
         if not open(output_py_path).read().strip().startswith(PROFILE_HEADER_FIRST_PART):
             print("Python file doesn't begin with appropriate header. Exiting.")
             sys.exit(1)
+
+    download = input_xls_or_zip == 'download'
+    if download:
+        input_xls_or_zip = tempfile.NamedTemporaryFile(delete=False).name
+        download_latest_sdk(input_xls_or_zip)
 
     if open(input_xls_or_zip, 'rb').read().startswith(XLS_HEADER_MAGIC):
         xls_file, profile_version = input_xls_or_zip, None
@@ -632,7 +660,7 @@ def main(input_xls_or_zip, output_py_path=None):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: %s <FitSDK.zip | Profile.xls> [profile.py]" % os.path.basename(__file__))
+        print("Usage: %s <FitSDK.zip | Profile.xls | 'download'> [profile.py]" % os.path.basename(__file__))
         sys.exit(0)
 
     xls = sys.argv[1]
