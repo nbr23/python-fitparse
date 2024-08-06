@@ -35,13 +35,14 @@ jobs:
       id: check_diff
       run: |
         if ! git diff  | grep -q '^[-+][^#]'; then
+          echo 'Nothing meaningful to commit'
           echo "skip_commit=true" >> $GITHUB_ENV
         else:
           echo "skip_commit=false" >> $GITHUB_ENV
         fi
 
     - name: Commit changes
-      if: env.skip_commit == 'false'
+      if: env.skip_commit != 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -49,7 +50,7 @@ jobs:
         git commit -m "Update profile.py from new SDK release"
 
     - name: Create Pull Request
-      if: env.skip_commit == 'false'
+      if: env.skip_commit != 'true'
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
