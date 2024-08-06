@@ -1,0 +1,60 @@
+name: Generate profile from SDK
+
+on:
+  push:
+    branches:
+      - workflow
+
+# on:
+  # schedule:
+  #   - cron: '0 0 * * *'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+
+    - name: Run Python script
+      run: |
+        python ./scripts/generate_profile.py download fitparse/profile.py
+    
+    - name: Check if there are non-comment changes
+      id: check_diff
+      run: |
+        git diff > diff_output.txt
+        if ! grep -qP '^\+[^#\s]' diff_output.txt; then
+          echo "skip_commit=true" >> $GITHUB_ENV
+        else:
+          echo "skip_commit=false" >> $GITHUB_ENV
+
+    - name: Commit changes
+      if: env.skip_commit == 'false'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update profile.py from new SDK release"
+
+    - name: Create Pull Request
+      if: env.skip_commit == 'false'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Update profile.py from new SDK release"
+        branch: automated/sdk-update
+        title: "Update profile.py from new SDK release"
+        body: "Update profile.py from new SDK release"
+        labels: automated
