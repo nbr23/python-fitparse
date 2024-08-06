@@ -33,7 +33,7 @@ jobs:
     - name: Check if there are non-comment changes
       id: diff
       run: |
-        git diff | grep -q '^[-+][^#]'
+        git diff | grep -q '^[-+][^#]' && echo RC=$?
         if ! git diff | grep -q '^[-+][^#]'; then
           echo 'Great stuff to commit';
           echo "skip-commit=false" >> $GITHUB_OUTPUT;
