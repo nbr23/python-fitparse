@@ -60,3 +60,5 @@ target/
 
 # python-fitparse specific
 FitSDK*
+
+.DS_Store
