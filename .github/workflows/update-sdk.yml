@@ -45,21 +45,18 @@ jobs:
     - name: Commit changes
       if: steps.diff.outputs.skip-commit != 'true'
       run: |
-        echo skip_commit == ${{ steps.diff.outputs.skip-commit }}
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update profile.py from new SDK release"
 
-
-    # git config --global user.name "github-actions[bot]"
-    # git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    # git add .
-    # git commit -m "Update profile.py from new SDK release"
-
-    # - name: Create Pull Request
-    #   if: steps.check_diff.outputs.skip_commit != 'true'
-    #   uses: peter-evans/create-pull-request@v6
-    #   with:
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     commit-message: "Update profile.py from new SDK release"
-    #     branch: automated/sdk-update
-    #     title: "Update profile.py from new SDK release"
-    #     body: "Update profile.py from new SDK release"
-    #     labels: automated
+    - name: Create Pull Request
+      if: steps.diff.outputs.skip-commit != 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Update profile.py from new SDK release"
+        branch: automated/sdk-update
+        title: "Update profile.py from new SDK release"
+        body: "Update profile.py from new SDK release"
+        labels: automated
