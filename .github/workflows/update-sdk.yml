@@ -36,10 +36,10 @@ jobs:
       run: |
         if ! git diff  | grep -q '^[-+][^#]'; then
           echo 'Great stuff to commit';
-          echo "skip-commit=true" >> $GITHUB_OUTPUT;
+          echo "skip-commit=false" >> $GITHUB_OUTPUT;
         else
           echo 'Nothing meaningful to commit';
-          echo "skip-commit=false" >> $GITHUB_OUTPUT;
+          echo "skip-commit=true" >> $GITHUB_OUTPUT;
         fi
 
     - name: Commit changes
