@@ -44,6 +44,7 @@ jobs:
     - name: Commit changes
       if: steps.check_diff.outputs.skip_commit != 'true'
       run: |
+        echo skip_commit == ${{ steps.check_diff.outputs.skip_commit }}
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add .
