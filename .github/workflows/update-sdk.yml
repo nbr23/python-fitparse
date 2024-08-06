@@ -32,19 +32,20 @@ jobs:
         python ./scripts/generate_profile.py download fitparse/profile.py
     
     - name: Check if there are non-comment changes
-      id: check_diff
+      id: diff
       run: |
+        echo "skip-commit=0" >> $GITHUB_OUTPUT
         if ! git diff  | grep -q '^[-+][^#]'; then
           echo 'Nothing meaningful to commit'
-          echo "skip_commit=1" >> $GITHUB_OUTPUT
+          echo "skip-commit=1" >> $GITHUB_OUTPUT
         else:
-          echo "skip_commit=2" >> $GITHUB_OUTPUT
+          echo "skip-commit=2" >> $GITHUB_OUTPUT
         fi
 
     - name: Commit changes
-      if: steps.check_diff.outputs.skip_commit != 'true'
+      if: steps.diff.outputs.skip-commit != 'true'
       run: |
-        echo skip_commit == ${{ steps.check_diff.outputs.skip_commit }}
+        echo skip_commit == ${{ steps.diff.outputs.skip-commit }}
 
 
     # git config --global user.name "github-actions[bot]"
