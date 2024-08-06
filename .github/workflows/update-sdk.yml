@@ -34,13 +34,12 @@ jobs:
     - name: Check if there are non-comment changes
       id: diff
       run: |
-        echo "skip-commit=0" >> $GITHUB_OUTPUT;
         if ! git diff  | grep -q '^[-+][^#]'; then
-          echo 'Nothing meaningful to commit';
-          echo "skip-commit=1" >> $GITHUB_OUTPUT;
-        else
           echo 'Great stuff to commit';
-          echo "skip-commit=2" >> $GITHUB_OUTPUT;
+          echo "skip-commit=true" >> $GITHUB_OUTPUT;
+        else
+          echo 'Nothing meaningful to commit';
+          echo "skip-commit=false" >> $GITHUB_OUTPUT;
         fi
 
     - name: Commit changes
