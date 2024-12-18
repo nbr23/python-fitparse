@@ -54,3 +54,5 @@ jobs:
         title: "Update profile.py from new SDK release"
         body: "Update profile.py from new SDK release"
         labels: automated
+        reviewers: nbr23
+        assignees: nbr23
