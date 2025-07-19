@@ -34,14 +34,6 @@ Issues = "https://github.com/dtcooper/python-fitparse/issues"
 [project.scripts]
 fitdump = "scripts.fitdump:main"
 
-[project.optional-dependencies]
-dev = [
-    "coverage>=4.5.2",
-    "coveralls>=1.7.0",
-    "flake8",
-    "pytest",
-    "pip-tools",
-]
 # Dependencies needed for profile generation
 generate = [
     "openpyxl==3.1.5",
@@ -59,4 +51,13 @@ include = [
     "/patches",
     "/LICENSE",
     "/README.md",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=4.5.2",
+    "coveralls>=1.7.0",
+    "flake8",
+    "pytest",
+    "pip-tools",
 ]
