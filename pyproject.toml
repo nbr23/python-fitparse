@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fitparse"
+version = "1.2.0"
+description = "Python library to parse ANT/Garmin .FIT files"
+authors = [
+    {name = "David Cooper", email = "dave@kupesoft.com"}
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["ant", "garmin", "fit", "files", "parse"]
+
+[project.urls]
+Homepage = "https://www.github.com/dtcooper/python-fitparse"
+Repository = "https://www.github.com/dtcooper/python-fitparse"
+Issues = "https://github.com/dtcooper/python-fitparse/issues"
+
+[project.scripts]
+fitdump = "scripts.fitdump:main"
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=4.5.2",
+    "coveralls>=1.7.0",
+    "flake8",
+    "pytest",
+    "pip-tools",
+]
+# Dependencies needed for profile generation
+generate = [
+    "openpyxl==3.1.5",
+    "requests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["fitparse"]
+artifacts = ["scripts/fitdump"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/fitparse",
+    "/scripts",
+    "/patches",
+    "/LICENSE",
+    "/README.md",
+]

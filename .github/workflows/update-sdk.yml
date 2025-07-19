@@ -12,18 +12,21 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
       with:
-        python-version: '3.x'
+        version: "latest"
+
+    - name: Set up Python
+      run: uv python install
 
     - name: Install dependencies
       run: |
-        pip install -r requirements-test.txt
+        uv sync --extra generate
 
     - name: Run Python script
       run: |
-        python ./scripts/generate_profile.py download fitparse/profile.py
+        uv run python ./scripts/generate_profile.py download fitparse/profile.py
     
     - name: Check if there are non-comment changes
       id: diff
