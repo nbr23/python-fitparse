@@ -21,18 +21,21 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
     - name: Install dependencies
       run: |
-        pip install -r requirements-test.txt
+        uv sync --dev
 
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Run tests
       run: |
-        python -m unittest discover -s tests
-        coverage run run_tests.py && coverage report -m
+        uv run python -m unittest discover -s tests
+        uv run coverage run run_tests.py && uv run coverage report -m
