@@ -21,6 +21,8 @@ import requests
 import tempfile
 
 import openpyxl  # Dev requirement for parsing Excel spreadsheet
+import importlib.util
+import glob
 
 FIELD_NUM_TIMESTAMP = 253
 
@@ -559,6 +561,86 @@ def get_xls_and_version_from_zip(path):
     except KeyError:
         return archive.open('Profile.xlsx'), profile_version
 
+def load_patches_from_directory(patches_dir, patch_type):
+    patches = {}
+
+    if not os.path.exists(patches_dir):
+        return patches
+
+    patch_files = glob.glob(os.path.join(patches_dir, "*.py"))
+
+    for patch_file in patch_files:
+        try:
+            spec = importlib.util.spec_from_file_location("patch_module", patch_file)
+            patch_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(patch_module)
+
+            if patch_type == 'message_types':
+                if not hasattr(patch_module, 'MESSAGE_INFO'):
+                    print(f"Warning: {patch_file} missing MESSAGE_INFO, skipping")
+                    continue
+                patch_obj = patch_module.MESSAGE_INFO
+                patch_key = patch_obj.num
+            elif patch_type == 'field_types':
+                if not hasattr(patch_module, 'TYPE_INFO'):
+                    print(f"Warning: {patch_file} missing TYPE_INFO, skipping")
+                    continue
+                patch_obj = patch_module.TYPE_INFO
+                patch_key = patch_obj.name
+            else:
+                print(f"Warning: Unknown patch type {patch_type}")
+                continue
+
+            print(f"Loaded patch: {patch_type} - {patch_key}")
+            patches[patch_key] = patch_obj
+
+        except Exception as e:
+            print(f"Error loading patch {patch_file}: {e}")
+
+    return patches
+
+
+def load_message_type_patches():
+    """Load message type patches from patches/message_types directory."""
+    patches_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'patches', 'message_types')
+    return load_patches_from_directory(patches_dir, 'message_types')
+
+
+def load_field_type_patches():
+    """Load field type patches from patches/field_types directory."""
+    patches_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'patches', 'field_types')
+    return load_patches_from_directory(patches_dir, 'field_types')
+
+
+def apply_patches(type_list, message_list):
+    print("Loading patches...")
+    field_type_patches = load_field_type_patches()
+    if field_type_patches:
+        print(f"Applying {len(field_type_patches)} field type patches...")
+        for patch_name, patch_type_info in field_type_patches.items():
+            if not type_list.get(patch_name, raise_exception=False):
+                type_list.types.append(patch_type_info)
+                print(f"  Added field type: {patch_name}")
+            else:
+                print(f"  Skipped field type: {patch_name} (already exists in generated profile)")
+
+    message_type_patches = load_message_type_patches()
+    if message_type_patches:
+        print(f"Applying {len(message_type_patches)} message type patches...")
+        for patch_num, patch_message_info in message_type_patches.items():
+            existing_message = None
+            for msg in message_list.messages:
+                if msg.num == patch_num:
+                    existing_message = msg
+                    break
+
+            if not existing_message:
+                message_list.messages.append(patch_message_info)
+                print(f"  Added message type: {patch_message_info.name} (num: {patch_num})")
+            else:
+                print(f"  Skipped message type: {patch_message_info.name} (num: {patch_num}, already exists in generated profile)")
+
+
 def download_latest_sdk(path):
     url = 'https://developer.garmin.com/fit/download/'
     dl_page = requests.get(url)
@@ -600,6 +682,8 @@ def main(input_xls_or_zip, output_py_path=None):
     types_rows, messages_rows = parse_spreadsheet(xls_file, 'Types', 'Messages')
     type_list = parse_types(types_rows)
     message_list = parse_messages(messages_rows, type_list)
+
+    apply_patches(type_list, message_list)
 
     mesg_num_declarations = []
     for mesg_name in MESSAGE_NUM_DECLARATIONS:
