@@ -382,6 +382,12 @@ version = "1.2.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
+generate = [
+    { name = "openpyxl" },
+    { name = "requests" },
+]
+
+[package.dev-dependencies]
 dev = [
     { name = "coverage", version = "7.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "coverage", version = "7.9.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
@@ -393,22 +399,22 @@ dev = [
     { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pytest", version = "8.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
-generate = [
-    { name = "openpyxl" },
-    { name = "requests" },
-]
 
 [package.metadata]
 requires-dist = [
-    { name = "coverage", marker = "extra == 'dev'", specifier = ">=4.5.2" },
-    { name = "coveralls", marker = "extra == 'dev'", specifier = ">=1.7.0" },
-    { name = "flake8", marker = "extra == 'dev'" },
     { name = "openpyxl", marker = "extra == 'generate'", specifier = "==3.1.5" },
-    { name = "pip-tools", marker = "extra == 'dev'" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "requests", marker = "extra == 'generate'" },
 ]
-provides-extras = ["dev", "generate"]
+provides-extras = ["generate"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=4.5.2" },
+    { name = "coveralls", specifier = ">=1.7.0" },
+    { name = "flake8" },
+    { name = "pip-tools" },
+    { name = "pytest" },
+]
 
 [[package]]
 name = "flake8"
