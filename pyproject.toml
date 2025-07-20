@@ -3,11 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "fitparse"
-version = "1.2.0"
+name = "python-fitparse"
+version = "2.0.0"
 description = "Python library to parse ANT/Garmin .FIT files"
 authors = [
-    {name = "David Cooper", email = "dave@kupesoft.com"}
+    {name = "David Cooper", email = "dave@kupesoft.com"},
+    { name = "nbr23", email = "max@23.tf" }
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
@@ -27,9 +28,9 @@ classifiers = [
 keywords = ["ant", "garmin", "fit", "files", "parse"]
 
 [project.urls]
-Homepage = "https://www.github.com/dtcooper/python-fitparse"
-Repository = "https://www.github.com/dtcooper/python-fitparse"
-Issues = "https://github.com/dtcooper/python-fitparse/issues"
+Homepage = "https://www.github.com/nbr23/python-fitparse"
+Repository = "https://www.github.com/nbr23/python-fitparse"
+Issues = "https://github.com/nbr23/python-fitparse/issues"
 
 [project.scripts]
 fitdump = "scripts.fitdump:main"
