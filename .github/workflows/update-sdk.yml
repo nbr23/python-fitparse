@@ -39,13 +39,31 @@ jobs:
           echo "skip-commit=false" >> $GITHUB_OUTPUT;
         fi
 
+    - name: Bump version
+      if: steps.diff.outputs.skip-commit != 'true'
+      run: |
+        # Get current version
+        current_version=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+
+        # Parse version parts
+        IFS='.' read -r major minor patch <<< "$current_version"
+
+        # Bump patch version
+        new_patch=$((patch + 1))
+        new_version="$major.$minor.$new_patch"
+
+        # Update version in pyproject.toml
+        sed -i "s/version = \".*\"/version = \"$new_version\"/" pyproject.toml
+
+        echo "Bumped version from $current_version to $new_version"
+
     - name: Commit changes
       if: steps.diff.outputs.skip-commit != 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add .
-        git commit -m "Update profile.py from new SDK release"
+        git commit -m "Update profile.py from new SDK release and bump version"
 
     - name: Create Pull Request
       if: steps.diff.outputs.skip-commit != 'true'
