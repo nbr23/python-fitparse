@@ -58,6 +58,11 @@ jobs:
 
         echo "Bumped version from $current_version to $new_version"
 
+    - name: Update uv.lock
+      if: steps.diff.outputs.skip-commit != 'true'
+      run: |
+        uv lock
+
     - name: Commit changes
       if: steps.diff.outputs.skip-commit != 'true'
       run: |
