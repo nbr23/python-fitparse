@@ -172,7 +172,8 @@ class MessageList(namedtuple('MessageList', ('messages'))):
                 self.messages,
                 key=lambda mi: (
                         0 if mi.group_name.lower().startswith('common') else 1,
-                        mi.group_name.lower(), mi.num,
+                        mi.group_name.lower(),
+                        mi.num if isinstance(mi.num, int) else int(mi.num, 16),
                 ),
         ):
             # Group name comment
@@ -212,11 +213,12 @@ class MessageInfo(namedtuple('MessageInfo', ('name', 'num', 'group_name', 'field
     def __str__(self):
         s = "MessageType(%s\n" % render_comment(self.comment)
         s += "    name='%s',\n" % self.name
-        s += "    mesg_num=%d,\n" % self.num
+        num_val = self.num if isinstance(self.num, int) else int(self.num, 16)
+        s += "    mesg_num=%d,\n" % num_val
         s += "    fields={\n"
-        for field in sorted(self.fields, key=lambda fi: fi.num):
-            # Don't include trailing comma for fields
-            s += "        %d: %s\n" % (field.num, indent(field, 2))
+        for field in sorted(self.fields, key=lambda fi: fi.num if isinstance(fi.num, int) else int(fi.num, 16) if isinstance(fi.num, str) else fi.num):
+            field_num = field.num if isinstance(field.num, int) else int(field.num, 16) if isinstance(field.num, str) else field.num
+            s += "        %d: %s\n" % (field_num, indent(field, 2))
         s += "    },\n"
         s += ")"
         return s
@@ -225,14 +227,15 @@ class MessageInfo(namedtuple('MessageInfo', ('name', 'num', 'group_name', 'field
 class FieldInfo(
     namedtuple('FieldInfo', ('name', 'type', 'num', 'scale', 'offset', 'units', 'components', 'subfields', 'comment'))):
     def __str__(self):
-        if self.num == FIELD_NUM_TIMESTAMP:
+        num_val = self.num if isinstance(self.num, int) else int(self.num, 16) if isinstance(self.num, str) else self.num
+        if num_val == FIELD_NUM_TIMESTAMP:
             # Add trailing comma here because of comment
             assert not self.components and not self.subfields
             return 'FIELD_TYPE_TIMESTAMP,%s' % render_comment(self.comment)
         s = "Field(%s\n" % render_comment(self.comment)
         s += "    name='%s',\n" % self.name
         s += "    type=%s\n" % render_type(self.type)
-        s += "    def_num=%d,\n" % self.num
+        s += "    def_num=%d,\n" % num_val
         if self.scale:
             s += "    scale=%s,\n" % self.scale
         if self.offset:
@@ -259,7 +262,8 @@ class ComponentFieldInfo(
     def __str__(self):
         s = "ComponentField(\n"
         s += "    name='%s',\n" % self.name
-        s += "    def_num=%d,\n" % (self.num if self.num is not None else 0)
+        num_val = (self.num if isinstance(self.num, int) else int(self.num, 16) if isinstance(self.num, str) else self.num) if self.num is not None else 0
+        s += "    def_num=%d,\n" % num_val
         if self.scale:
             s += "    scale=%s,\n" % self.scale
         if self.offset:
@@ -278,7 +282,8 @@ class SubFieldInfo(namedtuple('SubFieldInfo', (
     def __str__(self):
         s = "SubField(%s\n" % render_comment(self.comment)
         s += "    name='%s',\n" % self.name
-        s += "    def_num=%s,\n" % self.num
+        num_val = self.num if isinstance(self.num, int) else int(self.num, 16) if isinstance(self.num, str) else self.num
+        s += "    def_num=%s,\n" % num_val
         s += "    type=%s\n" % render_type(self.type)
         if self.scale:
             s += "    scale=%s,\n" % self.scale
@@ -304,9 +309,11 @@ class ReferenceFieldInfo(namedtuple('ReferenceFieldInfo', ('name', 'value', 'num
     def __str__(self):
         s = 'ReferenceField(\n'
         s += "    name='%s',\n" % self.name
-        s += '    def_num=%d,\n' % self.num
+        num_val = self.num if isinstance(self.num, int) else int(self.num, 16) if isinstance(self.num, str) else self.num
+        s += '    def_num=%d,\n' % num_val
         s += "    value='%s',\n" % self.value
-        s += '    raw_value=%d,\n' % self.raw_value
+        raw_val = self.raw_value if isinstance(self.raw_value, int) else int(self.raw_value, 16) if isinstance(self.raw_value, str) else self.raw_value
+        s += '    raw_value=%d,\n' % raw_val
         s += ')'
         return s
 
@@ -648,18 +655,28 @@ def apply_patches(type_list, message_list):
 
 
 def download_latest_sdk(path):
-    url = 'https://developer.garmin.com/fit/download/'
-    dl_page = requests.get(url)
+    repo_url = 'https://api.github.com/repos/garmin/fit-sdk-tools/releases/latest'
+    print("Fetching latest SDK release from GitHub...")
 
-    re_link = re.compile(r'href="(https://developer\.garmin\.com/downloads/fit/sdk/FitSDKRelease_[^\s]+\.zip)"')
-
-    match = re_link.search(dl_page.text)
-    if not match:
-        print("Couldn't find download link on page. Exiting.")
+    r = requests.get(repo_url)
+    if r.status_code != 200:
+        print(f"Failed to fetch GitHub releases: {r.status_code}")
         sys.exit(1)
 
-    download_url = match.group(1)
-    print("Downloading latest SDK from %s" % download_url)
+    release_data = r.json()
+
+    profile_asset = None
+    for asset in release_data.get('assets', []):
+        if asset['name'] == 'Profile.xlsx':
+            profile_asset = asset
+            break
+
+    if not profile_asset:
+        print("Couldn't find Profile.xlsx in latest release. Exiting.")
+        sys.exit(1)
+
+    download_url = profile_asset['browser_download_url']
+    print("Downloading Profile.xlsx from %s" % download_url)
 
     r = requests.get(download_url, stream=True)
 
@@ -677,11 +694,17 @@ def main(input_xls_or_zip, output_py_path=None):
 
     download = input_xls_or_zip == 'download'
     if download:
-        input_xls_or_zip = tempfile.NamedTemporaryFile(delete=False).name
+        input_xls_or_zip = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx').name
         download_latest_sdk(input_xls_or_zip)
 
-    if open(input_xls_or_zip, 'rb').read().startswith(XLS_HEADER_MAGIC):
+    file_header = open(input_xls_or_zip, 'rb').read(8)
+    if file_header.startswith(XLS_HEADER_MAGIC):
         xls_file, profile_version = input_xls_or_zip, None
+    elif file_header.startswith(b'PK'):
+        if input_xls_or_zip.endswith('.xlsx'):
+            xls_file, profile_version = input_xls_or_zip, None
+        else:
+            xls_file, profile_version = get_xls_and_version_from_zip(input_xls_or_zip)
     else:
         xls_file, profile_version = get_xls_and_version_from_zip(input_xls_or_zip)
 
