@@ -327,6 +327,18 @@ def render_comment(comment):
 def fix_scale(data):
     if data == 1:
         return None
+    if isinstance(data, bytes):
+        decoded = data.decode().strip()
+        if not decoded:
+            return None
+        try:
+            data = float(decoded)
+            if data.is_integer():
+                data = int(data)
+        except ValueError:
+            return None
+    if isinstance(data, float) and data.is_integer():
+        data = int(data)
     return data
 
 
@@ -430,7 +442,10 @@ def parse_types(types_rows):
 
 def maybe_decode(o):
     if isinstance(o, bytes):
-        return o.decode()
+        decoded = o.decode().strip()
+        if decoded and decoded.lstrip('-').isdigit():
+            return int(decoded)
+        return decoded if decoded else None
     return o
 
 
