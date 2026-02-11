@@ -63,3 +63,9 @@ dev = [
     "pytest",
     "pip-tools",
 ]
+
+[tool.coverage.run]
+omit = [
+    "*/tmp/*",
+    "/tmp/*",
+]
