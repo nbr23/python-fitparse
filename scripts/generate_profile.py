@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+# /// script
+# dependencies = [
+#   "openpyxl",
+#   "requests",
+# ]
+# ///
 
 #
 # Horrible, dirty, ugly, awful, and terrible script to export the Profile.xls
