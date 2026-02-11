@@ -27,7 +27,7 @@ jobs:
 
     - name: Run Python script
       run: |
-        uv run python ./scripts/generate_profile.py download fitparse/profile.py
+        uv run --script ./scripts/generate_profile.py download fitparse/profile.py
     
     - name: Check if there are non-comment changes
       id: diff
