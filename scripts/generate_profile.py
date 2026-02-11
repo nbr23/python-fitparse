@@ -685,6 +685,12 @@ def download_latest_sdk(path):
             if chunk:
                 f.write(chunk)
 
+    tag_name = release_data.get('tag_name', '')
+    version_match = re.search(r'(\d+\.\d+)', tag_name)
+    if version_match:
+        return version_match.group(1)
+    return None
+
 
 def main(input_xls_or_zip, output_py_path=None):
     if output_py_path and os.path.exists(output_py_path):
@@ -693,16 +699,21 @@ def main(input_xls_or_zip, output_py_path=None):
             sys.exit(1)
 
     download = input_xls_or_zip == 'download'
+    profile_version = None
     if download:
         input_xls_or_zip = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx').name
-        download_latest_sdk(input_xls_or_zip)
+        profile_version = download_latest_sdk(input_xls_or_zip)
 
     file_header = open(input_xls_or_zip, 'rb').read(8)
     if file_header.startswith(XLS_HEADER_MAGIC):
-        xls_file, profile_version = input_xls_or_zip, None
+        xls_file = input_xls_or_zip
+        if not download:
+            profile_version = None
     elif file_header.startswith(b'PK'):
         if input_xls_or_zip.endswith('.xlsx'):
-            xls_file, profile_version = input_xls_or_zip, None
+            xls_file = input_xls_or_zip
+            if not download:
+                profile_version = None
         else:
             xls_file, profile_version = get_xls_and_version_from_zip(input_xls_or_zip)
     else:
