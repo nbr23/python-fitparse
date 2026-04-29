@@ -718,7 +718,7 @@ wheels = [
 
 [[package]]
 name = "python-fitparse"
-version = "2.1.5"
+version = "2.1.6"
 source = { editable = "." }
 
 [package.optional-dependencies]
