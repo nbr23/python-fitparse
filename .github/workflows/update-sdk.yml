@@ -29,6 +29,12 @@ jobs:
       run: |
         uv run --script ./scripts/generate_profile.py download fitparse/profile.py
     
+    - name: Extract SDK version
+      id: sdk_version
+      run: |
+        sdk_version=$(grep -oP 'SDK VERSION \K[\d.]+' fitparse/profile.py || echo "")
+        echo "version=$sdk_version" >> $GITHUB_OUTPUT
+
     - name: Check if there are non-comment changes
       id: diff
       run: |
@@ -69,17 +75,17 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add .
-        git commit -m "Update profile.py from new SDK release and bump version"
+        git commit -m "Update profile.py from new SDK release and bump version${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
 
     - name: Create Pull Request
       if: steps.diff.outputs.skip-commit != 'true'
       uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "Update profile.py from new SDK release"
+        commit-message: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
         branch: automated/sdk-update
-        title: "Update profile.py from new SDK release"
-        body: "Update profile.py from new SDK release"
+        title: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
+        body: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
         labels: automated
         reviewers: nbr23
         assignees: nbr23
