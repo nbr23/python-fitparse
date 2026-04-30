@@ -6,7 +6,7 @@ python-fitparse
 > This fork continues active development with support for new FIT SDK versions and patches.
 
 Here's a Python library to parse ANT/Garmin `.FIT` files.
-[![Build Status](https://github.com/nbr23/python-fitparse/workflows/test/badge.svg)](https://github.com/nbr23/python-fitparse/actions?query=workflow%3Atest)
+[![Build Status](https://github.com/nbr23/python-fitparse/workflows/Main%20CI%2FCD%20Pipeline/badge.svg)](https://github.com/nbr23/python-fitparse/actions?query=workflow%3A%22Main+CI%2FCD+Pipeline%22)
 
 
 Install from [![PyPI](https://img.shields.io/pypi/v/python-fitparse.svg)](https://pypi.python.org/pypi/python-fitparse/):
