@@ -29,6 +29,17 @@ class ProfilePatchesTestCase(unittest.TestCase):
         date_field = location.fields[8]
         self.assertEqual(date_field.name, 'date')
 
+    def test_patched_stress_level_body_battery_field(self):
+        stress_level = MESSAGE_TYPES[227]
+        field_names = {f.name for f in stress_level.fields.values()}
+
+        self.assertIn('stress_level_value', field_names)
+        self.assertIn('stress_level_time', field_names)
+
+        body_battery = stress_level.fields[3]
+        self.assertEqual(body_battery.name, 'body_battery')
+        self.assertEqual(body_battery.units, 'percent')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -318,6 +318,12 @@ class ReferenceFieldInfo(namedtuple('ReferenceFieldInfo', ('name', 'value', 'num
         return s
 
 
+def normalize_def_num(num):
+    if isinstance(num, str):
+        return int(num, 16)
+    return num
+
+
 def render_comment(comment):
     if comment:
         return '  # %s' % comment
@@ -662,7 +668,13 @@ def apply_patches(type_list, message_list):
                 message_list.messages.append(patch_message_info)
                 print(f"  Added message type: {patch_message_info.name} (num: {patch_num})")
             else:
-                print(f"  Skipped message type: {patch_message_info.name} (num: {patch_num}, already exists in generated profile)")
+                existing_nums = {normalize_def_num(f.num) for f in existing_message.fields}
+                for patch_field in patch_message_info.fields:
+                    if normalize_def_num(patch_field.num) in existing_nums:
+                        print(f"  Skipped field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num} already defined)")
+                    else:
+                        existing_message.fields.append(patch_field)
+                        print(f"  Added field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num})")
 
 
 def download_latest_sdk(path):
