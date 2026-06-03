@@ -644,12 +644,15 @@ def load_field_type_patches():
 
 def apply_patches(type_list, message_list):
     print("Loading patches...")
+    applied = 0
+
     field_type_patches = load_field_type_patches()
     if field_type_patches:
         print(f"Applying {len(field_type_patches)} field type patches...")
         for patch_name, patch_type_info in field_type_patches.items():
             if not type_list.get(patch_name, raise_exception=False):
                 type_list.types.append(patch_type_info)
+                applied += 1
                 print(f"  Added field type: {patch_name}")
             else:
                 print(f"  Skipped field type: {patch_name} (already exists in generated profile)")
@@ -666,6 +669,7 @@ def apply_patches(type_list, message_list):
 
             if not existing_message:
                 message_list.messages.append(patch_message_info)
+                applied += 1
                 print(f"  Added message type: {patch_message_info.name} (num: {patch_num})")
             else:
                 existing_nums = {normalize_def_num(f.num) for f in existing_message.fields}
@@ -674,7 +678,10 @@ def apply_patches(type_list, message_list):
                         print(f"  Skipped field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num} already defined)")
                     else:
                         existing_message.fields.append(patch_field)
+                        applied += 1
                         print(f"  Added field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num})")
+
+    return applied
 
 
 def download_latest_sdk(path):
@@ -746,7 +753,7 @@ def main(input_xls_or_zip, output_py_path=None):
     type_list = parse_types(types_rows)
     message_list = parse_messages(messages_rows, type_list)
 
-    apply_patches(type_list, message_list)
+    patches_applied = apply_patches(type_list, message_list)
 
     mesg_num_declarations = []
     for mesg_name in MESSAGE_NUM_DECLARATIONS:
@@ -779,6 +786,7 @@ def main(input_xls_or_zip, output_py_path=None):
             len(type_list.types), sum(len(ti.values) for ti in type_list.types),
             len(message_list.messages), sum(len(mi.fields) for mi in message_list.messages),
         )),
+        header('APPLIED %d PATCH%s' % (patches_applied, '' if patches_applied == 1 else 'ES')),
         '', IMPORT_HEADER
     ]) + '\n'
 
