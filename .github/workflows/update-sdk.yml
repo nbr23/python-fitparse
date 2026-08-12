@@ -55,9 +55,9 @@ jobs:
         # Parse version parts
         IFS='.' read -r major minor patch <<< "$current_version"
 
-        # Bump patch version
-        new_patch=$((patch + 1))
-        new_version="$major.$minor.$new_patch"
+        # Bump minor version
+        new_minor=$((minor + 1))
+        new_version="$major.$new_minor.0"
 
         # Update version in pyproject.toml
         sed -i "s/version = \".*\"/version = \"$new_version\"/" pyproject.toml
