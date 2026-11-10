@@ -185,6 +185,45 @@ class FitFileTestCase(unittest.TestCase):
                 totals = [m.get_value('total_cycles') for m in f.get_messages('record')]
                 self.assertEqual(totals, [250, 260, 266])
 
+    WALKING_INTENSITY = 6 | 3 << 5
+    CYCLING_INTENSITY = 2 | 5 << 5
+
+    def monitoring_messages(self, field_defs, data):
+        fit_data = generate_fitfile(
+            generate_messages(mesg_num=55, local_mesg_num=1, field_defs=field_defs, data=data)
+        )
+        return list(FitFile(fit_data).get_messages('monitoring'))
+
+    def test_subfield_resolves_against_a_component_reference(self):
+        orders = {
+            'cycles first': ([(26, 'uint16'), (3, 'uint32'), (24, 'byte')], lambda c, a: [1000, c, a]),
+            'cycles last': ([(26, 'uint16'), (24, 'byte'), (3, 'uint32')], lambda c, a: [1000, a, c]),
+        }
+        for order, (field_defs, row) in orders.items():
+            with self.subTest(order=order):
+                walking, cycling = self.monitoring_messages(
+                    field_defs, [row(1739, self.WALKING_INTENSITY), row(420, self.CYCLING_INTENSITY)],
+                )
+                self.assertEqual(walking.get_value('activity_type'), 'walking')
+                self.assertEqual(walking.get_value('steps'), 1739)
+                self.assertNotIn('cycles', [fd.name for fd in walking.fields])
+                self.assertEqual(cycling.get_value('activity_type'), 'cycling')
+                self.assertEqual(cycling.get_value('strokes'), 210.0)
+                self.assertNotIn('cycles', [fd.name for fd in cycling.fields])
+
+    def test_native_reference_wins_over_a_component_reference(self):
+        (message,) = self.monitoring_messages(
+            [(5, 'enum'), (24, 'byte'), (3, 'uint32')], [[2, self.WALKING_INTENSITY, 420]],
+        )
+        self.assertEqual(message.get_value('strokes'), 210.0)
+        self.assertIsNone(message.get_value('steps'))
+
+    def test_invalid_native_reference_falls_back_to_a_component_reference(self):
+        (message,) = self.monitoring_messages(
+            [(5, 'enum'), (24, 'byte'), (3, 'uint32')], [[0xFF, self.WALKING_INTENSITY, 1739]],
+        )
+        self.assertEqual(message.get_value('steps'), 1739)
+
     def test_component_field_resolves_subfield(self):
         fit_data = generate_fitfile(
             generate_messages(

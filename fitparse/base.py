@@ -411,19 +411,38 @@ class FitFileDecoder(DeveloperDataMixin):
         return raw_values
 
     @staticmethod
-    def _resolve_subfield(field, def_mesg, raw_values):
+    def _resolve_subfield(field, ref_values):
         # Resolve into (field, parent) ie (subfield, field) or (field, None)
         if field.subfields:
             for sub_field in field.subfields:
-                # Go through reference fields for this sub field
                 for ref_field in sub_field.ref_fields:
-                    # Go through field defs AND their raw values
-                    for field_def, raw_value in zip(def_mesg.field_defs, raw_values):
-                        # If there's a definition number AND raw value match on the
-                        # reference field, then we return this subfield
-                        if (field_def.def_num == ref_field.def_num) and (ref_field.raw_value == raw_value):
-                            return sub_field, field
+                    if ref_values.get(ref_field.def_num) == ref_field.raw_value:
+                        return sub_field, field
         return field, None
+
+    def _reference_values(self, def_mesg, raw_values):
+        ref_values = {
+            field_def.def_num: raw_value
+            for field_def, raw_value in zip(def_mesg.field_defs, raw_values)
+            if raw_value is not None
+        }
+        native = dict(ref_values)
+        for field_def, raw_value in zip(def_mesg.field_defs, raw_values):
+            if not field_def.field:
+                continue
+            field, _ = self._resolve_subfield(field_def.field, native)
+            # Accumulating components are skipped so this pass leaves the accumulators
+            # alone; references are enums, which never accumulate.
+            for component in field.components or ():
+                if component.accumulate:
+                    continue
+                try:
+                    cmp_raw_value = component.render(raw_value)
+                except ValueError:
+                    continue
+                if cmp_raw_value is not None:
+                    ref_values.setdefault(component.def_num, self._apply_scale_offset(component, cmp_raw_value))
+        return ref_values
 
     def _apply_scale_offset(self, field, raw_value):
         # Apply numeric transformations (scale+offset)
@@ -455,6 +474,7 @@ class FitFileDecoder(DeveloperDataMixin):
                 header.local_mesg_num))
 
         raw_values = self._parse_raw_values_from_data_message(def_mesg)
+        ref_values = self._reference_values(def_mesg, raw_values)
         field_datas = []  # TODO: I don't love this name, update on DataMessage too
 
         # TODO: Maybe refactor this and make it simpler (or at least broken
@@ -462,7 +482,7 @@ class FitFileDecoder(DeveloperDataMixin):
         for field_def, raw_value in zip(def_mesg.field_defs + def_mesg.dev_field_defs, raw_values):
             field, parent_field = field_def.field, None
             if field:
-                field, parent_field = self._resolve_subfield(field, def_mesg, raw_values)
+                field, parent_field = self._resolve_subfield(field, ref_values)
 
                 # Resolve component fields
                 if field.components:
@@ -489,7 +509,7 @@ class FitFileDecoder(DeveloperDataMixin):
                         cmp_field = def_mesg.mesg_type.fields[component.def_num]
 
                         # Resolve a possible subfield
-                        cmp_field, cmp_parent_field = self._resolve_subfield(cmp_field, def_mesg, raw_values)
+                        cmp_field, cmp_parent_field = self._resolve_subfield(cmp_field, ref_values)
                         cmp_value = cmp_field.render(cmp_raw_value)
 
                         # Plop it on field_datas
