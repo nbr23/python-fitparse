@@ -1,5 +1,5 @@
 import datetime
-from fitparse.utils import scrub_method_name, is_iterable
+from fitparse.utils import FitParseError, scrub_method_name, is_iterable
 
 # Datetimes (uint32) represent seconds since this UTC_REFERENCE
 UTC_REFERENCE = 631065600  # timestamp for UTC 00:00 Dec 31 1989
@@ -58,10 +58,17 @@ class FitFileDataProcessor:
             'process_message_%s' % data_message.def_mesg.name), data_message)
 
     def _run_processor(self, processor_name, data):
+        processors = vars(self).setdefault('_processors', {})
         try:
-            getattr(self, processor_name)(data)
-        except AttributeError:
-            pass
+            processor = processors[processor_name]
+        except KeyError:
+            processor = processors[processor_name] = getattr(self, processor_name, None)
+        if processor is None:
+            return
+        try:
+            processor(data)
+        except AttributeError as e:
+            raise FitParseError("%s failed: %s" % (processor_name, e)) from e
 
     def process_type_bool(self, field_data):
         if field_data.value is not None:

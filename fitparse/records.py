@@ -49,7 +49,7 @@ class DefinitionMessage(RecordBase):
 
 
 class FieldDefinition(RecordBase):
-    __slots__ = ('field', 'def_num', 'base_type', 'size')
+    __slots__ = ('field', 'def_num', 'base_type', 'size', 'unpacker')
 
     @property
     def name(self):
@@ -69,7 +69,7 @@ class FieldDefinition(RecordBase):
 
 
 class DevFieldDefinition(RecordBase):
-    __slots__ = ('field', 'dev_data_index', 'base_type', 'def_num', 'size')
+    __slots__ = ('field', 'dev_data_index', 'base_type', 'def_num', 'size', 'unpacker')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

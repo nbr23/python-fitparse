@@ -8,7 +8,7 @@ from struct import pack
 import warnings
 
 from fitparse import FitFile
-from fitparse.processors import UTC_REFERENCE, StandardUnitsDataProcessor
+from fitparse.processors import UTC_REFERENCE, FitFileDataProcessor, StandardUnitsDataProcessor
 from fitparse.records import BASE_TYPES, Crc
 from fitparse.utils import FitEOFError, FitCRCError, FitHeaderError, FitParseError
 
@@ -716,6 +716,22 @@ class FitFileTestCase(unittest.TestCase):
     def _dev_record_field(self, data):
         f = FitFile(data)
         return next(f.get_messages('record')).get('pwr')
+
+    def test_an_attribute_error_inside_a_processor_raises_fit_parse_error(self):
+        class Broken(FitFileDataProcessor):
+            def process_field_heart_rate(self, field_data):
+                field_data.missing_attribute
+
+        with self.assertRaises(FitParseError):
+            FitFile(records_fitfile(1), data_processor=Broken()).parse()
+
+    def test_processors_still_run_once_their_lookup_is_cached(self):
+        class Doubling(FitFileDataProcessor):
+            def process_field_heart_rate(self, field_data):
+                field_data.value *= 2
+
+        f = FitFile(records_fitfile(2), data_processor=Doubling())
+        self.assertEqual([m.get_value('heart_rate') for m in f.get_messages('record')], [240, 242])
 
     def test_dev_field_applies_the_description_scale_and_offset(self):
         field_data = self._dev_record_field(dev_record_fitfile(

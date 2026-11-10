@@ -355,6 +355,7 @@ class FitFileDecoder(DeveloperDataMixin):
                 def_num=field_def_num,
                 base_type=base_type,
                 size=field_size,
+                unpacker=self._field_unpacker(endian, base_type, field_size),
             ))
 
         dev_field_defs = []
@@ -367,8 +368,9 @@ class FitFileDecoder(DeveloperDataMixin):
                     field=field,
                     dev_data_index=dev_data_index,
                     def_num=field_def_num,
-                    size=field_size
-                  ))
+                    size=field_size,
+                    unpacker=self._field_unpacker(endian, field.type, field_size),
+                ))
 
         def_mesg = DefinitionMessage(
             header=header,
@@ -381,26 +383,32 @@ class FitFileDecoder(DeveloperDataMixin):
         self._local_mesgs[header.local_mesg_num] = def_mesg
         return def_mesg
 
+    @staticmethod
+    def _field_unpacker(endian, base_type, size):
+        # Struct to read n base types (field def size / base type size)
+        count = int(size / base_type.size)
+        return struct.Struct(endian + str(count) + base_type.fmt) if count > 0 else None
+
     def _parse_raw_values_from_data_message(self, def_mesg):
         # Go through mesg's field defs and read them
         raw_values = []
         for field_def in def_mesg.field_defs + def_mesg.dev_field_defs:
             base_type = field_def.base_type
             is_byte = base_type.name == 'byte'
-            # Struct to read n base types (field def size / base type size)
-            struct_fmt = str(int(field_def.size / base_type.size)) + base_type.fmt
+            unpacker = field_def.unpacker
+            if unpacker is None:
+                raise FitParseError("Invalid struct format: %s0%s" % (def_mesg.endian, base_type.fmt))
 
-            # Extract the raw value, ask for a tuple if it's a byte type
             try:
-                raw_value = self._read_struct(
-                    struct_fmt, endian=def_mesg.endian, always_tuple=is_byte,
-                )
+                raw_value = unpacker.unpack(self._read(unpacker.size))
             except FitEOFError:
                 if self.allow_truncated:
                     raise
                 # file was suddenly terminated
                 warnings.warn("File was terminated unexpectedly, some data will not be loaded.")
                 break
+            if len(raw_value) == 1 and not is_byte:
+                raw_value = raw_value[0]
 
             # If the field returns with a tuple of values it's definitely an
             # oddball, but we'll parse it on a per-value basis it.
