@@ -77,6 +77,16 @@ def raw_data(local_mesg_num, payload):
     return pack('B', local_mesg_num) + payload
 
 
+RECORD_SIZE = 6
+
+
+def records_fitfile(count, trailer=b''):
+    data = raw_definition(20, 1, [(253, 4, 0x86), (3, 1, 0x02)])
+    for n in range(count):
+        data += raw_data(1, pack('<IB', 723842606 + n, 120 + n))
+    return generate_fitfile(data + trailer)
+
+
 def corrupt(data, rng):
     body = bytearray(data[:-2])
     for _ in range(rng.randint(1, 4)):
@@ -499,6 +509,66 @@ class FitFileTestCase(unittest.TestCase):
         f.parse()
         self.assertEqual(len(f.messages), 1)
 
+    def _values(self, fit):
+        return [m.get_values() for m in fit.get_messages()]
+
+    def _parse_truncated(self, data):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            f = FitFile(data, allow_truncated=True)
+            f.parse()
+        self.assertEqual([str(x.message) for x in w], [])
+        return f
+
+    def test_allow_truncated_keeps_a_complete_file_as_is(self):
+        data = records_fitfile(3)
+        f = self._parse_truncated(data)
+        self.assertIsNone(f.truncated)
+        self.assertEqual(self._values(f), self._values(FitFile(data)))
+
+    def test_allow_truncated_keeps_every_message_before_a_cut_at_a_message_boundary(self):
+        data = records_fitfile(3)
+        f = self._parse_truncated(data[:-2 - RECORD_SIZE])
+        self.assertIsInstance(f.truncated, FitEOFError)
+        self.assertEqual(self._values(f), self._values(FitFile(data))[:-1])
+
+    def test_allow_truncated_drops_the_message_the_cut_went_through(self):
+        data = records_fitfile(3)
+        f = self._parse_truncated(data[:-2 - RECORD_SIZE // 2])
+        self.assertIsInstance(f.truncated, FitEOFError)
+        self.assertEqual(self._values(f), self._values(FitFile(data))[:-1])
+
+    def test_allow_truncated_keeps_every_message_before_a_cut_definition(self):
+        data = records_fitfile(2, raw_definition(21, 2, [(253, 4, 0x86), (0, 1, 0x00)]))
+        f = self._parse_truncated(data[:-2 - 4])
+        self.assertIsInstance(f.truncated, FitEOFError)
+        self.assertEqual(self._values(f), self._values(FitFile(data)))
+
+    def test_allow_truncated_keeps_every_message_of_a_file_missing_its_crc(self):
+        data = records_fitfile(3)
+        f = self._parse_truncated(data[:-2])
+        self.assertIsInstance(f.truncated, FitEOFError)
+        self.assertEqual(self._values(f), self._values(FitFile(data)))
+
+    def test_allow_truncated_still_raises_on_a_full_length_file_read_past_its_end(self):
+        data = generate_fitfile(raw_definition(20, 1, [(253, 4, 0x86)]) + raw_data(1, b'\x00\x00'))
+        with self.assertRaises(FitEOFError):
+            FitFile(data, allow_truncated=True).parse()
+
+    def test_allow_truncated_keeps_the_complete_segments_of_a_cut_chained_file(self):
+        with open(testfile('activity-settings.fit'), 'rb') as fh:
+            data = fh.read()
+        first_segment = self._values(FitFile(data[:771]))
+        for cut in (775, 800):
+            f = self._parse_truncated(data[:cut])
+            self.assertIsInstance(f.truncated, FitEOFError)
+            self.assertEqual(self._values(f)[:len(first_segment)], first_segment)
+
+    def test_allow_truncated_recovers_a_truncated_fixture(self):
+        f = self._parse_truncated(testfile('activity-unexpected-eof.fit'))
+        self.assertIsInstance(f.truncated, FitEOFError)
+        self.assertTrue(f.messages)
+
     def test_developer_data_thread_safe(self):
         """
         Test that a file with developer types in it can be parsed thread-safe.
@@ -603,10 +673,11 @@ class FitFileTestCase(unittest.TestCase):
                 data = corrupt(fh.read(), rng)
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore')
-                try:
-                    FitFile(data).parse()
-                except FitParseError:
-                    pass
+                for allow_truncated in (False, True):
+                    try:
+                        FitFile(data, allow_truncated=allow_truncated).parse()
+                    except FitParseError:
+                        pass
 
     # TODO:
     #  * Test Processors:

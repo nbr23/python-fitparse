@@ -9,7 +9,7 @@ The ``fitparse`` API Documentation
 The ``FitFile`` Object
 ----------------------
 
-.. class:: FitFile(fileish, check_crc=True, data_processor=None)
+.. class:: FitFile(fileish, check_crc=True, allow_truncated=False, data_processor=None)
 
     Interface for reading a ``.FIT`` file.
 
@@ -37,6 +37,15 @@ The ``FitFile`` Object
 
     :param check_crc: Set to ``False`` if to disable CRC validation while
         reading the current ``.FIT`` file.
+
+    :param allow_truncated: Set to ``True`` to read a ``.FIT`` file that ends
+        before its header says it should, such as a copy cut off mid-transfer.
+        Parsing stops cleanly at the end of the data and keeps every message
+        read in full; a message the end of the file cut through is dropped,
+        and :attr:`truncated` records the end. The checksum of the cut
+        segment cannot be verified. A file of its full declared length that
+        still runs out of data is corrupt and raises :exc:`FitEOFError` as
+        usual.
 
     :param data_processor: Use this parameter to specify an alternate data
         processor object to use. If one is not provided, an instance of
@@ -101,6 +110,15 @@ The ``FitFile`` Object
 
         :raises: Reading this property may raise a :exc:`FitParseError`
             exception. See the :ref:`note on exceptions <exception_warning>`.
+
+
+    .. attribute:: truncated
+
+        ``None`` unless the file was opened with ``allow_truncated=True`` and
+        parsing reached its premature end, in which case it is the
+        :exc:`FitEOFError` that ended it. It is only meaningful once parsing
+        has finished, e.g. after :meth:`parse()` or exhausting
+        :meth:`get_messages()`.
 
 
     .. attribute:: profile_version

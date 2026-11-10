@@ -139,11 +139,14 @@ class DeveloperDataMixin:
 class FitFileDecoder(DeveloperDataMixin):
     """Basic decoder for fit files"""
 
-    def __init__(self, fileish, *args, check_crc=True, data_processor=None, **kwargs):
+    def __init__(self, fileish, *args, check_crc=True, allow_truncated=False, data_processor=None, **kwargs):
         self._file = fileish_open(fileish, 'rb')
 
         self.check_crc = check_crc
+        self.allow_truncated = allow_truncated
+        self.truncated = None
         self._crc = None
+        self._in_header = False
 
         # Get total filesize
         self._file.seek(0, os.SEEK_END)
@@ -222,6 +225,7 @@ class FitFileDecoder(DeveloperDataMixin):
         self._crc = Crc()
         self._local_mesgs = {}
 
+        segment_start = self._file.tell()
         header_data = self._read(12)
         if header_data[8:12] != b'.FIT':
             raise FitHeaderError("Invalid .FIT File Header")
@@ -249,8 +253,23 @@ class FitFileDecoder(DeveloperDataMixin):
 
         # After we've consumed the header, set the bytes left to be read
         self._bytes_left = data_size
+        self._segment_end = segment_start + header_size + data_size + struct.calcsize(Crc.FMT)
 
     def _parse_message(self):
+        try:
+            return self._read_message()
+        except FitEOFError as e:
+            if not (self.allow_truncated and self._truncated()):
+                raise
+            self.truncated = e
+            self._complete = True
+            self.close()
+            return None
+
+    def _truncated(self):
+        return self._in_header or self._filesize < self._segment_end
+
+    def _read_message(self):
         # When done, calculate the CRC and return None
         if self._bytes_left <= 0:
             if not self._complete:
@@ -262,8 +281,10 @@ class FitFileDecoder(DeveloperDataMixin):
                 return None
 
             # Still have data left in the file - assuming chained fit files
+            self._in_header = True
             self._parse_file_header()
-            return self._parse_message()
+            self._in_header = False
+            return self._read_message()
 
         header = self._parse_message_header()
 
@@ -371,6 +392,8 @@ class FitFileDecoder(DeveloperDataMixin):
                     struct_fmt, endian=def_mesg.endian, always_tuple=is_byte,
                 )
             except FitEOFError:
+                if self.allow_truncated:
+                    raise
                 # file was suddenly terminated
                 warnings.warn("File was terminated unexpectedly, some data will not be loaded.")
                 break
@@ -621,12 +644,13 @@ class DataProcessorMixin:
 class UncachedFitFile(DataProcessorMixin, FitFileDecoder):
     """FitFileDecoder with data processing"""
 
-    def __init__(self, fileish, *args, check_crc=True, data_processor=None, **kwargs):
+    def __init__(self, fileish, *args, check_crc=True, allow_truncated=False, data_processor=None, **kwargs):
         # Ensure all optional params are passed as kwargs
         super().__init__(
             fileish,
             *args,
             check_crc=check_crc,
+            allow_truncated=allow_truncated,
             data_processor=data_processor,
             **kwargs
         )
