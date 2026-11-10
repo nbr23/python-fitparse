@@ -156,6 +156,25 @@ class FitFileTestCase(unittest.TestCase):
         self.assertEqual(count, 753)  # TODO: confirm size(records) = size(csv)
         csv_fp.close()
 
+    def test_accumulator_survives_a_redefinition(self):
+        for second_local_mesg_num in (1, 2):
+            with self.subTest(second_local_mesg_num=second_local_mesg_num):
+                field_defs = [(253, 'uint32'), (18, 'uint8')]
+                fit_data = generate_fitfile(
+                    generate_messages(
+                        mesg_num=20, local_mesg_num=1, field_defs=field_defs,
+                        data=[[723842606, 250], [723842607, 4]],
+                    )
+                    + generate_messages(
+                        mesg_num=20, local_mesg_num=second_local_mesg_num, field_defs=field_defs,
+                        data=[[723842608, 10]],
+                    )
+                )
+
+                f = FitFile(fit_data)
+                totals = [m.get_value('total_cycles') for m in f.get_messages('record')]
+                self.assertEqual(totals, [250, 260, 266])
+
     def test_component_field_resolves_subfield(self):
         fit_data = generate_fitfile(
             generate_messages(

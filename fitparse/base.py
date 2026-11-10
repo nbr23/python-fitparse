@@ -319,13 +319,11 @@ class FitFileDecoder(DeveloperDataMixin):
                 )
                 base_type = BASE_TYPE_BYTE
 
-            # If the field has components that are accumulators
-            # start recording their accumulation at 0
             if field and field.components:
                 for component in field.components:
                     if component.accumulate:
                         accumulators = self._accumulators.setdefault(global_mesg_num, {})
-                        accumulators[component.def_num] = 0
+                        accumulators.setdefault(component.def_num, 0)
 
             field_defs.append(FieldDefinition(
                 field=field,
