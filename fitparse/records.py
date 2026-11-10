@@ -290,9 +290,10 @@ class SubField(FieldAndSubFieldBase):
 
 
 class DevField(FieldAndSubFieldBase):
-    __slots__ = ('dev_data_index', 'def_num', 'type', 'name', 'units', 'native_field_num',
-                 # The rest of these are just to be compatible with Field objects. They're always None
-                 'scale', 'offset', 'components', 'subfields')
+    __slots__ = ('dev_data_index', 'def_num', 'type', 'name', 'units', 'scale', 'offset',
+                 'native_mesg_num', 'native_field_num',
+                 # Only for compatibility with Field objects; always None
+                 'components', 'subfields')
     field_type = 'devfield'
 
 

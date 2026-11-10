@@ -65,6 +65,9 @@ class DeveloperDataMixin:
         field_name = message.get_raw_value('field_name')
         units = message.get_raw_value("units")
         native_field_num = message.get_raw_value('native_field_num')
+        native_mesg_num = message.get_raw_value('native_mesg_num')
+        scale = message.get_raw_value('scale')
+        offset = message.get_raw_value('offset')
 
         for name, value in (('developer_data_index', dev_data_index),
                             ('field_definition_number', field_def_num),
@@ -76,6 +79,10 @@ class DeveloperDataMixin:
             field_name = "unnamed_dev_field_%s" % field_def_num
         if not isinstance(units, str):
             units = None
+        if not isinstance(scale, int):
+            scale = None
+        if not isinstance(offset, int):
+            offset = None
         base_type = BASE_TYPES.get(base_type_id)
         if base_type is None:
             warnings.warn(
@@ -102,6 +109,9 @@ class DeveloperDataMixin:
             type=base_type,
             name=field_name,
             units=units,
+            scale=scale,
+            offset=offset,
+            native_mesg_num=native_mesg_num,
             native_field_num=native_field_num
         )
 

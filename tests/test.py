@@ -87,6 +87,18 @@ def records_fitfile(count, trailer=b''):
     return generate_fitfile(data + trailer)
 
 
+def dev_record_fitfile(description_fields, description_payload, dev_value):
+    data = (
+        raw_definition(207, 1, [(3, 1, 0x02)]) + raw_data(1, b'\x00')
+        + raw_definition(206, 2, [(0, 1, 0x02), (1, 1, 0x02), (2, 1, 0x02), (3, 4, 0x07)]
+                         + description_fields)
+        + raw_data(2, b'\x00\x00\x84pwr\x00' + description_payload)
+        + pack('<BxBHB', 0x60 | 3, 0, 20, 1) + pack('<3B', 253, 4, 0x86) + pack('<B3B', 1, 0, 2, 0)
+        + raw_data(3, pack('<IH', 723842606, dev_value))
+    )
+    return generate_fitfile(data)
+
+
 def corrupt(data, rng):
     body = bytearray(data[:-2])
     for _ in range(rng.randint(1, 4)):
@@ -689,6 +701,30 @@ class FitFileTestCase(unittest.TestCase):
         f = FitFile(generate_fitfile(data))
         f.parse()
         self.assertEqual(f.dev_types[0]['fields'][5].name, 'unnamed_dev_field_5')
+
+    def _dev_record_field(self, data):
+        f = FitFile(data)
+        return next(f.get_messages('record')).get('pwr')
+
+    def test_dev_field_applies_the_description_scale_and_offset(self):
+        field_data = self._dev_record_field(dev_record_fitfile(
+            [(6, 1, 0x02), (7, 1, 0x01)], pack('<Bb', 10, 5), 2000,
+        ))
+        self.assertEqual(field_data.raw_value, 2000)
+        self.assertEqual(field_data.value, 195.0)
+
+    def test_dev_field_without_scale_or_offset_keeps_its_raw_value(self):
+        field_data = self._dev_record_field(dev_record_fitfile(
+            [(6, 1, 0x02), (7, 1, 0x01)], pack('<Bb', 0xFF, 0x7F), 2000,
+        ))
+        self.assertEqual(field_data.value, 2000)
+
+    def test_dev_field_exposes_its_native_message_and_field(self):
+        field_data = self._dev_record_field(dev_record_fitfile(
+            [(14, 2, 0x84), (15, 1, 0x02)], pack('<HB', 20, 7), 2000,
+        ))
+        self.assertEqual((field_data.field.native_mesg_num, field_data.field.native_field_num), (20, 7))
+        self.assertEqual(field_data.value, 2000)
 
     def test_dev_field_description_with_an_array_index_raises_fit_parse_error(self):
         data = (
