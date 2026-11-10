@@ -50,6 +50,29 @@ class ProfilePatchesTestCase(unittest.TestCase):
         self.assertEqual(body_battery.name, 'body_battery')
         self.assertEqual(body_battery.units, 'percent')
 
+    def test_patched_record_fields(self):
+        record = MESSAGE_TYPES[20]
+        expected = {
+            90: ('performance_condition', 'sint8', None),
+            136: ('wrist_heart_rate', 'uint8', 'bpm'),
+            137: ('stamina_potential', 'uint8', 'percent'),
+            138: ('stamina', 'uint8', 'percent'),
+            143: ('body_battery', 'uint8', 'percent'),
+        }
+        for def_num, (name, base_type, units) in expected.items():
+            field = record.fields[def_num]
+            self.assertEqual((field.name, field.type.name, field.units), (name, base_type, units))
+        self.assertEqual(record.fields[3].name, 'heart_rate')
+
+    def test_patched_skin_temp_sample_message(self):
+        sample = MESSAGE_TYPES[397]
+        self.assertEqual(sample.name, 'skin_temp_sample')
+        self.assertEqual(set(sample.fields), {1, 253})
+
+        deviation = sample.fields[1]
+        self.assertEqual((deviation.name, deviation.type.name, deviation.units), ('deviation', 'float32', 'C'))
+        self.assertEqual(sample.fields[253].name, 'timestamp')
+
 
 if __name__ == '__main__':
     unittest.main()
