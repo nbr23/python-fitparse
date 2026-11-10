@@ -198,11 +198,12 @@ class FitFileDecoder(DeveloperDataMixin):
         return unpacked if (len(unpacked) > 1) or always_tuple else unpacked[0]
 
     def _read_and_assert_crc(self, allow_zero=False):
-        # CRC Calculation is little endian from SDK
-        # TODO - How to handle the case of unterminated file? Error out and have user retry with check_crc=false?
-        crc_computed, crc_read = self._crc.value, self._read_struct(Crc.FMT)
         if not self.check_crc:
+            # A missing or short CRC at the end of the file is tolerated when checking is off
+            self._file.read(struct.calcsize(Crc.FMT))
             return
+        # CRC Calculation is little endian from SDK
+        crc_computed, crc_read = self._crc.value, self._read_struct(Crc.FMT)
         if crc_computed == crc_read or (allow_zero and crc_read == 0):
             return
         raise FitCRCError('CRC Mismatch [computed: {}, read: {}]'.format(
@@ -252,8 +253,7 @@ class FitFileDecoder(DeveloperDataMixin):
     def _parse_message(self):
         # When done, calculate the CRC and return None
         if self._bytes_left <= 0:
-            # Don't assert CRC if requested not
-            if not self._complete and self.check_crc:
+            if not self._complete:
                 self._read_and_assert_crc()
 
             if self._file.tell() >= self._filesize:

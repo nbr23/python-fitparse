@@ -446,6 +446,40 @@ class FitFileTestCase(unittest.TestCase):
         with warnings.catch_warnings(record=True) as w:
             f.parse()
 
+    def test_check_crc_false_parses_a_valid_file(self):
+        data = generate_fitfile(raw_definition(20, 1, [(253, 4, 0x86)]) + raw_data(1, pack('<I', 723842606)))
+        checked = FitFile(data)
+        checked.parse()
+        unchecked = FitFile(data, check_crc=False)
+        unchecked.parse()
+        self.assertEqual(
+            [m.get_values() for m in unchecked.messages],
+            [m.get_values() for m in checked.messages],
+        )
+
+    def test_check_crc_false_parses_a_file_with_a_wrong_crc(self):
+        data = generate_fitfile()
+        data = data[:-2] + pack('<' + Crc.FMT, Crc.calculate(data[:-2]) ^ 0xFFFF)
+        with self.assertRaises(FitCRCError):
+            FitFile(data).parse()
+        f = FitFile(data, check_crc=False)
+        f.parse()
+        self.assertEqual(len(f.messages), 1)
+
+        FitFile(testfile('activity-filecrc.fit'), check_crc=False).parse()
+
+    def test_check_crc_false_reads_chained_files(self):
+        checked = FitFile(testfile('activity-settings.fit'))
+        checked.parse()
+        unchecked = FitFile(testfile('activity-settings.fit'), check_crc=False)
+        unchecked.parse()
+        self.assertEqual(len(unchecked.messages), len(checked.messages))
+
+    def test_check_crc_false_tolerates_a_missing_crc(self):
+        f = FitFile(generate_fitfile()[:-2], check_crc=False)
+        f.parse()
+        self.assertEqual(len(f.messages), 1)
+
     def test_developer_data_thread_safe(self):
         """
         Test that a file with developer types in it can be parsed thread-safe.
