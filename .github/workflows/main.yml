@@ -42,6 +42,11 @@ jobs:
         uv run python -m unittest discover -s tests
         uv run coverage run run_tests.py && uv run coverage report -m
 
+    - name: Smoke-test fitdump from the built wheel
+      run: |
+        uv build
+        uvx --isolated --from "$(ls dist/*.whl)" fitdump tests/files/Activity.fit > /dev/null
+
   tag-version:
     needs: test
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'

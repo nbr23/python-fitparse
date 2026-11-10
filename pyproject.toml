@@ -33,7 +33,7 @@ Repository = "https://github.com/nbr23/python-fitparse"
 Issues = "https://github.com/nbr23/python-fitparse/issues"
 
 [project.scripts]
-fitdump = "scripts.fitdump:main"
+fitdump = "fitparse.fitdump:main"
 
 # Dependencies needed for profile generation
 [project.optional-dependencies]
@@ -44,7 +44,6 @@ generate = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["fitparse"]
-artifacts = ["scripts/fitdump"]
 
 [tool.hatch.build.targets.sdist]
 include = [
