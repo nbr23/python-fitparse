@@ -159,12 +159,15 @@ class DataMessage(RecordBase):
 class FieldData(RecordBase):
     __slots__ = ('field_def', 'field', 'parent_field', 'value', 'raw_value', 'units')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
-        if not self.units and self.field:
-            # Default to units on field, otherwise None.
-            # NOTE:Not a property since you may want to override this in a data processor
-            self.units = self.field.units
+    def __init__(self, field_def=None, field=None, parent_field=None, value=None, raw_value=None, units=None):
+        self.field_def = field_def
+        self.field = field
+        self.parent_field = parent_field
+        self.value = value
+        self.raw_value = raw_value
+        # Default to units on field, otherwise None.
+        # NOTE:Not a property since you may want to override this in a data processor
+        self.units = field.units if not units and field else units
 
     @property
     def name(self):
