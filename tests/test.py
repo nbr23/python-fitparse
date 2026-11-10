@@ -173,6 +173,7 @@ class FitFileTestCase(unittest.TestCase):
             self.assertEqual(record.get_value('heart_rate'), int(heartrate))
             self.assertEqual(record.get_value('cadence'), int(cadence) if cadence != 'null' else None)
             self.assertAlmostEqual(record.get_value('speed'), float(speed))
+            self.assertAlmostEqual(record.get_value('enhanced_speed'), float(speed))
             self.assertAlmostEqual(record.get_value('distance'), float(distance))
 
         self.assertEqual(count, 753)  # TODO: confirm size(records) = size(csv)
@@ -675,7 +676,17 @@ class FitFileTestCase(unittest.TestCase):
         f = FitFile(generate_fitfile(data))
         f.parse()
         self.assertIsNone(f.messages[1].get_value('speed'))
+        self.assertIsNone(f.messages[1].get_value('enhanced_speed'))
         self.assertIsNone(f.messages[1].get_value('distance'))
+
+    def test_compressed_speed_expands_through_speed_to_enhanced_speed(self):
+        data = raw_definition(20, 1, [(8, 3, 0x0D)]) + raw_data(1, b'\x01\x31\x00')
+        f = FitFile(generate_fitfile(data))
+        record = next(f.get_messages('record'))
+        self.assertEqual(
+            [(fd.name, fd.value) for fd in record.fields if fd.field_def is None],
+            [('speed', 2.57), ('enhanced_speed', 2.57), ('distance', 0.1875)],
+        )
 
     def test_dev_field_description_with_an_unknown_base_type_falls_back_to_bytes(self):
         data = (

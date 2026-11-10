@@ -350,12 +350,6 @@ class FitFileDecoder(DeveloperDataMixin):
                 )
                 base_type = BASE_TYPE_BYTE
 
-            if field and field.components:
-                for component in field.components:
-                    if component.accumulate:
-                        accumulators = self._accumulators.setdefault(global_mesg_num, {})
-                        accumulators.setdefault(component.def_num, 0)
-
             field_defs.append(FieldDefinition(
                 field=field,
                 def_num=field_def_num,
@@ -477,6 +471,58 @@ class FitFileDecoder(DeveloperDataMixin):
 
         return base_value
 
+    def _expand_components(self, def_mesg, field, raw_value, ref_values, field_datas, path):
+        for component in field.components or ():
+            # Render its raw value
+            try:
+                cmp_raw_value = component.render(raw_value)
+            except ValueError:
+                continue
+
+            # Apply accumulated value
+            if component.accumulate and cmp_raw_value is not None:
+                accumulator = self._accumulators.setdefault(def_mesg.mesg_num, {})
+                cmp_raw_value = self._apply_compressed_accumulation(
+                    cmp_raw_value, accumulator.get(component.def_num, 0), component.bits,
+                )
+                accumulator[component.def_num] = cmp_raw_value
+
+            # Apply scale and offset from component, not from the dynamic field
+            # as they may differ
+            cmp_raw_value = self._apply_scale_offset(component, cmp_raw_value)
+
+            # Extract the component's dynamic field from def_mesg
+            cmp_field = def_mesg.mesg_type.fields[component.def_num]
+
+            # Resolve a possible subfield
+            cmp_field, cmp_parent_field = self._resolve_subfield(cmp_field, ref_values)
+            cmp_value = cmp_field.render(cmp_raw_value)
+
+            # Plop it on field_datas
+            field_datas.append(
+                FieldData(
+                    field_def=None,
+                    field=cmp_field,
+                    parent_field=cmp_parent_field,
+                    value=cmp_value,
+                    raw_value=cmp_raw_value,
+                )
+            )
+
+            # As in the FIT SDK, a target's own components (speed -> enhanced_speed) expand from
+            # its raw value; path stops a profile cycle from recursing forever
+            if cmp_field.components and cmp_field.def_num not in path:
+                self._expand_components(
+                    def_mesg, cmp_field, self._unapply_scale_offset(cmp_field, cmp_raw_value), ref_values,
+                    field_datas, path + (cmp_field.def_num,),
+                )
+
+    @staticmethod
+    def _unapply_scale_offset(field, value):
+        if not isinstance(value, (int, float)):
+            return None
+        return round((value + (field.offset or 0)) * (field.scale or 1))
+
     def _parse_data_message_components(self, header):
         def_mesg = self._local_mesgs.get(header.local_mesg_num)
         if not def_mesg:
@@ -494,44 +540,7 @@ class FitFileDecoder(DeveloperDataMixin):
             if field:
                 field, parent_field = self._resolve_subfield(field, ref_values)
 
-                # Resolve component fields
-                if field.components:
-                    for component in field.components:
-                        # Render its raw value
-                        try:
-                            cmp_raw_value = component.render(raw_value)
-                        except ValueError:
-                            continue
-
-                        # Apply accumulated value
-                        if component.accumulate and cmp_raw_value is not None:
-                            accumulator = self._accumulators[def_mesg.mesg_num]
-                            cmp_raw_value = self._apply_compressed_accumulation(
-                                cmp_raw_value, accumulator[component.def_num], component.bits,
-                            )
-                            accumulator[component.def_num] = cmp_raw_value
-
-                        # Apply scale and offset from component, not from the dynamic field
-                        # as they may differ
-                        cmp_raw_value = self._apply_scale_offset(component, cmp_raw_value)
-
-                        # Extract the component's dynamic field from def_mesg
-                        cmp_field = def_mesg.mesg_type.fields[component.def_num]
-
-                        # Resolve a possible subfield
-                        cmp_field, cmp_parent_field = self._resolve_subfield(cmp_field, ref_values)
-                        cmp_value = cmp_field.render(cmp_raw_value)
-
-                        # Plop it on field_datas
-                        field_datas.append(
-                            FieldData(
-                                field_def=None,
-                                field=cmp_field,
-                                parent_field=cmp_parent_field,
-                                value=cmp_value,
-                                raw_value=cmp_raw_value,
-                            )
-                        )
+                self._expand_components(def_mesg, field, raw_value, ref_values, field_datas, (field.def_num,))
 
                 # TODO: Do we care about a base_type and a resolved field mismatch?
                 # My hunch is we don't
