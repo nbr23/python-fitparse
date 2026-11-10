@@ -25,9 +25,24 @@ jobs:
       run: |
         uv sync --extra generate
 
+    - name: Snapshot current profile
+      run: |
+        cp fitparse/profile.py "$RUNNER_TEMP/profile_old.py"
+
     - name: Run Python script
       run: |
         uv run --script ./scripts/generate_profile.py download fitparse/profile.py
+
+    - name: Summarise profile changes
+      run: |
+        status=0
+        uv run python scripts/profile_diff.py "$RUNNER_TEMP/profile_old.py" fitparse/profile.py > "$RUNNER_TEMP/profile-diff.md" || status=$?
+        cat "$RUNNER_TEMP/profile-diff.md" >> "$GITHUB_STEP_SUMMARY"
+        exit "$status"
+
+    - name: Run tests
+      run: |
+        uv run python -m unittest discover -s tests
     
     - name: Extract SDK version
       id: sdk_version
@@ -85,7 +100,7 @@ jobs:
         commit-message: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
         branch: automated/sdk-update
         title: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
-        body: "Update profile.py from new SDK release${{ steps.sdk_version.outputs.version != '' && format(' ({0})', steps.sdk_version.outputs.version) || '' }}"
+        body-path: ${{ runner.temp }}/profile-diff.md
         labels: automated
         reviewers: nbr23
         assignees: nbr23

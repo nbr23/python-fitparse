@@ -18,6 +18,7 @@
 
 from collections import namedtuple
 import datetime
+import hashlib
 import os
 import re
 import sys
@@ -31,6 +32,8 @@ import importlib.util
 import glob
 
 FIELD_NUM_TIMESTAMP = 253
+
+DOWNLOAD_TIMEOUT = 60
 
 XLS_HEADER_MAGIC = b'\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1'
 
@@ -545,10 +548,12 @@ def parse_messages(messages_rows, type_list):
                 )
 
                 assert len(subfield.ref_fields) == len(ref_field_names)
-                if "alert_type" not in ref_field_names:
-                    field.subfields.append(subfield)
+                field.subfields.append(subfield)
 
-    # Resolve reference fields for subfields and components
+    return message_list
+
+
+def resolve_references(message_list, type_list):
     for message in message_list.messages:
         for field in message.fields:
             for sub_field in field.subfields:
@@ -572,8 +577,6 @@ def parse_messages(messages_rows, type_list):
                 )
                 bit_offset += component.bits
 
-    return message_list
-
 
 def get_xls_and_version_from_zip(path):
     archive = zipfile.ZipFile(path, 'r')
@@ -591,41 +594,40 @@ def get_xls_and_version_from_zip(path):
     except KeyError:
         return archive.open('Profile.xlsx'), profile_version
 
-def load_patches_from_directory(patches_dir, patch_type):
-    patches = {}
 
+class PatchError(Exception):
+    pass
+
+
+PATCH_ATTRIBUTES = {
+    'message_types': ('MESSAGE_INFO', lambda info: info.num),
+    'field_types': ('TYPE_INFO', lambda info: info.name),
+}
+
+
+def load_patches_from_directory(patches_dir, patch_type):
+    if patch_type not in PATCH_ATTRIBUTES:
+        raise PatchError(f"Unknown patch type {patch_type}")
+    attribute, key_of = PATCH_ATTRIBUTES[patch_type]
+
+    patches = {}
     if not os.path.exists(patches_dir):
         return patches
 
-    patch_files = glob.glob(os.path.join(patches_dir, "*.py"))
+    for patch_file in sorted(glob.glob(os.path.join(patches_dir, "*.py"))):
+        spec = importlib.util.spec_from_file_location("patch_module", patch_file)
+        patch_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(patch_module)
 
-    for patch_file in patch_files:
-        try:
-            spec = importlib.util.spec_from_file_location("patch_module", patch_file)
-            patch_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(patch_module)
+        if not hasattr(patch_module, attribute):
+            raise PatchError(f"{patch_file} has no {attribute}")
+        patch_obj = getattr(patch_module, attribute)
+        patch_key = key_of(patch_obj)
+        if patch_key in patches:
+            raise PatchError(f"{patch_file} patches {patch_type} {patch_key}, already patched by another file")
 
-            if patch_type == 'message_types':
-                if not hasattr(patch_module, 'MESSAGE_INFO'):
-                    print(f"Warning: {patch_file} missing MESSAGE_INFO, skipping")
-                    continue
-                patch_obj = patch_module.MESSAGE_INFO
-                patch_key = patch_obj.num
-            elif patch_type == 'field_types':
-                if not hasattr(patch_module, 'TYPE_INFO'):
-                    print(f"Warning: {patch_file} missing TYPE_INFO, skipping")
-                    continue
-                patch_obj = patch_module.TYPE_INFO
-                patch_key = patch_obj.name
-            else:
-                print(f"Warning: Unknown patch type {patch_type}")
-                continue
-
-            print(f"Loaded patch: {patch_type} - {patch_key}")
-            patches[patch_key] = patch_obj
-
-        except Exception as e:
-            print(f"Error loading patch {patch_file}: {e}")
+        print(f"Loaded patch: {patch_type} - {patch_key}")
+        patches[patch_key] = patch_obj
 
     return patches
 
@@ -642,6 +644,69 @@ def load_field_type_patches():
     return load_patches_from_directory(patches_dir, 'field_types')
 
 
+def merge_type_values(existing_type, patch_type_info):
+    if existing_type.base_type != patch_type_info.base_type:
+        raise PatchError(
+            f"Field type {existing_type.name} is {existing_type.base_type} in the SDK, "
+            f"the patch declares {patch_type_info.base_type}"
+        )
+    existing_values = {normalize_def_num(v.value): v for v in existing_type.values}
+    added = 0
+    for patch_value in patch_type_info.values:
+        official = existing_values.get(normalize_def_num(patch_value.value))
+        if official is None:
+            existing_type.values.append(patch_value)
+            added += 1
+            print(f"  Added value: {existing_type.name}.{patch_value.name} ({patch_value.value})")
+        elif official.name != patch_value.name:
+            raise PatchError(
+                f"{existing_type.name} value {patch_value.value} is '{official.name}' in the SDK, "
+                f"the patch names it '{patch_value.name}'"
+            )
+        else:
+            print(f"  Redundant value: {existing_type.name}.{patch_value.name} is in the SDK, remove it from the patch")
+    return added
+
+
+def merge_subfields(message_name, existing_field, patch_field):
+    existing_names = {s.name for s in existing_field.subfields}
+    added = 0
+    for patch_subfield in patch_field.subfields:
+        if patch_subfield.name in existing_names:
+            print(f"  Redundant subfield: {message_name}.{existing_field.name}.{patch_subfield.name} is in the SDK")
+        else:
+            existing_field.subfields.append(patch_subfield)
+            added += 1
+            print(f"  Added subfield: {message_name}.{existing_field.name}.{patch_subfield.name}")
+    return added
+
+
+def merge_message_fields(existing_message, patch_message_info):
+    if existing_message.name != patch_message_info.name:
+        raise PatchError(
+            f"Message {patch_message_info.num} is '{existing_message.name}' in the SDK, "
+            f"the patch names it '{patch_message_info.name}'"
+        )
+    existing_fields = {normalize_def_num(f.num): f for f in existing_message.fields}
+    added = 0
+    for patch_field in patch_message_info.fields:
+        official = existing_fields.get(normalize_def_num(patch_field.num))
+        if official is None:
+            existing_message.fields.append(patch_field)
+            added += 1
+            print(f"  Added field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num})")
+        elif official.name != patch_field.name:
+            raise PatchError(
+                f"{existing_message.name} field {patch_field.num} is '{official.name}' in the SDK, "
+                f"the patch names it '{patch_field.name}'"
+            )
+        else:
+            added += merge_subfields(existing_message.name, official, patch_field)
+            print(f"  Field {existing_message.name}.{patch_field.name} is in the SDK now, "
+                  f"only its patched subfields still apply")
+    return added
+
+
 def apply_patches(type_list, message_list):
     print("Loading patches...")
     applied = 0
@@ -650,36 +715,28 @@ def apply_patches(type_list, message_list):
     if field_type_patches:
         print(f"Applying {len(field_type_patches)} field type patches...")
         for patch_name, patch_type_info in field_type_patches.items():
-            if not type_list.get(patch_name, raise_exception=False):
+            existing_type = type_list.get(patch_name, raise_exception=False)
+            if existing_type:
+                applied += merge_type_values(existing_type, patch_type_info)
+            else:
                 type_list.types.append(patch_type_info)
                 applied += 1
                 print(f"  Added field type: {patch_name}")
-            else:
-                print(f"  Skipped field type: {patch_name} (already exists in generated profile)")
 
     message_type_patches = load_message_type_patches()
     if message_type_patches:
         print(f"Applying {len(message_type_patches)} message type patches...")
         for patch_num, patch_message_info in message_type_patches.items():
-            existing_message = None
-            for msg in message_list.messages:
-                if msg.num == patch_num:
-                    existing_message = msg
-                    break
-
-            if not existing_message:
+            existing_message = next(
+                (m for m in message_list.messages if normalize_def_num(m.num) == normalize_def_num(patch_num)),
+                None,
+            )
+            if existing_message:
+                applied += merge_message_fields(existing_message, patch_message_info)
+            else:
                 message_list.messages.append(patch_message_info)
                 applied += 1
                 print(f"  Added message type: {patch_message_info.name} (num: {patch_num})")
-            else:
-                existing_nums = {normalize_def_num(f.num) for f in existing_message.fields}
-                for patch_field in patch_message_info.fields:
-                    if normalize_def_num(patch_field.num) in existing_nums:
-                        print(f"  Skipped field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num} already defined)")
-                    else:
-                        existing_message.fields.append(patch_field)
-                        applied += 1
-                        print(f"  Added field: {existing_message.name}.{patch_field.name} (def_num {patch_field.num})")
 
     return applied
 
@@ -688,10 +745,8 @@ def download_latest_sdk(path):
     repo_url = 'https://api.github.com/repos/garmin/fit-sdk-tools/releases/latest'
     print("Fetching latest SDK release from GitHub...")
 
-    r = requests.get(repo_url)
-    if r.status_code != 200:
-        print(f"Failed to fetch GitHub releases: {r.status_code}")
-        sys.exit(1)
+    r = requests.get(repo_url, timeout=DOWNLOAD_TIMEOUT)
+    r.raise_for_status()
 
     release_data = r.json()
 
@@ -705,15 +760,28 @@ def download_latest_sdk(path):
         print("Couldn't find Profile.xlsx in latest release. Exiting.")
         sys.exit(1)
 
+    algorithm, _, expected_digest = (profile_asset.get('digest') or '').partition(':')
+    if algorithm != 'sha256' or not expected_digest:
+        print("Profile.xlsx has no sha256 digest in the release metadata. Exiting.")
+        sys.exit(1)
+
     download_url = profile_asset['browser_download_url']
     print("Downloading Profile.xlsx from %s" % download_url)
 
-    r = requests.get(download_url, stream=True)
+    r = requests.get(download_url, stream=True, timeout=DOWNLOAD_TIMEOUT)
+    r.raise_for_status()
 
+    sha256 = hashlib.sha256()
     with open(path, 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
+                sha256.update(chunk)
                 f.write(chunk)
+
+    if sha256.hexdigest() != expected_digest:
+        print("Profile.xlsx sha256 {} does not match the release digest {}. Exiting.".format(
+            sha256.hexdigest(), expected_digest))
+        sys.exit(1)
 
     tag_name = release_data.get('tag_name', '')
     version_match = re.search(r'(\d+\.\d+)', tag_name)
@@ -754,6 +822,7 @@ def main(input_xls_or_zip, output_py_path=None):
     message_list = parse_messages(messages_rows, type_list)
 
     patches_applied = apply_patches(type_list, message_list)
+    resolve_references(message_list, type_list)
 
     mesg_num_declarations = []
     for mesg_name in MESSAGE_NUM_DECLARATIONS:

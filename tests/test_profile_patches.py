@@ -13,11 +13,12 @@ class ProfilePatchesTestCase(unittest.TestCase):
         location = MESSAGE_TYPES[29]
         field_names = {f.name for f in location.fields.values()}
 
-        self.assertIn('position_lat', field_names)
-        self.assertIn('position_long', field_names)
-        self.assertIn('date', field_names)
-        self.assertIn('count', field_names)
-        self.assertIn('clock_time', field_names)
+        self.assertEqual(
+            field_names,
+            {'name', 'position_lat', 'position_long', 'altitude', 'message_index'},
+        )
+        self.assertNotIn(3, location.fields)
+        self.assertNotIn(8, location.fields)
 
     def test_patched_location_message_field_types(self):
         location = MESSAGE_TYPES[29]
@@ -26,8 +27,17 @@ class ProfilePatchesTestCase(unittest.TestCase):
         self.assertEqual(position_lat.name, 'position_lat')
         self.assertEqual(position_lat.units, 'semicircles')
 
-        date_field = location.fields[8]
-        self.assertEqual(date_field.name, 'date')
+        name = location.fields[0]
+        self.assertEqual(name.name, 'name')
+        self.assertEqual(name.type.name, 'string')
+
+        altitude = location.fields[4]
+        self.assertEqual(altitude.name, 'altitude')
+        self.assertEqual((altitude.scale, altitude.offset, altitude.units), (5, 500, 'm'))
+
+        message_index = location.fields[254]
+        self.assertEqual(message_index.name, 'message_index')
+        self.assertIs(message_index.type, FIELD_TYPES['message_index'])
 
     def test_patched_stress_level_body_battery_field(self):
         stress_level = MESSAGE_TYPES[227]

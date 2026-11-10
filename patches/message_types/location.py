@@ -10,15 +10,15 @@ MESSAGE_INFO = MessageInfo(
     group_name='',
     fields=[
         FieldInfo(
-            name='date',
+            name='name',
             type='string',
-            num=8,
+            num=0,
             scale=None,
             offset=None,
             units=None,
             components=[],
             subfields=[],
-            comment='Used to correlate UTC to system time if the timestamp of the message is in system time. This UTC time is derived from the GPS data.'
+            comment='Label shown on the device, defaults to the save date and time (e.g. 22 Feb 15:12)'
         ),
         FieldInfo(
             name='position_lat',
@@ -43,26 +43,26 @@ MESSAGE_INFO = MessageInfo(
             comment=''
         ),
         FieldInfo(
-            name='count',
+            name='altitude',
             type='uint16',
-            num=3,
+            num=4,
+            scale=5,
+            offset=500,
+            units='m',
+            components=[],
+            subfields=[],
+            comment='Inferred from saved locations: values follow the standard FIT altitude encoding'
+        ),
+        FieldInfo(
+            name='message_index',
+            type='message_index',
+            num=254,
             scale=None,
             offset=None,
             units=None,
             components=[],
             subfields=[],
             comment=''
-        ),
-        FieldInfo(
-            name='clock_time',
-            type='uint16',
-            num=4,
-            scale=None,
-            offset=None,
-            units='min',
-            components=[],
-            subfields=[],
-            comment='UTC timestamp used to set the devices clock and date'
         ),
     ],
     comment=''
