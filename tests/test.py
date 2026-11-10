@@ -3,6 +3,7 @@
 import csv
 import datetime
 import os
+import random
 from struct import pack
 import warnings
 
@@ -63,6 +64,24 @@ def generate_fitfile(data=None, endian='<'):
     header = pack('<2BHI4s', 14, 16, 152, len(fit_data), b'.FIT')
     file_data = header + pack('<' + Crc.FMT, Crc.calculate(header)) + fit_data
     return file_data + pack('<' + Crc.FMT, Crc.calculate(file_data))
+
+
+def raw_definition(mesg_num, local_mesg_num, field_defs):
+    s = pack('<BxBHB', 0x40 | local_mesg_num, 0, mesg_num, len(field_defs))
+    for def_num, size, base_type_id in field_defs:
+        s += pack('<3B', def_num, size, base_type_id)
+    return s
+
+
+def raw_data(local_mesg_num, payload):
+    return pack('B', local_mesg_num) + payload
+
+
+def corrupt(data, rng):
+    body = bytearray(data[:-2])
+    for _ in range(rng.randint(1, 4)):
+        body[rng.randrange(body[0], len(body))] = rng.randrange(256)
+    return bytes(body) + pack('<' + Crc.FMT, Crc.calculate(bytes(body)))
 
 
 def secs_to_dt(secs):
@@ -451,6 +470,90 @@ class FitFileTestCase(unittest.TestCase):
         except FitParseError:
             self.fail("parse() unexpectedly raised a FitParseError")
 
+
+    def test_invalid_size_on_an_unknown_field_falls_back_to_bytes(self):
+        data = raw_definition(20, 1, [(250, 3, 0x84)]) + raw_data(1, b'\x01\x02\x03')
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            f = FitFile(generate_fitfile(data))
+            f.parse()
+        assert any("'unknown_250'" in str(x.message) for x in w)
+        self.assertEqual(f.messages[1].get(250).raw_value, (1, 2, 3))
+
+    def test_array_valued_date_time_keeps_its_raw_values(self):
+        data = raw_definition(0, 1, [(4, 8, 0x86)]) + raw_data(1, pack('<2I', 723842606, 723842607))
+        f = FitFile(generate_fitfile(data))
+        f.parse()
+        self.assertEqual(f.messages[1].get_value('time_created'), (723842606, 723842607))
+
+    def test_array_valued_timestamp_does_not_anchor_compressed_timestamps(self):
+        data = (
+            raw_definition(20, 1, [(253, 8, 0x86)])
+            + raw_data(1, pack('<2I', 723842606, 723842607))
+            + pack('B', 0x80 | (1 << 5) | 3) + pack('<2I', 1, 2)
+        )
+        f = FitFile(generate_fitfile(data))
+        f.parse()
+        self.assertEqual(len(f.messages), 3)
+
+    def test_component_of_an_array_with_invalid_elements_is_none(self):
+        data = raw_definition(20, 1, [(8, 3, 0x02)]) + raw_data(1, b'\x01\xff\x03')
+        f = FitFile(generate_fitfile(data))
+        f.parse()
+        self.assertIsNone(f.messages[1].get_value('speed'))
+        self.assertIsNone(f.messages[1].get_value('distance'))
+
+    def test_dev_field_description_with_an_unknown_base_type_falls_back_to_bytes(self):
+        data = (
+            raw_definition(207, 1, [(3, 1, 0x02)]) + raw_data(1, b'\x00')
+            + raw_definition(206, 2, [(0, 1, 0x02), (1, 1, 0x02), (2, 1, 0x02), (3, 4, 0x07)])
+            + raw_data(2, b'\x00\x00\x99abc\x00')
+        )
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            f = FitFile(generate_fitfile(data))
+            f.parse()
+        assert any('Unknown base type' in str(x.message) for x in w)
+        dev_field = f.dev_types[0]['fields'][0]
+        self.assertEqual(dev_field.type.name, 'byte')
+        self.assertEqual(dev_field.name, 'abc')
+
+    def test_dev_field_description_with_a_non_string_name_gets_a_placeholder(self):
+        data = (
+            raw_definition(207, 1, [(3, 1, 0x02)]) + raw_data(1, b'\x00')
+            + raw_definition(206, 2, [(0, 1, 0x02), (1, 1, 0x02), (2, 1, 0x02), (3, 4, 0x02)])
+            + raw_data(2, b'\x00\x05\x02abc\x00')
+        )
+        f = FitFile(generate_fitfile(data))
+        f.parse()
+        self.assertEqual(f.dev_types[0]['fields'][5].name, 'unnamed_dev_field_5')
+
+    def test_dev_field_description_with_an_array_index_raises_fit_parse_error(self):
+        data = (
+            raw_definition(207, 1, [(3, 1, 0x02)]) + raw_data(1, b'\x00')
+            + raw_definition(206, 2, [(0, 2, 0x02), (1, 1, 0x02), (2, 1, 0x02)])
+            + raw_data(2, b'\x00\x00\x00\x02')
+        )
+        with self.assertRaises(FitParseError):
+            FitFile(generate_fitfile(data)).parse()
+
+    def test_corrupted_files_only_raise_fit_parse_error(self):
+        rng = random.Random(20261109)
+        originals = [
+            testfile(name) for name in (
+                'Activity.fit', 'DeveloperData.fit', 'MonitoringFile.fit',
+                'compressed-speed-distance.fit', 'Settings.fit', 'WorkoutIndividualSteps.fit',
+            )
+        ]
+        for variant in range(150):
+            with open(rng.choice(originals), 'rb') as fh:
+                data = corrupt(fh.read(), rng)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                try:
+                    FitFile(data).parse()
+                except FitParseError:
+                    pass
 
     # TODO:
     #  * Test Processors:

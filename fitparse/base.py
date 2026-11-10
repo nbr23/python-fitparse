@@ -62,9 +62,27 @@ class DeveloperDataMixin:
         dev_data_index = message.get_raw_value('developer_data_index')
         field_def_num = message.get_raw_value('field_definition_number')
         base_type_id = message.get_raw_value('fit_base_type_id')
-        field_name = message.get_raw_value('field_name') or "unnamed_dev_field_%s" % field_def_num
+        field_name = message.get_raw_value('field_name')
         units = message.get_raw_value("units")
         native_field_num = message.get_raw_value('native_field_num')
+
+        for name, value in (('developer_data_index', dev_data_index),
+                            ('field_definition_number', field_def_num),
+                            ('fit_base_type_id', base_type_id)):
+            if not isinstance(value, int):
+                raise FitParseError(
+                    "Invalid %s=%r in developer field description" % (name, value))
+        if not isinstance(field_name, str) or not field_name:
+            field_name = "unnamed_dev_field_%s" % field_def_num
+        if not isinstance(units, str):
+            units = None
+        base_type = BASE_TYPES.get(base_type_id)
+        if base_type is None:
+            warnings.warn(
+                "Unknown base type %d for developer field %d; falling back to byte encoding."
+                % (base_type_id, field_def_num)
+            )
+            base_type = BASE_TYPE_BYTE
 
         if dev_data_index not in self.dev_types:
             if self.check_developer_data:
@@ -81,7 +99,7 @@ class DeveloperDataMixin:
         fields[field_def_num] = DevField(
             dev_data_index=dev_data_index,
             def_num=field_def_num,
-            type=BASE_TYPES[base_type_id],
+            type=base_type,
             name=field_name,
             units=units,
             native_field_num=native_field_num
@@ -296,7 +314,8 @@ class FitFileDecoder(DeveloperDataMixin):
             if (field_size % base_type.size) != 0:
                 warnings.warn(
                     "Invalid field size %d for field '%s' of type '%s' (expected a multiple of %d); falling back to byte encoding." % (
-                    field_size, field.name, base_type.name, base_type.size)
+                        field_size, field.name if field else 'unknown_%d' % field_def_num,
+                        base_type.name, base_type.size)
                 )
                 base_type = BASE_TYPE_BYTE
 
@@ -470,7 +489,7 @@ class FitFileDecoder(DeveloperDataMixin):
                 value = raw_value
 
             # Update compressed timestamp field
-            if (field_def.def_num == FIELD_TYPE_TIMESTAMP.def_num) and (raw_value is not None):
+            if (field_def.def_num == FIELD_TYPE_TIMESTAMP.def_num) and isinstance(raw_value, int):
                 self._compressed_ts_accumulator = raw_value
 
             field_datas.append(

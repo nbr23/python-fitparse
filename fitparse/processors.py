@@ -69,12 +69,12 @@ class FitFileDataProcessor:
 
     def process_type_date_time(self, field_data):
         value = field_data.value
-        if value is not None and value >= 0x10000000:
+        if isinstance(value, int) and value >= 0x10000000:
             field_data.value = datetime.datetime.fromtimestamp(timestamp=(UTC_REFERENCE + value), tz=datetime.timezone.utc).replace(tzinfo=None)
             field_data.units = None  # Units were 's', set to None
 
     def process_type_local_date_time(self, field_data):
-        if field_data.value is not None:
+        if isinstance(field_data.value, int):
             # NOTE: This value was created on the device using it's local timezone.
             #       Unless we know that timezone, this value won't be correct. However, if we
             #       assume UTC, at least it'll be consistent.
@@ -82,7 +82,7 @@ class FitFileDataProcessor:
             field_data.units = None
 
     def process_type_localtime_into_day(self, field_data):
-        if field_data.value is not None:
+        if isinstance(field_data.value, int):
             # NOTE: Values larger or equal to 86400 should not be possible.
             #       Additionally, if the value is exactly 86400, it will lead to an error when trying to
             #       create the time with datetime.time(24, 0 , 0).

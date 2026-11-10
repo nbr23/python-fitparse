@@ -316,6 +316,9 @@ class ComponentField(RecordBase):
             if self.bit_offset and self.bit_offset >= len(raw_value) << 3:
                 raise ValueError()
 
+            if not all(isinstance(value, int) for value in raw_value):
+                return None
+
             unpacked_num = 0
 
             # Unpack byte array as little endian
@@ -324,11 +327,11 @@ class ComponentField(RecordBase):
 
             raw_value = unpacked_num
 
-        # Mask and shift like a normal number
-        if isinstance(raw_value, int):
-            raw_value = (raw_value >> self.bit_offset) & ((1 << self.bits) - 1)
+        if not isinstance(raw_value, int):
+            return None
 
-        return raw_value
+        # Mask and shift like a normal number
+        return (raw_value >> self.bit_offset) & ((1 << self.bits) - 1)
 
 
 class Crc:
