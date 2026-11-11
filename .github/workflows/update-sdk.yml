@@ -42,7 +42,7 @@ jobs:
 
     - name: Run tests
       run: |
-        uv run python -m unittest discover -s tests
+        uv run pytest
     
     - name: Extract SDK version
       id: sdk_version

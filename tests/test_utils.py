@@ -2,10 +2,12 @@
 
 import io
 import os
+import re
 import tempfile
 
 from pathlib import Path
 
+import fitparse
 from fitparse.utils import fileish_open, is_iterable
 
 import unittest
@@ -69,6 +71,11 @@ class UtilsTestCase(unittest.TestCase):
         self.assertTrue(is_iterable((1, 2)))
         self.assertTrue(is_iterable([1, 2]))
         self.assertTrue(is_iterable(range(2)))
+
+    def test_version_matches_pyproject(self):
+        pyproject = Path(__file__).resolve().parent.parent / 'pyproject.toml'
+        declared = re.search(r'^version = "(.+)"$', pyproject.read_text(), re.M).group(1)
+        self.assertEqual(fitparse.__version__, declared)
 
 
 if __name__ == '__main__':

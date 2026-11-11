@@ -24,10 +24,8 @@ import re
 import sys
 import zipfile
 from itertools import islice
-import requests
 import tempfile
 
-import openpyxl  # Dev requirement for parsing Excel spreadsheet
 import importlib.util
 import glob
 
@@ -375,6 +373,8 @@ def parse_csv_fields(data, num_expected):
 
 
 def parse_spreadsheet(xls_file, *sheet_names):
+    import openpyxl
+
     workbook = openpyxl.load_workbook(xls_file)
 
     for sheet_name in sheet_names:
@@ -742,6 +742,8 @@ def apply_patches(type_list, message_list):
 
 
 def download_latest_sdk(path):
+    import requests
+
     repo_url = 'https://api.github.com/repos/garmin/fit-sdk-tools/releases/latest'
     print("Fetching latest SDK release from GitHub...")
 
